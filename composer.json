@@ -1,5 +1,5 @@
 {
-    "name": "0xc/openfeature",
+    "name": "open-feature/sdk",
     "description": "PHP implementation of the OpenFeature SDK",
     "license": "Apache-2.0",
     "type": "library",
