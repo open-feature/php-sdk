@@ -2,9 +2,9 @@
 
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![Specification](https://img.shields.io/static/v1?label=Specification&message=v0.4.0&color=yellow)](https://github.com/open-feature/spec/tree/v0.4.0)
-[![Latest Stable Version](http://poser.pugx.org/open-feature/php-sdk/v)](https://packagist.org/packages/open-feature/php-sdk)
-[![Total Downloads](http://poser.pugx.org/open-feature/php-sdk/downloads)](https://packagist.org/packages/open-feature/php-sdk)
-[![License](http://poser.pugx.org/open-feature/php-sdk/license)](https://packagist.org/packages/open-feature/php-sdk)
+[![Latest Stable Version](http://poser.pugx.org/open-feature/sdk/v)](https://packagist.org/packages/open-feature/sdk)
+[![Total Downloads](http://poser.pugx.org/open-feature/sdk/downloads)](https://packagist.org/packages/open-feature/sdk)
+[![License](http://poser.pugx.org/open-feature/sdk/license)](https://packagist.org/packages/open-feature/sdk)
 
 ## Alpha Checklist
 
