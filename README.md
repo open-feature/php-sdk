@@ -2,9 +2,9 @@
 
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![Specification](https://img.shields.io/static/v1?label=Specification&message=v0.4.0&color=yellow)](https://github.com/open-feature/spec/tree/v0.4.0)
-[![Latest Stable Version](http://poser.pugx.org/0xc/openfeature/v)](https://packagist.org/packages/0xc/openfeature)
-[![Total Downloads](http://poser.pugx.org/0xc/openfeature/downloads)](https://packagist.org/packages/0xc/openfeature)
-[![License](http://poser.pugx.org/0xc/openfeature/license)](https://packagist.org/packages/0xc/openfeature)
+[![Latest Stable Version](http://poser.pugx.org/open-feature/php-sdk/v)](https://packagist.org/packages/open-feature/php-sdk)
+[![Total Downloads](http://poser.pugx.org/open-feature/php-sdk/downloads)](https://packagist.org/packages/open-feature/php-sdk)
+[![License](http://poser.pugx.org/open-feature/php-sdk/license)](https://packagist.org/packages/open-feature/php-sdk)
 
 ## Alpha Checklist
 
@@ -27,7 +27,7 @@ Future development may aim to allow this library to be auto-loaded by filepath (
 ## Installation
 
 ```
-$ composer require 0xc/openfeature   // installs the latest version
+$ composer require open-feature/sdk   // installs the latest version
 ```
 
 ## Usage
