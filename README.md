@@ -41,7 +41,7 @@ class MyClass {
   private OpenFeatureClient $client;
 
   public function __construct() {
-    $this->client = OpenFeatureAPI->getInstance()->getClient('MyClass');
+    $this->client = OpenFeatureAPI::getInstance()->getClient('MyClass');
   }
 
   public function booleanExample(): UI
@@ -61,7 +61,7 @@ class MyClass {
       return render_template($template);
   }
 
-  public function numberExample(): List<HomepageModule>
+  public function numberExample(): array
   {
       // How many modules should we be fetching?
       $count = $this->client->getIntegerValue('module-fetch-count', 4);
