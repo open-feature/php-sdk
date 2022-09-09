@@ -6,18 +6,6 @@
 [![Total Downloads](http://poser.pugx.org/open-feature/sdk/downloads)](https://packagist.org/packages/open-feature/sdk)
 [![License](http://poser.pugx.org/open-feature/sdk/license)](https://packagist.org/packages/open-feature/sdk)
 
-## Alpha Checklist
-
-- [x] spec compliant
-- [x] contains test suite which verifies behavior consistent with spec
-- [x] contains test suite with reasonable coverage
-- [x] automated publishing
-- [x] comprehensive readme
-
-## Disclaimer
-
-_I'm throwing this project together as a potential demo-phase of OpenFeature for PHP, with future work surrounding a Split PHP provider (probably utilizing their existing package). It is not complete and is very much work in progress._
-
 ## Overview
 
 This package provides a functional SDK for an OpenFeature API and client. It also builds on various PSRs (PHP Standards Recommendations) such as the Logger interfaces (PSR-3) and the Basic and Extended Coding Standards (PSR-1 and PSR-12).
