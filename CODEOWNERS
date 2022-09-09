@@ -1,0 +1,9 @@
+# Welcome to the CODEOWNERS file
+# This file dictates code owners who will be required for
+# reviews in the project
+
+# These owners will be the default owners for everything in
+# the repo. Unless a later match takes precedence,
+# @global-owner1 and @global-owner2 will be requested for
+# review when someone opens a pull request.
+*       @tcarrio
