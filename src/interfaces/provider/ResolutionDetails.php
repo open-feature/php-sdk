@@ -32,7 +32,7 @@ interface ResolutionDetails
      * In cases of normal execution, the provider MUST NOT populate the flag resolution structure's error code
      * field, or otherwise must populate it with a null or falsy value.
      */
-    public function getErrorCode(): ?string;
+    public function getErrorCode(): ?ErrorCode;
 
     /**
      * ---------------

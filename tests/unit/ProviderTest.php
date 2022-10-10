@@ -10,6 +10,7 @@ use OpenFeature\Test\TestHook;
 use OpenFeature\Test\TestProvider;
 use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
 use OpenFeature\implementation\provider\ResolutionDetailsFactory;
+use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
 
 class ProviderTest extends TestCase
@@ -230,7 +231,7 @@ class ProviderTest extends TestCase
      */
     public function testMustPopulateErrorFieldInAbnormalExecution(): void
     {
-        $expectedErrorCode = 'ERROR';
+        $expectedErrorCode = ErrorCode::GENERAL();
 
         /** @var Mockery\MockInterface|Provider $mockProvider */
         $mockProvider = $this->mockery(TestProvider::class)->makePartial();

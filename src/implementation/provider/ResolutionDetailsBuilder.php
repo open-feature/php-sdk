@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenFeature\implementation\provider;
 
 use DateTime;
+use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\ResolutionDetails as ResolutionDetailsInterface;
 
 class ResolutionDetailsBuilder
@@ -26,7 +27,7 @@ class ResolutionDetailsBuilder
         return $this;
     }
 
-    public function withErrorCode(string $errorCode): ResolutionDetailsBuilder
+    public function withErrorCode(ErrorCode $errorCode): ResolutionDetailsBuilder
     {
         $this->details->setErrorCode($errorCode);
 

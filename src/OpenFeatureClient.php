@@ -28,8 +28,10 @@ use OpenFeature\interfaces\flags\EvaluationOptions as EvaluationOptionsInterface
 use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\hooks\Hook;
 use OpenFeature\interfaces\hooks\HooksAwareTrait;
+use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
 use OpenFeature\interfaces\provider\ResolutionDetails;
+use OpenFeature\interfaces\provider\ThrowableWithErrorCode;
 use Psr\Log\LoggerAwareInterface;
 use Throwable;
 
@@ -373,10 +375,12 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
                 ),
             );
 
+            $errorCode = $err instanceof ThrowableWithErrorCode ? $err->getErrorCode() : ErrorCode::GENERAL();
+
             $details = (new EvaluationDetailsBuilder())
                             ->withValue($defaultValue)
                             ->withReason(Reason::ERROR)
-                            ->withErrorCode($err->getMessage())
+                            ->withErrorCode($errorCode)
                             ->build();
 
             $hookExecutor->errorHooks($flagValueType, $hookContext, $err, $mergedRemainingHooks, $hookHints);

@@ -20,6 +20,7 @@ use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
 use OpenFeature\implementation\provider\ResolutionDetailsFactory;
 use OpenFeature\interfaces\hooks\Hook;
 use OpenFeature\interfaces\hooks\HookContext;
+use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
 use Psr\Log\LoggerInterface;
 
@@ -484,7 +485,7 @@ class OpenFeatureClientTest extends TestCase
         $api = APITestHelper::new();
         $client = new OpenFeatureClient($api, 'test-name', 'test-version');
 
-        $expectedErrorCode = 'NETWORK_ERROR';
+        $expectedErrorCode = ErrorCode::FLAG_NOT_FOUND();
 
         $mockProvider = $this->getDefaultMockProvider();
         $mockProvider->shouldReceive('resolveBooleanValue')->andReturns((new ResolutionDetailsBuilder())->withValue(true)->withErrorCode($expectedErrorCode)->build());
@@ -507,7 +508,7 @@ class OpenFeatureClientTest extends TestCase
         $api = APITestHelper::new();
         $client = new OpenFeatureClient($api, 'test-name', 'test-version');
 
-        $expectedErrorCode = 'NETWORK_ERROR';
+        $expectedErrorCode = ErrorCode::FLAG_NOT_FOUND();
         $expectedReason = 'Failed to reach target server';
 
         $mockProvider = $this->getDefaultMockProvider();

@@ -6,6 +6,7 @@ namespace OpenFeature\implementation\flags;
 
 use DateTime;
 use OpenFeature\interfaces\flags\EvaluationDetails as EvaluationDetailsInterface;
+use OpenFeature\interfaces\provider\ErrorCode;
 
 class EvaluationDetailsBuilder
 {
@@ -33,7 +34,7 @@ class EvaluationDetailsBuilder
         return $this;
     }
 
-    public function withErrorCode(?string $errorCode): EvaluationDetailsBuilder
+    public function withErrorCode(?ErrorCode $errorCode): EvaluationDetailsBuilder
     {
         $this->details->setErrorCode($errorCode);
 
