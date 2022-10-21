@@ -90,6 +90,14 @@
         "dev:test:coverage:html": "phpunit --colors=always --coverage-html build/coverage/coverage-html/",
         "dev:test:unit": "phpunit --colors=always --testdox",
         "dev:test:unit:debug": "phpunit --colors=always --testdox -d xdebug.profiler_enable=on",
+        "dev:test:features:init": "git submodule update --recursive",
+        "dev:test:features:setup": "cp ./test-harness/features/*.feature ./features/",
+        "dev:test:features:run": "vendor/bin/behat",
+        "dev:test:features": [
+            "@dev:test:features:setup",
+            "@dev:test:features:setup",
+            "@dev:test:features:run"
+        ],
         "test": "@dev:test"
     },
     "scripts-descriptions": {
