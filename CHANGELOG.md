@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.5](https://github.com/open-feature/php-sdk/compare/0.0.4...0.0.5) (2022-10-21)
+
+
+### Miscellaneous Chores
+
+* remove redundant exclusion ([#10](https://github.com/open-feature/php-sdk/issues/10)) ([ba4b5f1](https://github.com/open-feature/php-sdk/commit/ba4b5f15eb8984af57eb08e7bb9c903671366789))
+
 ## [0.0.4](https://github.com/open-feature/php-sdk/compare/0.0.3...0.0.4) (2022-10-21)
 
 
