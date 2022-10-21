@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.4](https://github.com/open-feature/php-sdk/compare/0.0.3...0.0.4) (2022-10-21)
+
+
+### Bug Fixes
+
+* exclude v in tag ([#8](https://github.com/open-feature/php-sdk/issues/8)) ([1ecabdb](https://github.com/open-feature/php-sdk/commit/1ecabdbf216139a65ed7be81561f32b078749489))
+
 ## [0.0.3](https://github.com/open-feature/php-sdk/compare/v0.0.2...0.0.3) (2022-10-21)
 
 
