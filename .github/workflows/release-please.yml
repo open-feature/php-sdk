@@ -16,3 +16,4 @@ jobs:
           command: manifest
           token: ${{secrets.GITHUB_TOKEN}}
           default-branch: main
+          include-v-in-tag: false
