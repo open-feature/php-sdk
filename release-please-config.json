@@ -5,7 +5,8 @@
       "release-type": "php",
       "prerelease": false,
       "bump-minor-pre-major": true,
-      "bump-patch-for-minor-pre-major": true
+      "bump-patch-for-minor-pre-major": true,
+      "include-v-in-tag": false
     }
   }
 }
