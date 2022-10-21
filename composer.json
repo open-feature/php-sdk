@@ -14,6 +14,7 @@
         "psr/log": "^1.1"
     },
     "require-dev": {
+        "behat/behat": "^3.11",
         "captainhook/captainhook": "^5.10",
         "captainhook/plugin-composer": "^5.3",
         "ergebnis/composer-normalize": "^2.25",

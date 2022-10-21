@@ -18,6 +18,7 @@ use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\implementation\flags\EvaluationOptions;
 use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
 use OpenFeature\implementation\provider\ResolutionDetailsFactory;
+use OpenFeature\implementation\provider\ResolutionError;
 use OpenFeature\interfaces\hooks\Hook;
 use OpenFeature\interfaces\hooks\HookContext;
 use OpenFeature\interfaces\provider\ErrorCode;
@@ -488,13 +489,16 @@ class OpenFeatureClientTest extends TestCase
         $expectedErrorCode = ErrorCode::FLAG_NOT_FOUND();
 
         $mockProvider = $this->getDefaultMockProvider();
-        $mockProvider->shouldReceive('resolveBooleanValue')->andReturns((new ResolutionDetailsBuilder())->withValue(true)->withErrorCode($expectedErrorCode)->build());
+        $mockProvider->shouldReceive('resolveBooleanValue')->andReturns((new ResolutionDetailsBuilder())->withValue(true)->withError(new ResolutionError($expectedErrorCode))->build());
 
         $api->setProvider($mockProvider);
 
         $actualDetails = $client->getBooleanDetails('flagKey', false, null, null);
 
-        $this->assertEquals($expectedErrorCode, $actualDetails->getErrorCode());
+        /** @var ResolutionError $resolutionError */
+        $resolutionError = $actualDetails->getError();
+        $this->assertNotNull($resolutionError);
+        $this->assertEquals($expectedErrorCode, $resolutionError->getCode());
     }
 
     /**
@@ -513,7 +517,7 @@ class OpenFeatureClientTest extends TestCase
 
         $mockProvider = $this->getDefaultMockProvider();
         $mockProvider->shouldReceive('resolveBooleanValue')
-            ->andReturns((new ResolutionDetailsBuilder())->withValue(true)->withErrorCode($expectedErrorCode)->withReason($expectedReason)->build());
+            ->andReturns((new ResolutionDetailsBuilder())->withValue(true)->withError(new ResolutionError($expectedErrorCode))->withReason($expectedReason)->build());
 
         $api->setProvider($mockProvider);
 

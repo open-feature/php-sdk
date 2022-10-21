@@ -6,14 +6,14 @@ namespace OpenFeature\implementation\flags;
 
 use DateTime;
 use OpenFeature\interfaces\flags\EvaluationDetails as EvaluationDetailsInterface;
-use OpenFeature\interfaces\provider\ErrorCode;
+use OpenFeature\interfaces\provider\ResolutionError;
 
 class EvaluationDetails implements EvaluationDetailsInterface
 {
     private string $flagKey = '';
     /** @var bool|string|int|float|DateTime|mixed[]|null $value */
     private $value;
-    private ?ErrorCode $errorCode = null;
+    private ?ResolutionError $error = null;
     private ?string $reason = null;
     private ?string $variant = null;
 
@@ -53,14 +53,14 @@ class EvaluationDetails implements EvaluationDetailsInterface
         $this->value = $value;
     }
 
-    public function getErrorCode(): ?ErrorCode
+    public function getError(): ?ResolutionError
     {
-        return $this->errorCode;
+        return $this->error;
     }
 
-    public function setErrorCode(?ErrorCode $errorCode): void
+    public function setError(?ResolutionError $error): void
     {
-        $this->errorCode = $errorCode;
+        $this->error = $error;
     }
 
     public function getReason(): ?string

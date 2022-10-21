@@ -18,6 +18,7 @@ use OpenFeature\implementation\hooks\HookContextFactory;
 use OpenFeature\implementation\hooks\HookExecutor;
 use OpenFeature\implementation\hooks\HookHints;
 use OpenFeature\implementation\provider\Reason;
+use OpenFeature\implementation\provider\ResolutionError;
 use OpenFeature\interfaces\common\LoggerAwareTrait;
 use OpenFeature\interfaces\common\Metadata as MetadataInterface;
 use OpenFeature\interfaces\flags\API;
@@ -31,7 +32,7 @@ use OpenFeature\interfaces\hooks\HooksAwareTrait;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
 use OpenFeature\interfaces\provider\ResolutionDetails;
-use OpenFeature\interfaces\provider\ThrowableWithErrorCode;
+use OpenFeature\interfaces\provider\ThrowableWithResolutionError;
 use Psr\Log\LoggerAwareInterface;
 use Throwable;
 
@@ -375,12 +376,12 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
                 ),
             );
 
-            $errorCode = $err instanceof ThrowableWithErrorCode ? $err->getErrorCode() : ErrorCode::GENERAL();
+            $error = $err instanceof ThrowableWithResolutionError ? $err->getResolutionError() : new ResolutionError(ErrorCode::GENERAL());
 
             $details = (new EvaluationDetailsBuilder())
                             ->withValue($defaultValue)
                             ->withReason(Reason::ERROR)
-                            ->withErrorCode($errorCode)
+                            ->withError($error)
                             ->build();
 
             $hookExecutor->errorHooks($flagValueType, $hookContext, $err, $mergedRemainingHooks, $hookHints);

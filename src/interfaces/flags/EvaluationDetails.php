@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace OpenFeature\interfaces\flags;
 
 use DateTime;
-use OpenFeature\interfaces\provider\ErrorCode;
+use OpenFeature\interfaces\provider\ResolutionError;
 
 /**
  * A structure representing the result of the flag evaluation process,
@@ -43,7 +43,7 @@ interface EvaluationDetails
      * MUST contain a string identifying an error occurred during flag evaluation and the
      * nature of the error.
      */
-    public function getErrorCode(): ?ErrorCode;
+    public function getError(): ?ResolutionError;
 
     /**
      * -----------------

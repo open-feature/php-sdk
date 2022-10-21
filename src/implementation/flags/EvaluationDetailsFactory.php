@@ -31,7 +31,7 @@ class EvaluationDetailsFactory
         return (new EvaluationDetailsBuilder())
                     ->withFlagKey($flagKey)
                     ->withValue($details->getValue())
-                    ->withErrorCode($details->getErrorCode())
+                    ->withError($details->getError())
                     ->withReason($details->getReason())
                     ->withVariant($details->getVariant())
                     ->build();

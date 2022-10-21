@@ -24,7 +24,6 @@ use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\hooks\Hook;
 use OpenFeature\interfaces\hooks\HookContext;
 use OpenFeature\interfaces\hooks\HookHints as HookHintsInterface;
-use OpenFeature\interfaces\provider\ResolutionDetails;
 use Throwable;
 
 use function method_exists;
@@ -79,7 +78,7 @@ class HooksTest extends TestCase
 
         $hook = $this->mockery(TestHook::class)->makePartial();
 
-        $hook->shouldReceive('after')->andReturnUsing(function (HookContext $context, ResolutionDetails $details, HookHints $hints) use ($testRunner, $expectedHookContext) {
+        $hook->shouldReceive('before')->andReturnUsing(function (HookContext $context, HookHints $hints) use ($testRunner, $expectedHookContext) {
             // there are no setters on any interfaces provided by HookContext or its children...
             $testRunner->assertEquals($expectedHookContext, $context);
         });

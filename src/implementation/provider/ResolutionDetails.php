@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace OpenFeature\implementation\provider;
 
 use DateTime;
-use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\ResolutionDetails as ResolutionDetailsInterface;
+use OpenFeature\interfaces\provider\ResolutionError;
 
 class ResolutionDetails implements ResolutionDetailsInterface
 {
     /** @var bool|string|int|float|DateTime|mixed[]|null $value */
     private $value = null;
-    private ?ErrorCode $errorCode = null;
+    private ?ResolutionError $error = null;
     private ?string $reason = null;
     private ?string $variant = null;
 
@@ -32,14 +32,14 @@ class ResolutionDetails implements ResolutionDetailsInterface
         $this->value = $value;
     }
 
-    public function getErrorCode(): ?ErrorCode
+    public function getError(): ?ResolutionError
     {
-        return $this->errorCode;
+        return $this->error;
     }
 
-    public function setErrorCode(?ErrorCode $errorCode): void
+    public function setError(?ResolutionError $error): void
     {
-        $this->errorCode = $errorCode;
+        $this->error = $error;
     }
 
     public function getReason(): ?string

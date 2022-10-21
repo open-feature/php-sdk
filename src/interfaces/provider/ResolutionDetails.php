@@ -27,12 +27,12 @@ interface ResolutionDetails
 
     /**
      * ---------------
-     * Requirement 2.7
+     * Requirement 2.8
      * ---------------
-     * In cases of normal execution, the provider MUST NOT populate the flag resolution structure's error code
-     * field, or otherwise must populate it with a null or falsy value.
+     * In cases of abnormal execution, the provider MUST indicate an error using the idioms of the implementation
+     * language, with an associated error code and optional associated error message.
      */
-    public function getErrorCode(): ?ErrorCode;
+    public function getError(): ?ResolutionError;
 
     /**
      * ---------------

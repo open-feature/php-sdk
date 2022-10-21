@@ -10,6 +10,7 @@ use OpenFeature\Test\TestHook;
 use OpenFeature\Test\TestProvider;
 use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
 use OpenFeature\implementation\provider\ResolutionDetailsFactory;
+use OpenFeature\implementation\provider\ResolutionError;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
 
@@ -181,7 +182,7 @@ class ProviderTest extends TestCase
     /**
      * Requirement 2.6
      *
-     * The provider SHOULD populate the flag resolution structure's reason field with a string indicating the semantic reason for the returned flag value.
+     * The provider SHOULD populate the flag resolution structure's reason field with "DEFAULT", "TARGETING_MATCH", "SPLIT", "DISABLED", "UNKNOWN", "ERROR" or some other string indicating the semantic reason for the returned flag value.
      */
     public function testShouldPopulateReasonField(): void
     {
@@ -208,7 +209,7 @@ class ProviderTest extends TestCase
      */
     public function testMustNotPopulateErrorFieldInNormalExecution(): void
     {
-        $expectedErrorCode = null;
+        $expectedResolutionError = null;
 
         /** @var Mockery\MockInterface|Provider $mockProvider */
         $mockProvider = $this->mockery(TestProvider::class)->makePartial();
@@ -221,7 +222,8 @@ class ProviderTest extends TestCase
 
         $actualResolution = $mockProvider->resolveBooleanValue('flagKey', false, null);
 
-        $this->assertEquals($expectedErrorCode, $actualResolution->getErrorCode());
+        $resolutionError = $actualResolution->getError();
+        $this->assertEquals($expectedResolutionError, $resolutionError);
     }
 
     /**
@@ -237,12 +239,15 @@ class ProviderTest extends TestCase
         $mockProvider = $this->mockery(TestProvider::class)->makePartial();
         $mockProvider->shouldReceive('resolveBooleanValue')
                      ->andReturn((new ResolutionDetailsBuilder())
-                                    ->withErrorCode($expectedErrorCode)
+                                    ->withError(new ResolutionError($expectedErrorCode))
                                     ->build());
 
         $actualResolution = $mockProvider->resolveBooleanValue('flagKey', false, null);
 
-        $this->assertEquals($expectedErrorCode, $actualResolution->getErrorCode());
+        /** @var ResolutionError $resolutionError */
+        $resolutionError = $actualResolution->getError();
+        $this->assertNotNull($resolutionError);
+        $this->assertEquals($expectedErrorCode, $resolutionError->getCode());
     }
 
     /**
