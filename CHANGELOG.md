@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.6](https://github.com/open-feature/php-sdk/compare/0.0.5...0.0.6) (2022-10-30)
+
+
+### Features
+
+* provide a base AbstractProvider for provider implementations to use ([78be67c](https://github.com/open-feature/php-sdk/commit/78be67cd93719742e0e0169a6b2ff9bffe95086b))
+
 ## [0.0.5](https://github.com/open-feature/php-sdk/compare/0.0.4...0.0.5) (2022-10-21)
 
 
