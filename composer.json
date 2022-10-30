@@ -8,6 +8,12 @@
         "featureflagging",
         "openfeature"
     ],
+    "authors": [
+        {
+            "name": "Tom Carrio",
+            "email": "tom@carrio.dev"
+        }
+    ],
     "require": {
         "php": "^7.4 || ^8",
         "myclabs/php-enum": "^1.8",
@@ -88,16 +94,16 @@
         ],
         "dev:test:coverage:ci": "phpunit --colors=always --coverage-text --coverage-clover build/coverage/clover.xml --coverage-cobertura build/coverage/cobertura.xml --coverage-crap4j build/coverage/crap4j.xml --coverage-xml build/coverage/coverage-xml --log-junit build/junit.xml",
         "dev:test:coverage:html": "phpunit --colors=always --coverage-html build/coverage/coverage-html/",
-        "dev:test:unit": "phpunit --colors=always --testdox",
-        "dev:test:unit:debug": "phpunit --colors=always --testdox -d xdebug.profiler_enable=on",
-        "dev:test:features:init": "git submodule update --recursive",
-        "dev:test:features:setup": "cp ./test-harness/features/*.feature ./features/",
-        "dev:test:features:run": "vendor/bin/behat",
         "dev:test:features": [
             "@dev:test:features:setup",
             "@dev:test:features:setup",
             "@dev:test:features:run"
         ],
+        "dev:test:features:init": "git submodule update --recursive",
+        "dev:test:features:run": "vendor/bin/behat",
+        "dev:test:features:setup": "cp ./test-harness/features/*.feature ./features/",
+        "dev:test:unit": "phpunit --colors=always --testdox",
+        "dev:test:unit:debug": "phpunit --colors=always --testdox -d xdebug.profiler_enable=on",
         "test": "@dev:test"
     },
     "scripts-descriptions": {
