@@ -498,7 +498,7 @@ class OpenFeatureClientTest extends TestCase
         /** @var ResolutionError $resolutionError */
         $resolutionError = $actualDetails->getError();
         $this->assertNotNull($resolutionError);
-        $this->assertEquals($expectedErrorCode, $resolutionError->getCode());
+        $this->assertEquals($expectedErrorCode, $resolutionError->getResolutionErrorCode());
     }
 
     /**
