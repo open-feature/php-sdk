@@ -359,7 +359,7 @@ class FeatureContext implements BehatContext
         $error = $details->getError();
 
         Assert::assertNotNull($error);
-        Assert::assertEquals($errorCode, $error->getCode());
+        Assert::assertEquals($errorCode, $error->getResolutionErrorCode());
     }
 
     /**
@@ -392,7 +392,7 @@ class FeatureContext implements BehatContext
 
         Assert::assertNotNull($error);
         Assert::assertEquals(
-            $error->getCode(),
+            $error->getResolutionErrorCode(),
             ErrorCode::TYPE_MISMATCH(),
         );
     }

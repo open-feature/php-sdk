@@ -20,7 +20,7 @@ interface ResolutionError
      * In cases of abnormal execution, the provider MUST indicate an error using the idioms of the implementation
      * language, with an associated error code and optional associated error message.
      */
-    public function getCode(): ErrorCode;
+    public function getResolutionErrorCode(): ErrorCode;
 
     /**
      * ---------------
@@ -29,5 +29,5 @@ interface ResolutionError
      * In cases of abnormal execution, the provider MUST indicate an error using the idioms of the implementation
      * language, with an associated error code and optional associated error message.
      */
-    public function getMessage(): ?string;
+    public function getResolutionErrorMessage(): ?string;
 }
