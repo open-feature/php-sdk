@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.7](https://github.com/open-feature/php-sdk/compare/0.0.6...0.0.7) (2022-11-01)
+
+
+### Bug Fixes
+
+* extend Exception for ResolutionError and provide non-overlapping methods ([541ebc4](https://github.com/open-feature/php-sdk/commit/541ebc4f416b1aeff3b35d784513895697894e4e))
+
 ## [0.0.6](https://github.com/open-feature/php-sdk/compare/0.0.5...0.0.6) (2022-10-30)
 
 
