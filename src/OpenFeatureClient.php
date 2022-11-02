@@ -360,7 +360,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
                 $mergedContext,
             );
 
-            if (!ValueTypeValidator::is($flagValueType, $resolutionDetails->getValue())) {
+            if (!$resolutionDetails->getError() && !ValueTypeValidator::is($flagValueType, $resolutionDetails->getValue())) {
                 throw new InvalidResolutionValueError($flagValueType);
             }
 

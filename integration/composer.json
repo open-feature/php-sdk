@@ -27,8 +27,13 @@
     },
     "repositories": [
         {
-            "type": "vcs",
-            "url": "https://github.com/tcarrio/openfeature-php-flagd-provider"
+            "type": "path",
+            "url": "../../openfeature-php-sdk-contrib/src/Flagd",
+            "options": {
+                "versions": {
+                    "open-feature/flagd-provider": "0.0.2"
+                }
+            }
         },
         {
             "type": "path",

@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-namespace OpenFeature\Tests\Integration;
-
 use Behat\Behat\Context\Context as BehatContext;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\HttpFactory;
@@ -14,10 +12,10 @@ use OpenFeature\Providers\Flagd\config\HttpConfig;
 use OpenFeature\implementation\flags\Attributes;
 use OpenFeature\implementation\flags\MutableEvaluationContext;
 use OpenFeature\interfaces\flags\EvaluationContext;
+use OpenFeature\interfaces\flags\EvaluationDetails;
 use OpenFeature\interfaces\flags\EvaluationOptions;
 use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\provider\ErrorCode;
-use OpenFeature\interfaces\provider\ResolutionDetails;
 use PHPUnit\Framework\Assert;
 
 /**
@@ -31,14 +29,16 @@ class FeatureContext implements BehatContext
 
     private string $flagType;
     private string $inputFlagKey;
-    private mixed $inputFlagDefaultValue;
+    /** @var mixed $inputFlagDefaultValue */
+    private $inputFlagDefaultValue;
     private ?EvaluationContext $inputContext = null;
     private ?EvaluationOptions $inputOptions = null;
 
-    private mixed $calculatedValue;
+    /** @var mixed $calculatedValue */
+    private $calculatedValue;
     private bool $valueWasCalculated = false;
 
-    private ResolutionDetails $calculatedDetails;
+    private EvaluationDetails $calculatedDetails;
     private bool $detailsWereCalculated = false;
 
     /**
@@ -161,8 +161,10 @@ class FeatureContext implements BehatContext
 
     /**
      * @When an object flag with key :flagKey is evaluated with a :defaultValue default value
+     * 
+     * @param mixed $defaultValue
      */
-    public function anObjectFlagWithKeyIsEvaluatedWithANullDefaultValue(string $flagKey, mixed $defaultValue)
+    public function anObjectFlagWithKeyIsEvaluatedWithANullDefaultValue(string $flagKey, $defaultValue)
     {
         $this->flagType = FlagValueType::OBJECT;
         $this->inputFlagKey = $flagKey;
@@ -171,8 +173,12 @@ class FeatureContext implements BehatContext
 
     /**
      * @Then the resolved object value should be contain fields :key1, :key2, and :key3, with values :value1, :value2 and :value3, respectively
+     * 
+     * @param mixed $value1
+     * @param mixed $value2
+     * @param mixed $value3
      */
-    public function theResolvedObjectValueShouldBeContainFieldsAndWithValuesAndRespectively(string $key1, string $key2, string $key3, mixed $value1, mixed $value2, mixed $value3)
+    public function theResolvedObjectValueShouldBeContainFieldsAndWithValuesAndRespectively(string $key1, string $key2, string $key3, $value1, $value2, $value3)
     {
         Assert::assertEquals(
             [
@@ -274,8 +280,10 @@ class FeatureContext implements BehatContext
 
     /**
      * @When an object flag with key :flagKey is evaluated with details and a :defaultValue default value
+     * 
+     * @param mixed $defaultValue
      */
-    public function anObjectFlagWithKeyIsEvaluatedWithDetailsAndANullDefaultValue(string $flagKey, mixed $defaultValue)
+    public function anObjectFlagWithKeyIsEvaluatedWithDetailsAndANullDefaultValue(string $flagKey, $defaultValue)
     {
         $this->flagType = FlagValueType::OBJECT;
         $this->inputFlagKey = $flagKey;
@@ -284,8 +292,12 @@ class FeatureContext implements BehatContext
 
     /**
      * @Then the resolved object details value should be contain fields :key1, :key2, and :key3, with values :value1, :value2 and :value3, respectively
+     * 
+     * @param mixed $value1
+     * @param mixed $value2
+     * @param mixed $value3
      */
-    public function theResolvedObjectDetailsValueShouldBeContainFieldsAndWithValuesAndRespectively(string $key1, string $key2, string $key3, mixed $value1, mixed $value2, mixed $value3)
+    public function theResolvedObjectDetailsValueShouldBeContainFieldsAndWithValuesAndRespectively(string $key1, string $key2, string $key3, $value1, $value2, $value3)
     {
         $details = $this->calculateDetails();
 
@@ -309,8 +321,13 @@ class FeatureContext implements BehatContext
 
     /**
      * @When context contains keys :key1, :key2, :key3, :key4 with values :value1, :value2, :value3, :value4
+     * 
+     * @param mixed $value1
+     * @param mixed $value2
+     * @param mixed $value3
+     * @param mixed $value4
      */
-    public function contextContainsKeysWithValues(string $key1, string $key2, string $key3, string $key4, mixed $value1, mixed $value2, mixed $value3, mixed $value4)
+    public function contextContainsKeysWithValues(string $key1, string $key2, string $key3, string $key4, $value1, $value2, $value3, $value4)
     {
         $this->inputContext = (new MutableEvaluationContext(null, new Attributes([
             $key1 => $value1,
@@ -322,11 +339,14 @@ class FeatureContext implements BehatContext
 
     /**
      * @When a flag with key :flagKey is evaluated with default value :defaultValue
+     * 
+     * @param mixed $defaultValue
      */
-    public function aFlagWithKeyIsEvaluatedWithDefaultValue(string $flagKey, mixed $defaultValue)
+    public function aFlagWithKeyIsEvaluatedWithDefaultValue(string $flagKey, $defaultValue)
     {
         $this->inputFlagKey = $flagKey;
         $this->inputFlagDefaultValue = $defaultValue;
+        $this->setFlagTypeIfNullByValue($defaultValue);
     }
 
     /**
@@ -339,8 +359,10 @@ class FeatureContext implements BehatContext
 
     /**
      * @Then the resolved flag value is :value when the context is empty
+     * 
+     * @param mixed $value
      */
-    public function theResolvedFlagValueIsWhenTheContextIsEmpty(mixed $value)
+    public function theResolvedFlagValueIsWhenTheContextIsEmpty($value)
     {
         $this->inputContext = null;
 
@@ -358,6 +380,7 @@ class FeatureContext implements BehatContext
         $this->flagExists = false;
         $this->inputFlagKey = $flagKey;
         $this->inputFlagDefaultValue = $defaultValue;
+        $this->setFlagTypeIfNullByValue($defaultValue);
     }
 
     /**
@@ -381,7 +404,7 @@ class FeatureContext implements BehatContext
         $error = $details->getError();
 
         Assert::assertNotNull($error);
-        Assert::assertEquals($errorCode, $error->getResolutionErrorCode());
+        Assert::assertEquals($errorCode, (string) $error->getResolutionErrorCode());
     }
 
     /**
@@ -390,6 +413,8 @@ class FeatureContext implements BehatContext
     public function aStringFlagWithKeyIsEvaluatedAsAnIntegerWithDetailsAndADefaultValue(string $flagKey, int $defaultValue)
     {
         $this->flagType = FlagValueType::INTEGER;
+        $this->inputFlagKey = $flagKey;
+        $this->inputFlagDefaultValue = $defaultValue;
     }
 
     /**
@@ -413,16 +438,15 @@ class FeatureContext implements BehatContext
         $error = $details->getError();
 
         Assert::assertNotNull($error);
-        Assert::assertEquals(
-            $error->getResolutionErrorCode(),
-            ErrorCode::TYPE_MISMATCH(),
-        );
+        Assert::assertEquals($error->getResolutionErrorCode(), ErrorCode::TYPE_MISMATCH());
     }
 
     /**
      * Ensures the value is only calculated once the first time this is called, memoizing its value
+     * 
+     * @return mixed
      */
-    private function calculateValue(): mixed
+    private function calculateValue()
     {
         if (!$this->valueWasCalculated) {
             $value = null;
@@ -460,7 +484,7 @@ class FeatureContext implements BehatContext
     /**
      * Ensures the details are only calculated once the first time this is called, memoizing its details
      */
-    private function calculateDetails(): ResolutionDetails
+    private function calculateDetails(): EvaluationDetails
     {
         if (!$this->detailsWereCalculated) {
             $details = null;
@@ -470,19 +494,19 @@ class FeatureContext implements BehatContext
 
                     break;
                 case FlagValueType::FLOAT:
-                    $details = $this->client->getFloatValue($this->inputFlagKey, $this->inputFlagDefaultValue, $this->inputContext, $this->inputOptions);
+                    $details = $this->client->getFloatDetails($this->inputFlagKey, $this->inputFlagDefaultValue, $this->inputContext, $this->inputOptions);
 
                     break;
                 case FlagValueType::INTEGER:
-                    $details = $this->client->getIntegerValue($this->inputFlagKey, $this->inputFlagDefaultValue, $this->inputContext, $this->inputOptions);
+                    $details = $this->client->getIntegerDetails($this->inputFlagKey, $this->inputFlagDefaultValue, $this->inputContext, $this->inputOptions);
 
                     break;
                 case FlagValueType::OBJECT:
-                    $details = $this->client->getObjectValue($this->inputFlagKey, $this->inputFlagDefaultValue, $this->inputContext, $this->inputOptions);
+                    $details = $this->client->getObjectDetails($this->inputFlagKey, $this->inputFlagDefaultValue, $this->inputContext, $this->inputOptions);
 
                     break;
                 case FlagValueType::STRING:
-                    $details = $this->client->getStringValue($this->inputFlagKey, $this->inputFlagDefaultValue, $this->inputContext, $this->inputOptions);
+                    $details = $this->client->getStringDetails($this->inputFlagKey, $this->inputFlagDefaultValue, $this->inputContext, $this->inputOptions);
 
                     break;
             }
@@ -493,5 +517,45 @@ class FeatureContext implements BehatContext
         }
 
         return $this->calculatedDetails;
+    }
+
+    /**
+     * @param mixed $value
+     */
+    private function setFlagTypeIfNullByValue($value): void
+    {
+        if (!isset($this->flagType)) {
+            $flagType = $this->getFlagTypeOf($value);
+
+            if (!is_null($flagType)) {
+                $this->flagType = $flagType;
+            }
+        }
+    }
+
+    /**
+     * @param mixed $value
+     */
+    private function getFlagTypeOf($value): ?string
+    {
+        if (is_string($value)) {
+            return FlagValueType::STRING;
+        }
+
+        if (is_array($value)) {
+            return FlagValueType::OBJECT;
+        }
+
+        if (is_float($value)) {
+            return FlagValueType::FLOAT;
+        }
+
+        if (is_int($value)) {
+            return FlagValueType::INTEGER;
+        }
+
+        if (is_bool($value)) {
+            return FlagValueType::BOOLEAN;
+        }
     }
 }
