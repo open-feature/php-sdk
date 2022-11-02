@@ -2,11 +2,15 @@
 
 declare(strict_types=1);
 
-namespace OpenFeature\FeatureTest;
+namespace OpenFeature\Tests\Integration;
 
 use Behat\Behat\Context\Context as BehatContext;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\HttpFactory;
 use OpenFeature\OpenFeatureAPI;
 use OpenFeature\OpenFeatureClient;
+use OpenFeature\Providers\Flagd\FlagdProvider;
+use OpenFeature\Providers\Flagd\config\HttpConfig;
 use OpenFeature\implementation\flags\Attributes;
 use OpenFeature\implementation\flags\MutableEvaluationContext;
 use OpenFeature\interfaces\flags\EvaluationContext;
@@ -48,7 +52,25 @@ class FeatureContext implements BehatContext
     {
         $api = OpenFeatureAPI::getInstance();
 
+        $client = new Client();
+        $httpFactory = new HttpFactory();
+
         // @todo: set provider to flagd
+        $provider = new FlagdProvider(
+            [
+                'hostname' => 'localhost',
+                'port' => 8013,
+                'protocol' => 'http',
+                'secure' => false,
+                'httpConfig' => new HttpConfig(
+                    $client,
+                    $httpFactory,
+                    $httpFactory,
+                ),
+            ],
+        );
+
+        $api->setProvider($provider);
 
         $this->client = $api->getClient('features', '1.0');
     }

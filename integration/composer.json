@@ -1,0 +1,59 @@
+{
+    "name": "open-feature/integration-tests",
+    "description": "Integration tests for the OpenFeature SDK",
+    "license": "Apache-2.0",
+    "type": "library",
+    "keywords": [
+        "featureflags",
+        "featureflagging",
+        "openfeature"
+    ],
+    "authors": [
+        {
+            "name": "Tom Carrio",
+            "email": "tom@carrio.dev"
+        }
+    ],
+    "require": {
+        "php": "^7.4 || ^8",
+        "open-feature/sdk": "^0.0.7",
+        "open-feature/flagd-provider": "^0.0.2",
+        "guzzlehttp/guzzle": "^7.5",
+        "guzzlehttp/psr7": "^2.4"
+    },
+    "require-dev": {
+        "behat/behat": "^3.11",
+        "phpunit/phpunit": "^9.5"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/tcarrio/openfeature-php-flagd-provider"
+        },
+        {
+            "type": "path",
+            "url": "../",
+            "options": {
+                "versions": {
+                    "open-feature/sdk": "0.0.7"
+                }
+            }
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "scripts": {
+        "dev:test": [
+            "@dev:test:features"
+        ],
+        "dev:test:features": [
+            "@dev:test:features:setup",
+            "@dev:test:features:setup",
+            "@dev:test:features:run"
+        ],
+        "dev:test:features:init": "git submodule update --recursive",
+        "dev:test:features:run": "vendor/bin/behat",
+        "dev:test:features:setup": "cp ./test-harness/features/*.feature ./features/",
+        "test": "@dev:test"
+    }
+}
