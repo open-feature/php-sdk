@@ -1,0 +1,87 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: PR
+
+on:
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        operating-system: [ubuntu-latest]
+        php-version: ['7.4', '8.0', '8.1']
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          coverage: xdebug
+          extensions: ast
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+
+      - name: Cache Composer packages
+        id: root-composer-cache
+        uses: actions/cache@v3
+        with:
+          key: ${{ runner.os }}-${{ matrix.php-version }}-php-${{ hashFiles('composer.json') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.php-version }}-php-
+
+      - name: Install dependencies
+        if: steps.root-composer-cache.outputs.cache-hit != 'true'
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Check Style
+        run: vendor/bin/phpcs
+
+      - name: Run Phan
+        env:
+          PHAN_DISABLE_XDEBUG_WARN: 1
+        run: vendor/bin/phan
+
+      - name: Run Psalm
+        run: vendor/bin/psalm --output-format=github --php-version=${{ matrix.php-version }}
+
+      - name: Run Phpstan
+        run: vendor/bin/phpstan analyse --error-format=github
+
+      - name: Run PHPUnit (unit tests)
+        run: vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover --testsuite unit
+
+      - name: Validate composer.json and composer.lock
+        working-directory: integration
+        run: composer validate
+
+      - name: Cache Composer packages
+        id: behat-composer-cache
+        uses: actions/cache@v3
+        with:
+          path: integration/vendor
+          key: ${{ runner.os }}-${{ matrix.php-version }}-php-${{ hashFiles('integration/composer.json') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.php-version }}-php-
+
+      - name: Install dependencies
+        if: steps.behat-composer-cache.outputs.cache-hit != 'true'
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Start test-harness container
+        run: docker run --rm -d -p 8013:8013 ghcr.io/open-feature/flagd-testbed:latest
+
+      - name: Run Behat (integration tests)
+        working-directory: integration
+        run: vendor/bin/behat

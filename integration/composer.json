@@ -28,15 +28,6 @@
     "repositories": [
         {
             "type": "path",
-            "url": "../../openfeature-php-sdk-contrib/src/Flagd",
-            "options": {
-                "versions": {
-                    "open-feature/flagd-provider": "0.0.2"
-                }
-            }
-        },
-        {
-            "type": "path",
             "url": "../",
             "options": {
                 "versions": {
