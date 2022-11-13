@@ -80,7 +80,7 @@ class OpenFeatureAPITest extends TestCase
         $actualProvider = $api->getProvider();
 
         $this->assertInstanceOf(Provider::class, $actualProvider);
-        $this->assertInstanceOf(get_class($provider), $actualProvider);
+        $this->assertInstanceOf(get_class($provider), $actualProvider); // phpcs:ignore
     }
 
     /**

@@ -8,6 +8,7 @@ use DateTime;
 use OpenFeature\interfaces\hooks\HookHints as HookHintsInterface;
 
 use function array_keys;
+use function key_exists;
 
 class HookHints implements HookHintsInterface
 {
@@ -19,7 +20,11 @@ class HookHints implements HookHintsInterface
      */
     public function get(string $key)
     {
-        return $this->hints[$key];
+        if (key_exists($key, $this->hints)) {
+            return $this->hints[$key];
+        }
+
+        return null;
     }
 
     /**
