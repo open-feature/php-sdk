@@ -65,8 +65,11 @@ jobs:
         working-directory: integration
         run: composer validate
 
-      - name: Update test-harness submodule
-        run: git submodule update --init --recursive
+      - name: Prepare test-harness
+        working-directory: integration
+        run: |
+          git submodule update --init --recursive
+          cp ./test-harness/features/*.feature ./features/
 
       - name: Cache Composer packages
         id: behat-composer-cache
