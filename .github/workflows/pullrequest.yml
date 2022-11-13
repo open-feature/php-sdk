@@ -72,6 +72,7 @@ jobs:
             ${{ runner.os }}-${{ matrix.php-version }}-php-
 
       - name: Install dependencies
+        working-directory: integration
         if: steps.behat-composer-cache.outputs.cache-hit != 'true'
         run: composer install --prefer-dist --no-progress --no-suggest
 
