@@ -1,6 +1,6 @@
 # OpenFeature SDK for PHP
 
-[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+[![a](https://img.shields.io/badge/slack-%40cncf%2Fopenfeature-brightgreen?style=flat&logo=slack)](https://cloud-native.slack.com/archives/C0344AANLA1)
 [![Specification](https://img.shields.io/static/v1?label=Specification&message=v0.5.0&color=yellow)](https://github.com/open-feature/spec/tree/v0.5.0)
 [![Latest Stable Version](http://poser.pugx.org/open-feature/sdk/v)](https://packagist.org/packages/open-feature/sdk)
 [![Total Downloads](http://poser.pugx.org/open-feature/sdk/downloads)](https://packagist.org/packages/open-feature/sdk)
@@ -11,7 +11,10 @@
 
 This package provides a functional SDK for an OpenFeature API and client. It also builds on various PSRs (PHP Standards Recommendations) such as the Logger interfaces (PSR-3) and the Basic and Extended Coding Standards (PSR-1 and PSR-12).
 
-Future development may aim to allow this library to be auto-loaded by filepath (PSR-4) and optionally integrate with the container standards (PSR-11) over global `$_SESSION` access.
+Future development goals for the package include:
+
+- Integrate container standards (PSR-11)
+- Build on PHP HTTP Promises to support async clients
 
 ## Installation
 
