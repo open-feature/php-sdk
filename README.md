@@ -1,7 +1,7 @@
 # OpenFeature SDK for PHP
 
 [![a](https://img.shields.io/badge/slack-%40cncf%2Fopenfeature-brightgreen?style=flat&logo=slack)](https://cloud-native.slack.com/archives/C0344AANLA1)
-[![Specification](https://img.shields.io/static/v1?label=Specification&message=v0.5.0&color=yellow)](https://github.com/open-feature/spec/tree/v0.5.0)
+[![Specification](https://img.shields.io/static/v1?label=Specification&message=v0.5.1&color=yellow)](https://github.com/open-feature/spec/tree/v0.5.1)
 [![Latest Stable Version](http://poser.pugx.org/open-feature/sdk/v)](https://packagist.org/packages/open-feature/sdk)
 [![Total Downloads](http://poser.pugx.org/open-feature/sdk/downloads)](https://packagist.org/packages/open-feature/sdk)
 ![PHP 7.4+](https://img.shields.io/badge/php->=7.4-blue.svg)
