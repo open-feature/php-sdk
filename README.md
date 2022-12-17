@@ -18,8 +18,8 @@ Future development goals for the package include:
 
 ## Installation
 
-```
-$ composer require open-feature/sdk   // installs the latest version
+```shell
+composer require open-feature/sdk
 ```
 
 ## Usage
@@ -29,10 +29,12 @@ While `Boolean` provides the simplest introduction, we offer a variety of flag t
 ```php
 use OpenFeature\OpenFeatureClient;
 
-class MyClass {
+class MyClass 
+{
   private OpenFeatureClient $client;
 
-  public function __construct() {
+  public function __construct() 
+  {
     $this->client = OpenFeatureAPI::getInstance()->getClient('MyClass');
   }
 
@@ -78,13 +80,14 @@ class MyClass {
 To configure OpenFeature, you'll need to add a provider to the global singleton `OpenFeatureAPI`. From there, you can generate a `Client` which is usable by your code. If you do not set a provider, then the `NoOpProvider`, which simply returns the default passed in, will be used.
 
 ```php
-
 use OpenFeature\OpenFeatureAPI;
 use OpenFeature\Providers\Flagd\FlagdProvider;
 
-class MyApp {
-    public function bootstrap(){
-        $api = OpenFeatureAPI.getInstance();
+class MyApp 
+{
+    public function bootstrap() 
+    {
+        $api = OpenFeatureAPI::getInstance();
         $api->setProvider(new FlagdProvider());
         $client = $api->getClient();
 
