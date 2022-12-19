@@ -96,6 +96,10 @@ class MyApp
 }
 ```
 
+### Provides
+
+The OpenFeature project maintains the [open-feature/php-sdk-contrib](https://github.com/open-feature/php-sdk-contrib) repository, which includes contributed providers and hooks. Vendors can also implement and maintain their own providers as well. We update [the PHP docs page](https://docs.openfeature.dev/docs/reference/technologies/server/php) with these vendors as often as possible.
+
 ## Development
 
 ### PHP Versioning
