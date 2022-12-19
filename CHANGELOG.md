@@ -1,5 +1,40 @@
 # Changelog
 
+## [1.1.0](https://github.com/open-feature/php-sdk/compare/v1.0.1...1.1.0) (2022-12-19)
+
+
+### Features
+
+* provide a base AbstractProvider for provider implementations to use ([6ffffe9](https://github.com/open-feature/php-sdk/commit/6ffffe9a767723c424e112e27bdd4bd0508d9f7d))
+* support for ErrorCode enum, Reason strings with pre-existing consts, v0.5 spec ([37f13e1](https://github.com/open-feature/php-sdk/commit/37f13e1d4c951473243cfe9d73f43cc3cd188fae))
+* support ResolutionError, init test-harness ([784d706](https://github.com/open-feature/php-sdk/commit/784d706145accaa4f45369fed43561ceec00df92))
+
+
+### Bug Fixes
+
+* exclude v in tag ([#8](https://github.com/open-feature/php-sdk/issues/8)) ([1ecabdb](https://github.com/open-feature/php-sdk/commit/1ecabdbf216139a65ed7be81561f32b078749489))
+* excludes v from tag version ([#6](https://github.com/open-feature/php-sdk/issues/6)) ([82f587d](https://github.com/open-feature/php-sdk/commit/82f587d32b8fd7d8320253180098424b782cd943))
+* extend Exception for ResolutionError and provide non-overlapping methods ([ee75354](https://github.com/open-feature/php-sdk/commit/ee753544e2e4467df341175646f54d00e9c1c8ab))
+
+
+### Miscellaneous Chores
+
+* bump release config to latest semver  ([644a9f8](https://github.com/open-feature/php-sdk/commit/644a9f8ac3b1b5a66cb5791b0fad1a18e61aaf15))
+* Configure Renovate ([#12](https://github.com/open-feature/php-sdk/issues/12)) ([e2d2603](https://github.com/open-feature/php-sdk/commit/e2d26032621bacb678d69b84e970002c2a5afe74))
+* **deps:** update dependency php to v8.2.0 ([#24](https://github.com/open-feature/php-sdk/issues/24)) ([b9e0985](https://github.com/open-feature/php-sdk/commit/b9e098577f56eafbe6017a39954013c7e7521bfc))
+* **deps:** update dependency phpstan/phpstan to ~1.9.0 ([#25](https://github.com/open-feature/php-sdk/issues/25)) ([2656740](https://github.com/open-feature/php-sdk/commit/265674015bbd6a58b68a1efa7e2c928a41e1f9c3))
+* **main:** release 0.0.10 ([#23](https://github.com/open-feature/php-sdk/issues/23)) ([470aa01](https://github.com/open-feature/php-sdk/commit/470aa01c50458e1427923dfd1d0d17ff0b4b7063))
+* **main:** release 0.0.2 ([#3](https://github.com/open-feature/php-sdk/issues/3)) ([01b6a23](https://github.com/open-feature/php-sdk/commit/01b6a234ec43e5372fda3cd6ace882dda4110422))
+* **main:** release 0.0.3 ([#7](https://github.com/open-feature/php-sdk/issues/7)) ([6fb4118](https://github.com/open-feature/php-sdk/commit/6fb411866dc592b83f309d3bb88b38b30e453379))
+* **main:** release 0.0.4 ([#9](https://github.com/open-feature/php-sdk/issues/9)) ([65c92d9](https://github.com/open-feature/php-sdk/commit/65c92d99ddc22e853a33d4a63fb9d9b61f56787e))
+* **main:** release 0.0.5 ([#11](https://github.com/open-feature/php-sdk/issues/11)) ([2344c4a](https://github.com/open-feature/php-sdk/commit/2344c4ae15ebf5e8a3cf22f3c5d9bdaeba2a4119))
+* **main:** release 0.0.6 ([#13](https://github.com/open-feature/php-sdk/issues/13)) ([5afadc7](https://github.com/open-feature/php-sdk/commit/5afadc7fe9d376e47f0b262dac42025057f363de))
+* **main:** release 0.0.7 ([#14](https://github.com/open-feature/php-sdk/issues/14)) ([6ecd918](https://github.com/open-feature/php-sdk/commit/6ecd918d18afa21f4939da432fb162d058470004))
+* **main:** release 0.0.8 ([#15](https://github.com/open-feature/php-sdk/issues/15)) ([7d7f1d2](https://github.com/open-feature/php-sdk/commit/7d7f1d2ce5b7ace4abc7f6c778c3d02196b7e632))
+* **main:** release 0.0.9 ([#22](https://github.com/open-feature/php-sdk/issues/22)) ([c1b0675](https://github.com/open-feature/php-sdk/commit/c1b067541b6fb7f9d07fecbe27c9e3dc8d2b2aae))
+* remove redundant exclusion ([#10](https://github.com/open-feature/php-sdk/issues/10)) ([ba4b5f1](https://github.com/open-feature/php-sdk/commit/ba4b5f15eb8984af57eb08e7bb9c903671366789))
+* Update README.md ([#21](https://github.com/open-feature/php-sdk/issues/21)) ([702df0c](https://github.com/open-feature/php-sdk/commit/702df0c121a54f43deb0281e7283083b8b685fe2))
+
 ## [0.0.10](https://github.com/open-feature/php-sdk/compare/0.0.9...0.0.10) (2022-12-19)
 
 
