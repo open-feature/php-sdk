@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.0.10](https://github.com/open-feature/php-sdk/compare/0.0.9...0.0.10) (2022-12-19)
+
+
+### Miscellaneous Chores
+
+* Configure Renovate ([#12](https://github.com/open-feature/php-sdk/issues/12)) ([e2d2603](https://github.com/open-feature/php-sdk/commit/e2d26032621bacb678d69b84e970002c2a5afe74))
+* **deps:** update dependency php to v8.2.0 ([#24](https://github.com/open-feature/php-sdk/issues/24)) ([b9e0985](https://github.com/open-feature/php-sdk/commit/b9e098577f56eafbe6017a39954013c7e7521bfc))
+* **deps:** update dependency phpstan/phpstan to ~1.9.0 ([#25](https://github.com/open-feature/php-sdk/issues/25)) ([2656740](https://github.com/open-feature/php-sdk/commit/265674015bbd6a58b68a1efa7e2c928a41e1f9c3))
+
 ## [0.0.9](https://github.com/open-feature/php-sdk/compare/0.0.8...0.0.9) (2022-12-19)
 
 
