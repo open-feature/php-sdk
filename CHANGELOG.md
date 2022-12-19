@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.9](https://github.com/open-feature/php-sdk/compare/0.0.8...0.0.9) (2022-12-19)
+
+
+### Miscellaneous Chores
+
+* Update README.md ([#21](https://github.com/open-feature/php-sdk/issues/21)) ([702df0c](https://github.com/open-feature/php-sdk/commit/702df0c121a54f43deb0281e7283083b8b685fe2))
+
 ## [0.0.8](https://github.com/open-feature/php-sdk/compare/0.0.7...0.0.8) (2022-11-03)
 
 
