@@ -106,6 +106,8 @@ The OpenFeature project maintains the [open-feature/php-sdk-contrib](https://git
 
 This library targets PHP version 7.4 and newer. As long as you have any compatible version of PHP on your system you should be able to utilize the OpenFeature SDK.
 
+⚠️ **PHP version 7.4 is EOL and support will shortly be dropped from this package.**
+
 This package also has a `.tool-versions` file for use with PHP version managers like `asdf`.
 
 ### Installation and Dependencies
