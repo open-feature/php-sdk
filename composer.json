@@ -42,12 +42,6 @@
         "spatie/phpunit-snapshot-assertions": "^4.2",
         "vimeo/psalm": "~5.4.0"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/tcarrio/openfeature-php-flagd-provider"
-        }
-    ],
     "minimum-stability": "dev",
     "prefer-stable": true,
     "autoload": {
