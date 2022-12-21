@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.1.1](https://github.com/open-feature/php-sdk/compare/1.1.0...1.1.1) (2022-12-21)
+
+
+### Bug Fixes
+
+* **deps:** update dependency open-feature/flagd-provider to ^0.1.0 ([#35](https://github.com/open-feature/php-sdk/issues/35)) ([928dc5f](https://github.com/open-feature/php-sdk/commit/928dc5f8e1e74ca10c749b3975be67408e6ca21e))
+
+
+### Miscellaneous Chores
+
+* **deps:** update amannn/action-semantic-pull-request action to v5 ([#37](https://github.com/open-feature/php-sdk/issues/37)) ([6bc2ec8](https://github.com/open-feature/php-sdk/commit/6bc2ec8998fe12e9357f43609079f80caba51172))
+* **deps:** update dependency psalm/plugin-mockery to ^0.11.0 ([#30](https://github.com/open-feature/php-sdk/issues/30)) ([432bfb7](https://github.com/open-feature/php-sdk/commit/432bfb722f2e3de61167375c369b8e14d31f7464))
+* **deps:** update dependency psalm/plugin-mockery to v1 ([#38](https://github.com/open-feature/php-sdk/issues/38)) ([9449851](https://github.com/open-feature/php-sdk/commit/9449851b51a3dd6a37c0a4bf0ed24381c4a4a9e1))
+* **deps:** update dependency psalm/plugin-phpunit to ^0.18.0 ([#31](https://github.com/open-feature/php-sdk/issues/31)) ([716930c](https://github.com/open-feature/php-sdk/commit/716930c1626e1be4f86fd0ad1dc3ade700ae1d4d))
+* **deps:** update dependency vimeo/psalm to v5 ([#39](https://github.com/open-feature/php-sdk/issues/39)) ([4aec058](https://github.com/open-feature/php-sdk/commit/4aec058538f4845326079040a10e4079c42fe2cd))
+
 ## [1.1.0](https://github.com/open-feature/php-sdk/compare/v1.0.1...1.1.0) (2022-12-19)
 
 
