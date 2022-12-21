@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/open-feature/php-sdk/compare/1.1.1...1.1.2) (2022-12-21)
+
+
+### Miscellaneous Chores
+
+* add OpenSSF badge to README ([384242f](https://github.com/open-feature/php-sdk/commit/384242f11faaffe8d671f2182b888b15b9458ebd))
+
 ## [1.1.1](https://github.com/open-feature/php-sdk/compare/1.1.0...1.1.1) (2022-12-21)
 
 
