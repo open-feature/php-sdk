@@ -6,6 +6,7 @@
 [![Total Downloads](http://poser.pugx.org/open-feature/sdk/downloads)](https://packagist.org/packages/open-feature/sdk)
 ![PHP 7.4+](https://img.shields.io/badge/php->=7.4-blue.svg)
 [![License](http://poser.pugx.org/open-feature/sdk/license)](https://packagist.org/packages/open-feature/sdk)
+[![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/6853/badge)](https://bestpractices.coreinfrastructure.org/projects/6853)
 
 ## Overview
 
