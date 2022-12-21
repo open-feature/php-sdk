@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/open-feature/php-sdk/compare/1.1.2...1.1.3) (2022-12-21)
+
+
+### Bug Fixes
+
+* **deps:** update dependency open-feature/flagd-provider to ^0.2.0 ([#43](https://github.com/open-feature/php-sdk/issues/43)) ([80e4d92](https://github.com/open-feature/php-sdk/commit/80e4d9259e9b05232238fcc463288c25deb3e4ba))
+
 ## [1.1.2](https://github.com/open-feature/php-sdk/compare/1.1.1...1.1.2) (2022-12-21)
 
 
