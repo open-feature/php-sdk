@@ -43,7 +43,7 @@
             "@dev:test:features"
         ],
         "dev:test:features": [
-            "@dev:test:features:setup",
+            "@dev:test:features:init",
             "@dev:test:features:setup",
             "@dev:test:features:run"
         ],
