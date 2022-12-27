@@ -15,42 +15,42 @@ class NoOpClient implements Client
 {
     private const CLIENT_NAME = 'no-op-client';
 
-    public function getBooleanValue(string $flagKey, bool $defaultValue, ?EvaluationContextInterface $context, ?EvaluationOptions $options): ?bool
+    public function getBooleanValue(string $flagKey, bool $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptions $options = null): ?bool
     {
         return $defaultValue;
     }
 
-    public function getBooleanDetails(string $flagKey, bool $defaultValue, ?EvaluationContextInterface $context, ?EvaluationOptions $options): EvaluationDetails
+    public function getBooleanDetails(string $flagKey, bool $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptions $options = null): EvaluationDetails
     {
         return EvaluationDetailsFactory::from($flagKey, $defaultValue);
     }
 
-    public function getStringValue(string $flagKey, string $defaultValue, ?EvaluationContextInterface $context, ?EvaluationOptions $options): ?string
+    public function getStringValue(string $flagKey, string $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptions $options = null): ?string
     {
         return $defaultValue;
     }
 
-    public function getStringDetails(string $flagKey, string $defaultValue, ?EvaluationContextInterface $context, ?EvaluationOptions $options): EvaluationDetails
+    public function getStringDetails(string $flagKey, string $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptions $options = null): EvaluationDetails
     {
         return EvaluationDetailsFactory::from($flagKey, $defaultValue);
     }
 
-    public function getIntegerValue(string $flagKey, int $defaultValue, ?EvaluationContextInterface $context, ?EvaluationOptions $options): int
+    public function getIntegerValue(string $flagKey, int $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptions $options = null): int
     {
         return $defaultValue;
     }
 
-    public function getIntegerDetails(string $flagKey, int $defaultValue, ?EvaluationContextInterface $context, ?EvaluationOptions $options): EvaluationDetails
+    public function getIntegerDetails(string $flagKey, int $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptions $options = null): EvaluationDetails
     {
         return EvaluationDetailsFactory::from($flagKey, $defaultValue);
     }
 
-    public function getFloatValue(string $flagKey, float $defaultValue, ?EvaluationContextInterface $context, ?EvaluationOptions $options): float
+    public function getFloatValue(string $flagKey, float $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptions $options = null): float
     {
         return $defaultValue;
     }
 
-    public function getFloatDetails(string $flagKey, float $defaultValue, ?EvaluationContextInterface $context, ?EvaluationOptions $options): EvaluationDetails
+    public function getFloatDetails(string $flagKey, float $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptions $options = null): EvaluationDetails
     {
         return EvaluationDetailsFactory::from($flagKey, $defaultValue);
     }
@@ -60,7 +60,7 @@ class NoOpClient implements Client
      *
      * @return mixed[]
      */
-    public function getObjectValue(string $flagKey, $defaultValue, ?EvaluationContextInterface $context, ?EvaluationOptions $options): array
+    public function getObjectValue(string $flagKey, $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptions $options = null): array
     {
         return $defaultValue;
     }
@@ -68,7 +68,7 @@ class NoOpClient implements Client
     /**
      * @param bool|string|int|float|DateTime|mixed[]|null $defaultValue
      */
-    public function getObjectDetails(string $flagKey, $defaultValue, ?EvaluationContextInterface $context, ?EvaluationOptions $options): EvaluationDetails
+    public function getObjectDetails(string $flagKey, $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptions $options = null): EvaluationDetails
     {
         return EvaluationDetailsFactory::from($flagKey, $defaultValue);
     }
