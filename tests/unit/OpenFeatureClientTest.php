@@ -87,7 +87,7 @@ class OpenFeatureClientTest extends TestCase
 
         $expectedValue = true;
 
-        $actualValue = $client->getBooleanValue('flagKey', $expectedValue, null, null);
+        $actualValue = $client->getBooleanValue('flagKey', $expectedValue);
 
         $this->assertEquals($expectedValue, $actualValue);
     }
@@ -109,7 +109,7 @@ class OpenFeatureClientTest extends TestCase
 
         $expectedValue = 3.14;
 
-        $actualValue = $client->getFloatValue('flagKey', $expectedValue, null, null);
+        $actualValue = $client->getFloatValue('flagKey', $expectedValue);
 
         $this->assertEquals($expectedValue, $actualValue);
     }
@@ -131,7 +131,7 @@ class OpenFeatureClientTest extends TestCase
 
         $expectedValue = 42;
 
-        $actualValue = $client->getIntegerValue('flagKey', $expectedValue, null, null);
+        $actualValue = $client->getIntegerValue('flagKey', $expectedValue);
 
         $this->assertEquals($expectedValue, $actualValue);
     }
@@ -149,7 +149,7 @@ class OpenFeatureClientTest extends TestCase
 
         $expectedValue = 'STRING VALUE';
 
-        $actualValue = $client->getStringValue('flagKey', $expectedValue, null, null);
+        $actualValue = $client->getStringValue('flagKey', $expectedValue);
 
         $this->assertEquals($expectedValue, $actualValue);
     }
@@ -167,7 +167,7 @@ class OpenFeatureClientTest extends TestCase
 
         $expectedValue = [];
 
-        $actualValue = $client->getObjectValue('flagKey', $expectedValue, null, null);
+        $actualValue = $client->getObjectValue('flagKey', $expectedValue);
 
         $this->assertEquals($expectedValue, $actualValue);
     }
@@ -191,7 +191,7 @@ class OpenFeatureClientTest extends TestCase
 
         $api->setProvider($mockProvider);
 
-        $actualValue = $client->getBooleanValue('flagKey', $expectedValue, null, null);
+        $actualValue = $client->getBooleanValue('flagKey', $expectedValue);
 
         $this->assertEquals($expectedValue, $actualValue);
     }
@@ -215,7 +215,7 @@ class OpenFeatureClientTest extends TestCase
 
         $api->setProvider($mockProvider);
 
-        $actualValue = $client->getFloatValue('flagKey', $expectedValue, null, null);
+        $actualValue = $client->getFloatValue('flagKey', $expectedValue);
 
         $this->assertEquals($expectedValue, $actualValue);
     }
@@ -239,7 +239,7 @@ class OpenFeatureClientTest extends TestCase
 
         $api->setProvider($mockProvider);
 
-        $actualValue = $client->getIntegerValue('flagKey', $expectedValue, null, null);
+        $actualValue = $client->getIntegerValue('flagKey', $expectedValue);
 
         $this->assertEquals($expectedValue, $actualValue);
     }
@@ -263,7 +263,7 @@ class OpenFeatureClientTest extends TestCase
 
         $api->setProvider($mockProvider);
 
-        $actualValue = $client->getStringValue('flagKey', $expectedValue, null, null);
+        $actualValue = $client->getStringValue('flagKey', $expectedValue);
 
         $this->assertEquals($expectedValue, $actualValue);
     }
@@ -287,7 +287,7 @@ class OpenFeatureClientTest extends TestCase
 
         $api->setProvider($mockProvider);
 
-        $actualValue = $client->getObjectValue('flagKey', $expectedValue, null, null);
+        $actualValue = $client->getObjectValue('flagKey', $expectedValue);
 
         $this->assertEquals($expectedValue, $actualValue);
     }
@@ -305,7 +305,7 @@ class OpenFeatureClientTest extends TestCase
 
         $expectedValue = true;
 
-        $actualDetails = $client->getBooleanDetails('flagKey', $expectedValue, null, null);
+        $actualDetails = $client->getBooleanDetails('flagKey', $expectedValue);
 
         $this->assertEquals($expectedValue, $actualDetails->getValue());
     }
@@ -323,7 +323,7 @@ class OpenFeatureClientTest extends TestCase
 
         $expectedValue = 3.14;
 
-        $actualDetails = $client->getFloatDetails('flagKey', $expectedValue, null, null);
+        $actualDetails = $client->getFloatDetails('flagKey', $expectedValue);
 
         $this->assertEquals($expectedValue, $actualDetails->getValue());
     }
@@ -341,7 +341,7 @@ class OpenFeatureClientTest extends TestCase
 
         $expectedValue = 42;
 
-        $actualDetails = $client->getIntegerDetails('flagKey', $expectedValue, null, null);
+        $actualDetails = $client->getIntegerDetails('flagKey', $expectedValue);
 
         $this->assertEquals($expectedValue, $actualDetails->getValue());
     }
@@ -359,7 +359,7 @@ class OpenFeatureClientTest extends TestCase
 
         $expectedValue = 'STRING VALUE';
 
-        $actualDetails = $client->getStringDetails('flagKey', $expectedValue, null, null);
+        $actualDetails = $client->getStringDetails('flagKey', $expectedValue);
 
         $this->assertEquals($expectedValue, $actualDetails->getValue());
     }
@@ -377,7 +377,7 @@ class OpenFeatureClientTest extends TestCase
 
         $expectedValue = [];
 
-        $actualDetails = $client->getObjectDetails('flagKey', $expectedValue, null, null);
+        $actualDetails = $client->getObjectDetails('flagKey', $expectedValue);
 
         $this->assertEquals($expectedValue, $actualDetails->getValue());
     }
@@ -400,7 +400,7 @@ class OpenFeatureClientTest extends TestCase
 
         $api->setProvider($mockProvider);
 
-        $actualDetails = $client->getObjectDetails('flagKey', $expectedValue, null, null);
+        $actualDetails = $client->getObjectDetails('flagKey', $expectedValue);
 
         $this->assertEquals($expectedValue, $actualDetails->getValue());
     }
@@ -424,7 +424,7 @@ class OpenFeatureClientTest extends TestCase
         $client = new OpenFeatureClient($api, 'test-name', 'test-version');
 
         $expectedValue = 'flagKey';
-        $actualDetails = $client->getBooleanDetails($expectedValue, false, null, null);
+        $actualDetails = $client->getBooleanDetails($expectedValue, false);
 
         $this->assertEquals($expectedValue, $actualDetails->getFlagKey());
     }
@@ -447,7 +447,7 @@ class OpenFeatureClientTest extends TestCase
 
         $api->setProvider($mockProvider);
 
-        $actualDetails = $client->getBooleanDetails('flagKey', false, null, null);
+        $actualDetails = $client->getBooleanDetails('flagKey', false);
 
         $this->assertEquals($expectedVariant, $actualDetails->getVariant());
     }
@@ -470,7 +470,7 @@ class OpenFeatureClientTest extends TestCase
 
         $api->setProvider($mockProvider);
 
-        $actualDetails = $client->getBooleanDetails('flagKey', false, null, null);
+        $actualDetails = $client->getBooleanDetails('flagKey', false);
 
         $this->assertEquals($expectedReason, $actualDetails->getReason());
     }
@@ -493,7 +493,7 @@ class OpenFeatureClientTest extends TestCase
 
         $api->setProvider($mockProvider);
 
-        $actualDetails = $client->getBooleanDetails('flagKey', false, null, null);
+        $actualDetails = $client->getBooleanDetails('flagKey', false);
 
         /** @var ResolutionError $resolutionError */
         $resolutionError = $actualDetails->getError();
@@ -521,7 +521,7 @@ class OpenFeatureClientTest extends TestCase
 
         $api->setProvider($mockProvider);
 
-        $actualDetails = $client->getBooleanDetails('flagKey', false, null, null);
+        $actualDetails = $client->getBooleanDetails('flagKey', false);
 
         $this->assertEquals($expectedReason, $actualDetails->getReason());
     }
@@ -563,7 +563,7 @@ class OpenFeatureClientTest extends TestCase
         $client = new OpenFeatureClient($api, 'test-name', 'test-version');
         $client->setLogger($mockLogger);
 
-        $value = $client->getBooleanValue('flagKey', false, null, null);
+        $value = $client->getBooleanValue('flagKey', false);
 
         $this->assertEquals($value, false);
     }
@@ -964,7 +964,7 @@ class OpenFeatureClientTest extends TestCase
 
         $client = new OpenFeatureClient($api, 'name', 'version');
 
-        $actualValue = $client->getBooleanValue('key', false, null, null);
+        $actualValue = $client->getBooleanValue('key', false);
 
         // the return value should be the default value, not the value expected to be returned by
         // the provider in the happy path
@@ -1001,7 +1001,7 @@ class OpenFeatureClientTest extends TestCase
 
         $client = new OpenFeatureClient($api, 'name', 'version');
 
-        $actualValue = $client->getBooleanValue('key', false, null, null);
+        $actualValue = $client->getBooleanValue('key', false);
 
         // the return value should be the default value, not the value expected to be returned by
         // the provider in the happy path
@@ -1038,7 +1038,7 @@ class OpenFeatureClientTest extends TestCase
 
         $client = new OpenFeatureClient($api, 'name', 'version');
 
-        $actualValue = $client->getBooleanValue('key', false, null, null);
+        $actualValue = $client->getBooleanValue('key', false);
 
         // the return value should be the default value, not the value expected to be returned by
         // the provider in the happy path
@@ -1328,7 +1328,7 @@ class OpenFeatureClientTest extends TestCase
 
         $client = new OpenFeatureClient($api, 'test-name', 'test-version');
 
-        $actualValue = $client->getBooleanValue('key', false, null, null);
+        $actualValue = $client->getBooleanValue('key', false);
 
         $this->assertEquals($actualValue, true);
     }
@@ -1358,7 +1358,7 @@ class OpenFeatureClientTest extends TestCase
 
         $client = new OpenFeatureClient($api, 'test-name', 'test-version');
 
-        $actualValue = $client->getBooleanValue('key', false, null, null);
+        $actualValue = $client->getBooleanValue('key', false);
 
         $this->assertEquals($actualValue, false);
     }
@@ -1388,7 +1388,7 @@ class OpenFeatureClientTest extends TestCase
 
         $client = new OpenFeatureClient($api, 'test-name', 'test-version');
 
-        $actualValue = $client->getBooleanValue('key', false, null, null);
+        $actualValue = $client->getBooleanValue('key', false);
 
         $this->assertEquals($actualValue, false);
     }
@@ -1418,7 +1418,7 @@ class OpenFeatureClientTest extends TestCase
 
         $client = new OpenFeatureClient($api, 'test-name', 'test-version');
 
-        $actualValue = $client->getBooleanValue('key', false, null, null);
+        $actualValue = $client->getBooleanValue('key', false);
 
         $this->assertEquals($actualValue, false);
     }
@@ -1448,7 +1448,7 @@ class OpenFeatureClientTest extends TestCase
 
         $client = new OpenFeatureClient($api, 'test-name', 'test-version');
 
-        $actualValue = $client->getBooleanValue('key', false, null, null);
+        $actualValue = $client->getBooleanValue('key', false);
 
         $this->assertEquals($actualValue, false);
     }
@@ -1478,7 +1478,7 @@ class OpenFeatureClientTest extends TestCase
 
         $client = new OpenFeatureClient($api, 'test-name', 'test-version');
 
-        $actualValue = $client->getBooleanValue('key', false, null, null);
+        $actualValue = $client->getBooleanValue('key', false);
 
         $this->assertEquals($actualValue, false);
     }
@@ -1505,7 +1505,7 @@ class OpenFeatureClientTest extends TestCase
 
         $client = new OpenFeatureClient($api, 'test-name', 'test-version');
 
-        $actualValue = $client->getBooleanValue('key', false, null, null);
+        $actualValue = $client->getBooleanValue('key', false);
 
         $this->assertEquals($actualValue, false);
     }
