@@ -16,18 +16,18 @@ namespace OpenFeature\interfaces\flags;
  */
 interface FeatureValues
 {
-    public function getBooleanValue(string $flagKey, bool $defaultValue, ?EvaluationContext $context, ?EvaluationOptions $options): ?bool;
+    public function getBooleanValue(string $flagKey, bool $defaultValue, ?EvaluationContext $context = null, ?EvaluationOptions $options = null): ?bool;
 
-    public function getStringValue(string $flagKey, string $defaultValue, ?EvaluationContext $context, ?EvaluationOptions $options): ?string;
+    public function getStringValue(string $flagKey, string $defaultValue, ?EvaluationContext $context = null, ?EvaluationOptions $options = null): ?string;
 
-    public function getIntegerValue(string $flagKey, int $defaultValue, ?EvaluationContext $context, ?EvaluationOptions $options): int;
+    public function getIntegerValue(string $flagKey, int $defaultValue, ?EvaluationContext $context = null, ?EvaluationOptions $options = null): int;
 
-    public function getFloatValue(string $flagKey, float $defaultValue, ?EvaluationContext $context, ?EvaluationOptions $options): float;
+    public function getFloatValue(string $flagKey, float $defaultValue, ?EvaluationContext $context = null, ?EvaluationOptions $options = null): float;
 
     /**
      * @param mixed[] $defaultValue
      *
      * @return mixed[]
      */
-    public function getObjectValue(string $flagKey, $defaultValue, ?EvaluationContext $context, ?EvaluationOptions $options);
+    public function getObjectValue(string $flagKey, $defaultValue, ?EvaluationContext $context = null, ?EvaluationOptions $options = null);
 }

@@ -15,16 +15,16 @@ namespace OpenFeature\interfaces\flags;
  */
 interface FeatureDetails
 {
-    public function getBooleanDetails(string $flagKey, bool $defaultValue, ?EvaluationContext $context, ?EvaluationOptions $options): EvaluationDetails;
+    public function getBooleanDetails(string $flagKey, bool $defaultValue, ?EvaluationContext $context = null, ?EvaluationOptions $options = null): EvaluationDetails;
 
-    public function getStringDetails(string $flagKey, string $defaultValue, ?EvaluationContext $context, ?EvaluationOptions $options): EvaluationDetails;
+    public function getStringDetails(string $flagKey, string $defaultValue, ?EvaluationContext $context = null, ?EvaluationOptions $options = null): EvaluationDetails;
 
-    public function getIntegerDetails(string $flagKey, int $defaultValue, ?EvaluationContext $context, ?EvaluationOptions $options): EvaluationDetails;
+    public function getIntegerDetails(string $flagKey, int $defaultValue, ?EvaluationContext $context = null, ?EvaluationOptions $options = null): EvaluationDetails;
 
-    public function getFloatDetails(string $flagKey, float $defaultValue, ?EvaluationContext $context, ?EvaluationOptions $options): EvaluationDetails;
+    public function getFloatDetails(string $flagKey, float $defaultValue, ?EvaluationContext $context = null, ?EvaluationOptions $options = null): EvaluationDetails;
 
     /**
      * @param mixed[] $defaultValue
      */
-    public function getObjectDetails(string $flagKey, $defaultValue, ?EvaluationContext $context, ?EvaluationOptions $options): EvaluationDetails;
+    public function getObjectDetails(string $flagKey, $defaultValue, ?EvaluationContext $context = null, ?EvaluationOptions $options = null): EvaluationDetails;
 }

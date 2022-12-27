@@ -127,7 +127,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      * with parameters flag key (string, required), default value (boolean | number | string | structure, required),
      * evaluation context (optional), and evaluation options (optional), which returns the flag value.
      */
-    public function getBooleanValue(string $flagKey, bool $defaultValue, ?EvaluationContextInterface $context, ?EvaluationOptionsInterface $options): bool
+    public function getBooleanValue(string $flagKey, bool $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptionsInterface $options = null): bool
     {
         /** @var bool $value */
         $value = $this->getBooleanDetails($flagKey, $defaultValue, $context, $options)->getValue() ?? $defaultValue;
@@ -143,7 +143,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      * default value (boolean | number | string | structure, required), evaluation context (optional), and evaluation
      * options (optional), which returns an evaluation details structure.
      */
-    public function getBooleanDetails(string $flagKey, bool $defaultValue, ?EvaluationContextInterface $context, ?EvaluationOptionsInterface $options): EvaluationDetailsInterface
+    public function getBooleanDetails(string $flagKey, bool $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptionsInterface $options = null): EvaluationDetailsInterface
     {
         return $this->evaluateFlag(FlagValueType::BOOLEAN, $flagKey, $defaultValue, $context, $options);
     }
@@ -156,7 +156,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      * with parameters flag key (string, required), default value (boolean | number | string | structure, required),
      * evaluation context (optional), and evaluation options (optional), which returns the flag value.
      */
-    public function getStringValue(string $flagKey, string $defaultValue, ?EvaluationContextInterface $context, ?EvaluationOptionsInterface $options): string
+    public function getStringValue(string $flagKey, string $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptionsInterface $options = null): string
     {
         /** @var string $value */
         $value = $this->getStringDetails($flagKey, $defaultValue, $context, $options)->getValue() ?? $defaultValue;
@@ -172,7 +172,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      * default value (boolean | number | string | structure, required), evaluation context (optional), and evaluation
      * options (optional), which returns an evaluation details structure.
      */
-    public function getStringDetails(string $flagKey, string $defaultValue, ?EvaluationContextInterface $context, ?EvaluationOptionsInterface $options): EvaluationDetailsInterface
+    public function getStringDetails(string $flagKey, string $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptionsInterface $options = null): EvaluationDetailsInterface
     {
         return $this->evaluateFlag(FlagValueType::STRING, $flagKey, $defaultValue, $context, $options);
     }
@@ -190,7 +190,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      * -----------------
      * The client SHOULD provide functions for floating-point numbers and integers, consistent with language idioms.
      */
-    public function getIntegerValue(string $flagKey, int $defaultValue, ?EvaluationContextInterface $context, ?EvaluationOptionsInterface $options): int
+    public function getIntegerValue(string $flagKey, int $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptionsInterface $options = null): int
     {
         /** @var int $value */
         $value = $this->getIntegerDetails($flagKey, $defaultValue, $context, $options)->getValue() ?? $defaultValue;
@@ -206,7 +206,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      * default value (boolean | number | string | structure, required), evaluation context (optional), and evaluation
      * options (optional), which returns an evaluation details structure.
      */
-    public function getIntegerDetails(string $flagKey, int $defaultValue, ?EvaluationContextInterface $context, ?EvaluationOptionsInterface $options): EvaluationDetailsInterface
+    public function getIntegerDetails(string $flagKey, int $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptionsInterface $options = null): EvaluationDetailsInterface
     {
         return $this->evaluateFlag(FlagValueType::INTEGER, $flagKey, $defaultValue, $context, $options);
     }
@@ -224,7 +224,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      * -----------------
      * The client SHOULD provide functions for floating-point numbers and integers, consistent with language idioms.
      */
-    public function getFloatValue(string $flagKey, float $defaultValue, ?EvaluationContextInterface $context, ?EvaluationOptionsInterface $options): float
+    public function getFloatValue(string $flagKey, float $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptionsInterface $options = null): float
     {
         /** @var float $value */
         $value = $this->getFloatDetails($flagKey, $defaultValue, $context, $options)->getValue() ?? $defaultValue;
@@ -240,7 +240,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      * default value (boolean | number | string | structure, required), evaluation context (optional), and evaluation
      * options (optional), which returns an evaluation details structure.
      */
-    public function getFloatDetails(string $flagKey, float $defaultValue, ?EvaluationContextInterface $context, ?EvaluationOptionsInterface $options): EvaluationDetailsInterface
+    public function getFloatDetails(string $flagKey, float $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptionsInterface $options = null): EvaluationDetailsInterface
     {
         return $this->evaluateFlag(FlagValueType::FLOAT, $flagKey, $defaultValue, $context, $options);
     }
@@ -255,7 +255,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      *
      * @inheritdoc
      */
-    public function getObjectValue(string $flagKey, $defaultValue, ?EvaluationContextInterface $context, ?EvaluationOptionsInterface $options)
+    public function getObjectValue(string $flagKey, $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptionsInterface $options = null)
     {
         /** @var mixed[] $value */
         $value = $this->getObjectDetails($flagKey, $defaultValue, $context, $options)->getValue() ?? $defaultValue;
@@ -275,7 +275,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      *
      * @inheritdoc
      */
-    public function getObjectDetails(string $flagKey, $defaultValue, ?EvaluationContextInterface $context, ?EvaluationOptionsInterface $options): EvaluationDetailsInterface
+    public function getObjectDetails(string $flagKey, $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptionsInterface $options = null): EvaluationDetailsInterface
     {
         return $this->evaluateFlag(FlagValueType::OBJECT, $flagKey, $defaultValue, $context, $options);
     }
