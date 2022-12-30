@@ -11,9 +11,7 @@ use OpenFeature\interfaces\common\Metadata as MetadataInterface;
 use OpenFeature\interfaces\flags\EvaluationContext as EvaluationContextInterface;
 use OpenFeature\interfaces\hooks\HookContext;
 
-use function get_class_methods;
 use function is_array;
-use function preg_replace;
 
 abstract class AbstractHookContext
 {
@@ -39,11 +37,11 @@ abstract class AbstractHookContext
         $this->providerMetadata = new Metadata('empty-provider');
 
         if ($hookContext instanceof HookContext) {
-            $methods = get_class_methods($hookContext);
-            foreach ($methods as $method) {
-                $property = preg_replace('/^get/', '', $method, 1);
-                $this->$property = $hookContext->$method();
-            }
+            $this->flagKey = $hookContext->getFlagKey();
+            $this->type = $hookContext->getType();
+            $this->evaluationContext = $hookContext->getEvaluationContext();
+            $this->clientMetadata = $hookContext->getClientMetadata();
+            $this->providerMetadata = $hookContext->getProviderMetadata();
         } elseif (is_array($hookContext)) {
             /** @var string $property */
             /** @var mixed $value */
