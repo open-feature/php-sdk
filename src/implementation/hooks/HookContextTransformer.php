@@ -13,7 +13,7 @@ class HookContextTransformer
         return new ImmutableHookContext($context);
     }
 
-    public static function toMutable(HookContext $context): ImmutableHookContext
+    public static function toMutable(HookContext $context): MutableHookContext
     {
         return new MutableHookContext($context);
     }
