@@ -8,6 +8,8 @@ name: PR
 on:
   pull_request:
     branches: [ main ]
+  push:
+    branches: [ main ]
 
 permissions:
   contents: read
@@ -59,7 +61,10 @@ jobs:
         run: vendor/bin/phpstan analyse --error-format=github
 
       - name: Run PHPUnit (unit tests)
-        run: vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover --testsuite unit
+        run: vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml --testsuite=unit
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
 
       - name: Validate composer.json and composer.lock
         working-directory: integration
