@@ -9,6 +9,11 @@ use OpenFeature\implementation\common\Metadata;
 use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\implementation\flags\EvaluationDetailsBuilder;
 use OpenFeature\implementation\flags\NoOpClient;
+use OpenFeature\interfaces\hooks\Hook;
+use OpenFeature\interfaces\hooks\HookContext;
+use OpenFeature\interfaces\hooks\HookHints;
+use OpenFeature\interfaces\provider\ResolutionDetails;
+use Throwable;
 
 class NoOpClientTest extends TestCase
 {
@@ -153,6 +158,57 @@ class NoOpClientTest extends TestCase
         $expectedValue = [];
 
         $actualValue = $this->client->getHooks();
+
+        $this->assertEquals($expectedValue, $actualValue);
+    }
+
+    public function testSetEvaluationContext(): void
+    {
+        $evaluationContext = new EvaluationContext('override-targeting-key');
+
+        $this->client->setEvaluationContext($evaluationContext);
+
+        $actualValue = $this->client->getEvaluationContext();
+
+        $expectedValue = new EvaluationContext('no-op-targeting-key');
+
+        $this->assertEquals($expectedValue, $actualValue);
+    }
+
+    public function testSetHooks(): void
+    {
+        $fakeHook = new class implements Hook {
+            public function before(HookContext $context, HookHints $hints): ?EvaluationContext
+            {
+                return null;
+            }
+
+            public function after(HookContext $context, ResolutionDetails $details, HookHints $hints): void
+            {
+                // no-op
+            }
+
+            public function error(HookContext $context, Throwable $error, HookHints $hints): void
+            {
+                // no-op
+            }
+
+            public function finally(HookContext $context, HookHints $hints): void
+            {
+                // no-op
+            }
+
+            public function supportsFlagValueType(string $flagValueType): bool
+            {
+                return true;
+            }
+        };
+
+        $this->client->setHooks([$fakeHook]);
+
+        $actualValue = $this->client->getHooks();
+
+        $expectedValue = [];
 
         $this->assertEquals($expectedValue, $actualValue);
     }
