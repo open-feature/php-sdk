@@ -19,16 +19,13 @@ use Throwable;
 use function array_merge;
 use function is_null;
 
-class OpenFeatureAPI implements API, LoggerAwareInterface
+final class OpenFeatureAPI implements API, LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
     private static ?OpenFeatureAPI $instance = null;
 
-    //// TODO: Support global using $_SESSION?
-    // private const GLOBAL_OPEN_FEATURE_KEY = '__OPENFEATURE_INSTANCE_ID__';
-
-    private ?Provider $provider = null;
+    private Provider $provider;
 
     /** @var Hook[] $hooks */
     private array $hooks = [];
@@ -43,15 +40,6 @@ class OpenFeatureAPI implements API, LoggerAwareInterface
      */
     public static function getInstance(): API
     {
-        //// TODO: Support global using $_SESSION?
-        // if (isset($_SESSION)) {
-        //     if (is_null($_SESSION[self::GLOBAL_OPEN_FEATURE_KEY])) {
-        //         $_SESSION[self::GLOBAL_OPEN_FEATURE_KEY] = new self();
-        //     }
-
-        //     return $_SESSION[self::GLOBAL_OPEN_FEATURE_KEY];
-        // }
-
         if (is_null(self::$instance)) {
             self::$instance = new self();
         }
@@ -70,15 +58,11 @@ class OpenFeatureAPI implements API, LoggerAwareInterface
      */
     private function __construct()
     {
-       // no-op
+        $this->provider = new NoOpProvider();
     }
 
     public function getProvider(): Provider
     {
-        if (!$this->provider) {
-            return new NoOpProvider();
-        }
-
         return $this->provider;
     }
 

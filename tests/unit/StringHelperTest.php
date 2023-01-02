@@ -34,4 +34,30 @@ class StringHelperTest extends TestCase
             ['Abc', 'Abc'],
         ];
     }
+
+    /**
+     * @dataProvider decapitalizeData
+     */
+    public function testDecapitalize(string $input, string $expectedValue): void
+    {
+        $actualValue = StringHelper::decapitalize($input);
+
+        $this->assertEquals($expectedValue, $actualValue);
+    }
+
+    /**
+     * @return Array<Array<string>>
+     */
+    public function decapitalizeData(): array
+    {
+        return [
+            ['', ''],
+            ['a', 'a'],
+            ['A', 'a'],
+            ['ab', 'ab'],
+            ['Ab', 'ab'],
+            ['abc', 'abc'],
+            ['Abc', 'abc'],
+        ];
+    }
 }

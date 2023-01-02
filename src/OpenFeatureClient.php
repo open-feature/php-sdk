@@ -37,6 +37,7 @@ use Psr\Log\LoggerAwareInterface;
 use Throwable;
 
 use function array_merge;
+use function array_reverse;
 use function sprintf;
 
 class OpenFeatureClient implements Client, LoggerAwareInterface
@@ -331,13 +332,8 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
             $options->getHooks(),
             $provider->getHooks(),
         );
-        // TODO: Should we do a complete reversal of $mergedBeforeHooks instead?
-        $mergedRemainingHooks = array_merge(
-            $provider->getHooks(),
-            $options->getHooks(),
-            $this->getHooks(),
-            $api->getHooks(),
-        );
+
+        $mergedRemainingHooks = array_reverse(array_merge([], $mergedBeforeHooks));
 
         try {
             $contextFromBeforeHook = $hookExecutor->beforeHooks($flagValueType, $hookContext, $mergedBeforeHooks, $hookHints);

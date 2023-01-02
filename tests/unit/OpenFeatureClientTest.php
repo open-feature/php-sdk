@@ -1474,7 +1474,8 @@ class OpenFeatureClientTest extends TestCase
 
         $api = APITestHelper::new();
         $api->setProvider($mockProvider);
-        $api->addHooks($erroringHook, $subsequentHook);
+        // error hooks run in reverse order
+        $api->addHooks($subsequentHook, $erroringHook);
 
         $client = new OpenFeatureClient($api, 'test-name', 'test-version');
 
@@ -1508,6 +1509,17 @@ class OpenFeatureClientTest extends TestCase
         $actualValue = $client->getBooleanValue('key', false);
 
         $this->assertEquals($actualValue, false);
+    }
+
+    public function testCanGetVersion(): void
+    {
+        $expectedVersion = 'a.b.c';
+
+        $client = new OpenFeatureClient(APITestHelper::new(), 'name', $expectedVersion);
+
+        $actualVersion = $client->getVersion();
+
+        $this->assertEquals($expectedVersion, $actualVersion);
     }
 
     /**
