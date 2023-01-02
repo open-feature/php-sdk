@@ -19,7 +19,7 @@ use Throwable;
 use function array_merge;
 use function is_null;
 
-class OpenFeatureAPI implements API, LoggerAwareInterface
+final class OpenFeatureAPI implements API, LoggerAwareInterface
 {
     use LoggerAwareTrait;
 

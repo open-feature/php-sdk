@@ -1474,7 +1474,8 @@ class OpenFeatureClientTest extends TestCase
 
         $api = APITestHelper::new();
         $api->setProvider($mockProvider);
-        $api->addHooks($erroringHook, $subsequentHook);
+        // error hooks run in reverse order
+        $api->addHooks($subsequentHook, $erroringHook);
 
         $client = new OpenFeatureClient($api, 'test-name', 'test-version');
 
