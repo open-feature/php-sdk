@@ -19,7 +19,7 @@ abstract class AbstractHook implements Hook
 
     abstract public function error(HookContext $context, Throwable $error, HookHints $hints): void;
 
-    abstract public function finallyAfter(HookContext $context, HookHints $hints): void;
+    abstract public function finally(HookContext $context, HookHints $hints): void;
 
     abstract public function supportsFlagValueType(string $flagValueType): bool;
 }
