@@ -1511,6 +1511,17 @@ class OpenFeatureClientTest extends TestCase
         $this->assertEquals($actualValue, false);
     }
 
+    public function testCanGetVersion(): void
+    {
+        $expectedVersion = 'a.b.c';
+
+        $client = new OpenFeatureClient(APITestHelper::new(), 'name', $expectedVersion);
+
+        $actualVersion = $client->getVersion();
+
+        $this->assertEquals($expectedVersion, $actualVersion);
+    }
+
     /**
      * @return Provider|MockInterface
      */
