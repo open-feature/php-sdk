@@ -25,9 +25,6 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
 
     private static ?OpenFeatureAPI $instance = null;
 
-    //// TODO: Support global using $_SESSION?
-    // private const GLOBAL_OPEN_FEATURE_KEY = '__OPENFEATURE_INSTANCE_ID__';
-
     private ?Provider $provider = null;
 
     /** @var Hook[] $hooks */
@@ -43,15 +40,6 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
      */
     public static function getInstance(): API
     {
-        //// TODO: Support global using $_SESSION?
-        // if (isset($_SESSION)) {
-        //     if (is_null($_SESSION[self::GLOBAL_OPEN_FEATURE_KEY])) {
-        //         $_SESSION[self::GLOBAL_OPEN_FEATURE_KEY] = new self();
-        //     }
-
-        //     return $_SESSION[self::GLOBAL_OPEN_FEATURE_KEY];
-        // }
-
         if (is_null(self::$instance)) {
             self::$instance = new self();
         }
