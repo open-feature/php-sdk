@@ -25,7 +25,7 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
 
     private static ?OpenFeatureAPI $instance = null;
 
-    private ?Provider $provider = null;
+    private Provider $provider;
 
     /** @var Hook[] $hooks */
     private array $hooks = [];
@@ -58,15 +58,11 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
      */
     private function __construct()
     {
-       // no-op
+        $this->provider = new NoOpProvider();
     }
 
     public function getProvider(): Provider
     {
-        if (!$this->provider) {
-            return new NoOpProvider();
-        }
-
         return $this->provider;
     }
 
