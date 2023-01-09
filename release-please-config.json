@@ -1,5 +1,5 @@
 {
-  "bootstrap-sha": "df431c2fb3f74af8c9731e8212e973bb87de4a28",
+  "bootstrap-sha": "45de3032f68611a88027ce4ddfe9d8151baca3a8",
   "packages": {
     ".": {
       "release-type": "php",
