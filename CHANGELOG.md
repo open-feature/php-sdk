@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.4](https://github.com/open-feature/php-sdk/compare/1.1.3...1.1.4) (2023-01-09)
+
+
+### Miscellaneous Chores
+
+* **deps:** update dependency php to v8.2.1 ([#66](https://github.com/open-feature/php-sdk/issues/66)) ([45de303](https://github.com/open-feature/php-sdk/commit/45de3032f68611a88027ce4ddfe9d8151baca3a8))
+* reset release-please commit sha ([f7d4683](https://github.com/open-feature/php-sdk/commit/f7d468380d71496bfbc44ba5dc8c9adc6e006055))
+
 ## [1.1.3](https://github.com/open-feature/php-sdk/compare/1.1.2...1.1.3) (2022-12-21)
 
 
