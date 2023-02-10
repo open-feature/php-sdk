@@ -32,10 +32,7 @@ class MutableAttributes extends Attributes implements MutableAttributesInterface
         return new MutableAttributes($attributeMap);
     }
 
-    /**
-     * @param bool|string|int|float|DateTime|mixed[]|null $value
-     */
-    public function add(string $key, $value): void
+    public function add(string $key, bool | string | int | float | DateTime | array | null $value): void
     {
         $this->attributesMap[$key] = $value;
     }

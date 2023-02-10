@@ -36,7 +36,7 @@ class HookContextBuilder
     /**
      * @param bool|string|int|float|DateTime|mixed[]|null $defaultValue
      */
-    public function withDefaultValue($defaultValue): self
+    public function withDefaultValue(bool | string | int | float | DateTime | array | null $defaultValue): self
     {
         $this->hookContext->setDefaultValue($defaultValue);
 

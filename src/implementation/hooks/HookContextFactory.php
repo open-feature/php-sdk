@@ -18,7 +18,7 @@ class HookContextFactory
     public static function from(
         string $flagKey,
         string $type,
-        $defaultValue,
+        bool | string | int | float | DateTime | array | null $defaultValue,
         ?EvaluationContextInterface $evaluationContext,
         Metadata $clientMetadata,
         Metadata $providerMetadata

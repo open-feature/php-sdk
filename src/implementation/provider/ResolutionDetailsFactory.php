@@ -12,7 +12,7 @@ class ResolutionDetailsFactory
     /**
      * @param bool|string|int|float|DateTime|mixed[]|null $value
      */
-    public static function fromSuccess($value): ResolutionDetailsInterface
+    public static function fromSuccess(bool | string | int | float | DateTime | array | null $value): ResolutionDetailsInterface
     {
         return (new ResolutionDetailsBuilder())
                     ->withValue($value)

@@ -7,3 +7,5 @@
 /build/
 
 /features/*.feature
+
+/.devenv*

@@ -4,11 +4,11 @@
 
 ### System Requirements
 
-PHP 8+ is recommended. PHP 7.4 is EOL and support will be removed in an upcoming release.
+PHP 8+ is required.
 
 ### Compilation target(s)
 
-We target compatibility with PHP versions 7.4, 8.0, 8.1, and 8.2.
+We target compatibility with PHP versions 8.0, 8.1, and 8.2.
 
 ### Installation and Dependencies
 

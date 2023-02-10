@@ -17,7 +17,7 @@ interface MutableHookContext
     /**
      * @param bool|string|int|float|DateTime|mixed[]|null $defaultValue
      */
-    public function setDefaultValue($defaultValue): void;
+    public function setDefaultValue(bool | string | int | float | DateTime | array | null $defaultValue): void;
 
     public function setEvaluationContext(EvaluationContext $evaluationContext): void;
 

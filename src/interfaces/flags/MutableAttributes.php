@@ -13,5 +13,5 @@ interface MutableAttributes extends Attributes
      *
      * @param bool|string|int|float|DateTime|mixed[]|null $value
      */
-    public function add(string $key, $value): void;
+    public function add(string $key, bool | string | int | float | DateTime | array | null $value): void;
 }

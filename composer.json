@@ -15,7 +15,7 @@
         }
     ],
     "require": {
-        "php": "^7.4 || ^8",
+        "php": "^8",
         "myclabs/php-enum": "^1.8",
         "psr/log": "^1.1"
     },

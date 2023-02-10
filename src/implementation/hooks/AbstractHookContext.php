@@ -18,7 +18,7 @@ abstract class AbstractHookContext
     protected string $flagKey = '';
     protected string $type = '';
     /** @var bool|string|int|float|DateTime|mixed[]|null $defaultValue */
-    protected $defaultValue = null;
+    protected bool | string | int | float | DateTime | array | null $defaultValue = null;
     protected EvaluationContextInterface $evaluationContext;
     protected MetadataInterface $clientMetadata;
     protected MetadataInterface $providerMetadata;
@@ -26,7 +26,7 @@ abstract class AbstractHookContext
     /**
      * @param HookContext|mixed[]|null $hookContext
      */
-    public function __construct($hookContext = null)
+    public function __construct(HookContext | array | null $hookContext = null)
     {
         /**
          * utility constructor to build a HookContext from an existing

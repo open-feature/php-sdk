@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenFeature\implementation\provider;
 
+use DateTime;
 use OpenFeature\interfaces\flags\EvaluationContext;
 use OpenFeature\interfaces\provider\Provider;
 use OpenFeature\interfaces\provider\ResolutionDetails as ResolutionDetailsInterface;
@@ -33,10 +34,13 @@ class NoOpProvider extends AbstractProvider implements Provider
     }
 
     /**
-     * @inheritdoc
+     * @param bool|string|int|float|DateTime|mixed[]|null $defaultValue
      */
-    public function resolveObjectValue(string $flagKey, $defaultValue, ?EvaluationContext $context = null): ResolutionDetailsInterface
-    {
+    public function resolveObjectValue(
+        string $flagKey,
+        bool | string | int | float | DateTime | array | null $defaultValue,
+        ?EvaluationContext $context = null
+    ): ResolutionDetailsInterface {
         return ResolutionDetailsFactory::fromSuccess($defaultValue);
     }
 }

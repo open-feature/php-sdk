@@ -16,9 +16,9 @@ class HookHints implements HookHintsInterface
     private array $hints = [];
 
     /**
-     * @return bool | string | float | int | DateTime | mixed[] | null
+     * @return bool|string|int|float|DateTime|mixed[]|null
      */
-    public function get(string $key)
+    public function get(string $key): bool | string | int | float | DateTime | array | null
     {
         if (key_exists($key, $this->hints)) {
             return $this->hints[$key];

@@ -5,7 +5,7 @@
 [![Specification](https://img.shields.io/static/v1?label=Specification&message=v0.5.1&color=yellow)](https://github.com/open-feature/spec/tree/v0.5.1)
 [![Latest Stable Version](http://poser.pugx.org/open-feature/sdk/v)](https://packagist.org/packages/open-feature/sdk)
 [![Total Downloads](http://poser.pugx.org/open-feature/sdk/downloads)](https://packagist.org/packages/open-feature/sdk)
-![PHP 7.4+](https://img.shields.io/badge/php->=7.4-blue.svg)
+![PHP 8.0+](https://img.shields.io/badge/php->=8.0-blue.svg)
 [![License](http://poser.pugx.org/open-feature/sdk/license)](https://packagist.org/packages/open-feature/sdk)
 [![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/6853/badge)](https://bestpractices.coreinfrastructure.org/projects/6853)
 
@@ -106,9 +106,7 @@ The OpenFeature project maintains the [open-feature/php-sdk-contrib](https://git
 
 ### PHP Versioning
 
-This library targets PHP version 7.4 and newer. As long as you have any compatible version of PHP on your system you should be able to utilize the OpenFeature SDK.
-
-⚠️ **PHP version 7.4 is EOL and support will shortly be dropped from this package.**
+This library targets PHP version 8.0 and newer. As long as you have any compatible version of PHP on your system you should be able to utilize the OpenFeature SDK.
 
 This package also has a `.tool-versions` file for use with PHP version managers like `asdf`.
 

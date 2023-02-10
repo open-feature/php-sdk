@@ -20,7 +20,7 @@ class ResolutionDetailsBuilder
     /**
      * @param bool|string|int|float|DateTime|mixed[]|null $value
      */
-    public function withValue($value): ResolutionDetailsBuilder
+    public function withValue(bool | string | int | float | DateTime | array | null $value): ResolutionDetailsBuilder
     {
         $this->details->setValue($value);
 
