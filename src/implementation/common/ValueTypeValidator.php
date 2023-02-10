@@ -17,80 +17,64 @@ class ValueTypeValidator
 {
     /**
      * Validates whether the value is a boolean type
-     *
-     * @param mixed $value
      */
-    public static function isBoolean($value): bool
+    public static function isBoolean(mixed $value): bool
     {
         return is_bool($value);
     }
 
     /**
      * Validates whether the value is a string type
-     *
-     * @param mixed $value
      */
-    public static function isString($value): bool
+    public static function isString(mixed $value): bool
     {
         return is_string($value);
     }
 
     /**
      * Validates whether the value is an integer type
-     *
-     * @param mixed $value
      */
-    public static function isInteger($value): bool
+    public static function isInteger(mixed $value): bool
     {
         return is_int($value);
     }
 
     /**
      * Validates whether the value is a float type
-     *
-     * @param mixed $value
      */
-    public static function isFloat($value): bool
+    public static function isFloat(mixed $value): bool
     {
         return is_float($value);
     }
 
     /**
      * Validates whether the value is a structure
-     *
-     * @param mixed $value
      */
-    public static function isStructure($value): bool
+    public static function isStructure(mixed $value): bool
     {
         return self::isArray($value);
     }
 
     /**
      * Validates whether the value is an Array type
-     *
-     * @param mixed $value
      */
-    public static function isArray($value): bool
+    public static function isArray(mixed $value): bool
     {
         return is_array($value);
     }
 
     /**
      * Validates whether the value is a DateTime type
-     *
-     * @param mixed $value
      */
-    public static function isDateTime($value): bool
+    public static function isDateTime(mixed $value): bool
     {
         return $value instanceof DateTime;
     }
 
     /**
      * Validates whether the value is valid for the given type
-     *
-     * @param mixed $value
      */
-    public static function is(string $type, $value): bool
+    public static function is(string $type, mixed $value): bool
     {
         switch ($type) {
             case FlagValueType::BOOLEAN:

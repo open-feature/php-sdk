@@ -26,5 +26,5 @@ interface FeatureDetails
     /**
      * @param mixed[] $defaultValue
      */
-    public function getObjectDetails(string $flagKey, $defaultValue, ?EvaluationContext $context = null, ?EvaluationOptions $options = null): EvaluationDetails;
+    public function getObjectDetails(string $flagKey, array $defaultValue, ?EvaluationContext $context = null, ?EvaluationOptions $options = null): EvaluationDetails;
 }

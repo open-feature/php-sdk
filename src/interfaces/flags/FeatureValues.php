@@ -29,5 +29,5 @@ interface FeatureValues
      *
      * @return mixed[]
      */
-    public function getObjectValue(string $flagKey, $defaultValue, ?EvaluationContext $context = null, ?EvaluationOptions $options = null);
+    public function getObjectValue(string $flagKey, array $defaultValue, ?EvaluationContext $context = null, ?EvaluationOptions $options = null);
 }

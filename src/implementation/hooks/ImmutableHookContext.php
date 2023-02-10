@@ -24,7 +24,7 @@ class ImmutableHookContext extends AbstractHookContext implements HookContextInt
     /**
      * @return bool|string|int|float|DateTime|mixed[]|null
      */
-    public function getDefaultValue()
+    public function getDefaultValue(): bool | string | int | float | DateTime | array | null
     {
         return $this->defaultValue;
     }

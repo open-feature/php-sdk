@@ -13,11 +13,13 @@ use OpenFeature\interfaces\common\StringIndexed;
  * -----------------
  * hook hints MUST be a structure supports definition of arbitrary properties, with keys
  * of type string, and values of type boolean | string | number | datetime | structure
+ *
+ * @return bool|string|int|float|DateTime|mixed[]|null
  */
 interface HookHints extends StringIndexed
 {
     /**
-     * @return bool | string | float | int | DateTime | mixed[] | null
+     * @return bool|string|int|float|DateTime|mixed[]|null
      */
-    public function get(string $key);
+    public function get(string $key): bool | string | float | int | DateTime | array | null;
 }

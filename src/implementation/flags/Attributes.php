@@ -36,7 +36,7 @@ class Attributes implements AttributesInterface
     /**
      * @return bool|string|int|float|DateTime|mixed[]|null
      */
-    public function get(string $key)
+    public function get(string $key): bool | string | int | float | DateTime | array | null
     {
         if (isset($this->attributesMap[$key])) {
             return $this->attributesMap[$key];

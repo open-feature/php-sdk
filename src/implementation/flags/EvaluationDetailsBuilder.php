@@ -27,7 +27,7 @@ class EvaluationDetailsBuilder
     /**
      * @param bool|string|int|float|DateTime|mixed[]|null $value
      */
-    public function withValue($value): EvaluationDetailsBuilder
+    public function withValue(bool | string | int | float | DateTime | array | null $value): EvaluationDetailsBuilder
     {
         $this->details->setValue($value);
 

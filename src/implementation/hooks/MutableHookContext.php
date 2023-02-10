@@ -22,10 +22,7 @@ class MutableHookContext extends ImmutableHookContext implements HookContextInte
         $this->type = $type;
     }
 
-    /**
-     * @param bool|string|int|float|DateTime|mixed[]|null $defaultValue
-     */
-    public function setDefaultValue($defaultValue): void
+    public function setDefaultValue(bool | string | int | float | DateTime | array | null $defaultValue): void
     {
         $this->defaultValue = $defaultValue;
     }

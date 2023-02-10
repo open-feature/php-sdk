@@ -18,7 +18,7 @@ interface Attributes
     /**
      * @return bool|string|int|float|DateTime|mixed[]|null
      */
-    public function get(string $key);
+    public function get(string $key): bool | string | int | float | DateTime | array | null;
 
     /**
      * @return Array<array-key, bool|string|int|float|DateTime|mixed[]|null>

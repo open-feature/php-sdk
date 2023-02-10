@@ -60,15 +60,16 @@ class NoOpClient implements Client
      *
      * @return mixed[]
      */
-    public function getObjectValue(string $flagKey, $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptions $options = null): array
-    {
+    public function getObjectValue(
+        string $flagKey,
+        array $defaultValue,
+        ?EvaluationContextInterface $context = null,
+        ?EvaluationOptions $options = null
+    ): array {
         return $defaultValue;
     }
 
-    /**
-     * @param bool|string|int|float|DateTime|mixed[]|null $defaultValue
-     */
-    public function getObjectDetails(string $flagKey, $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptions $options = null): EvaluationDetails
+    public function getObjectDetails(string $flagKey, bool | string | int | float | DateTime | array | null $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptions $options = null): EvaluationDetails
     {
         return EvaluationDetailsFactory::from($flagKey, $defaultValue);
     }
@@ -88,17 +89,17 @@ class NoOpClient implements Client
       // no-op
     }
 
-  /**
-   * @inheritdoc
-   */
+    /**
+     * @inheritdoc
+     */
     public function getHooks(): array
     {
         return [];
     }
 
-  /**
-   * @inheritdoc
-   */
+    /**
+     * @inheritdoc
+     */
     public function setHooks(array $hooks): void
     {
       // no-op

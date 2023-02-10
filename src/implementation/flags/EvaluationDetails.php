@@ -11,8 +11,9 @@ use OpenFeature\interfaces\provider\ResolutionError;
 class EvaluationDetails implements EvaluationDetailsInterface
 {
     private string $flagKey = '';
+
     /** @var bool|string|int|float|DateTime|mixed[]|null $value */
-    private $value;
+    private bool | string | int | float | DateTime | array | null $value = null;
     private ?ResolutionError $error = null;
     private ?string $reason = null;
     private ?string $variant = null;
@@ -40,7 +41,7 @@ class EvaluationDetails implements EvaluationDetailsInterface
      *
      * @return bool|string|int|float|DateTime|mixed[]|null
      */
-    public function getValue()
+    public function getValue(): bool | string | int | float | DateTime | array | null
     {
         return $this->value;
     }
@@ -48,7 +49,7 @@ class EvaluationDetails implements EvaluationDetailsInterface
     /**
      * @param bool|string|int|float|DateTime|mixed[]|null $value
      */
-    public function setValue($value): void
+    public function setValue(bool | string | int | float | DateTime | array | null $value): void
     {
         $this->value = $value;
     }

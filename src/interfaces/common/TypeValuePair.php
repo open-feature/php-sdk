@@ -13,5 +13,5 @@ interface TypeValuePair
     /**
      * @return bool|string|int|float|DateTime|mixed[]|null
      */
-    public function getValue();
+    public function getValue(): bool | string | int | float | DateTime | array | null;
 }

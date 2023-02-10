@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenFeature\interfaces\provider;
 
+use DateTime;
 use OpenFeature\interfaces\common\MetadataGetter;
 use OpenFeature\interfaces\flags\EvaluationContext;
 use OpenFeature\interfaces\hooks\HooksGetter;
@@ -47,7 +48,11 @@ interface Provider extends HooksGetter, LoggerAwareInterface, MetadataGetter
     /**
      * Resolves the flag value for the provided flag key as an object
      *
-     * @param mixed[] $defaultValue
+     * @param bool|string|int|float|DateTime|mixed[]|null $defaultValue
      */
-    public function resolveObjectValue(string $flagKey, $defaultValue, ?EvaluationContext $context = null): ResolutionDetails;
+    public function resolveObjectValue(
+        string $flagKey,
+        bool | string | int | float | DateTime | array | null $defaultValue,
+        ?EvaluationContext $context = null
+    ): ResolutionDetails;
 }

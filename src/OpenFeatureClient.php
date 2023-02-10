@@ -292,7 +292,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
     private function evaluateFlag(
         string $flagValueType,
         string $flagKey,
-        $defaultValue,
+        bool | string | int | float | DateTime | array | null $defaultValue,
         ?EvaluationContextInterface $invocationContext = null,
         ?EvaluationOptionsInterface $options = null
     ): EvaluationDetailsInterface {
@@ -388,13 +388,10 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
         return $details;
     }
 
-    /**
-     * @param mixed $defaultValue
-     */
     private function createProviderEvaluation(
         string $type,
         string $key,
-        $defaultValue,
+        mixed $defaultValue,
         Provider $provider,
         EvaluationContextInterface $context
     ): ResolutionDetails {
