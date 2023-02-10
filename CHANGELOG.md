@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.0](https://github.com/open-feature/php-sdk/compare/1.3.1...1.4.0) (2023-02-10)
+
+
+### Features
+
+* deprecate php 7 ([#77](https://github.com/open-feature/php-sdk/issues/77)) ([0a9b5b5](https://github.com/open-feature/php-sdk/commit/0a9b5b577acb158d02edd4c2b06258a30129b500))
+
+
+### Bug Fixes
+
+* **deps:** update dependency open-feature/flagd-provider to ^0.3.0 ([#70](https://github.com/open-feature/php-sdk/issues/70)) ([29f219f](https://github.com/open-feature/php-sdk/commit/29f219f287c9ffcc2a89b577abb8abfe563e5cbb))
+
 ## [1.3.1](https://github.com/open-feature/php-sdk/compare/1.3.0...1.3.1) (2023-01-09)
 
 
