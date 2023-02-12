@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace OpenFeature\implementation\provider;
 
-use DateTime;
 use OpenFeature\implementation\common\Metadata;
 use OpenFeature\interfaces\common\Metadata as MetadataInterface;
 use OpenFeature\interfaces\flags\EvaluationContext;
@@ -35,11 +34,10 @@ abstract class AbstractProvider implements Provider
 
     abstract public function resolveFloatValue(string $flagKey, float $defaultValue, ?EvaluationContext $context = null): ResolutionDetailsInterface;
 
-    abstract public function resolveObjectValue(
-        string $flagKey,
-        bool | string | int | float | DateTime | array | null $defaultValue,
-        ?EvaluationContext $context = null
-    ): ResolutionDetailsInterface;
+    /**
+     * @param mixed[] $defaultValue
+     */
+    abstract public function resolveObjectValue(string $flagKey, array $defaultValue, ?EvaluationContext $context = null): ResolutionDetailsInterface;
 
     /**
      * @return Hook[]

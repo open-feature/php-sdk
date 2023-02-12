@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace OpenFeature\Test;
 
-use DateTime;
 use OpenFeature\implementation\common\Metadata;
 use OpenFeature\implementation\provider\ResolutionDetailsFactory;
 use OpenFeature\interfaces\common\Metadata as MetadataInterface;
@@ -59,9 +58,9 @@ class TestProvider implements Provider
     }
 
     /**
-     * @param bool|string|int|float|DateTime|mixed[]|null $defaultValue
+     * @param mixed[] $defaultValue
      */
-    public function resolveObjectValue(string $flagKey, bool | string | int | float | DateTime | array | null $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
+    public function resolveObjectValue(string $flagKey, array $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
         return ResolutionDetailsFactory::fromSuccess($defaultValue);
     }
