@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/open-feature/php-sdk/compare/1.4.0...2.0.0) (2023-02-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* provider resolveObject interface ([#78](https://github.com/open-feature/php-sdk/issues/78))
+
+### Bug Fixes
+
+* provider resolveObject interface ([#78](https://github.com/open-feature/php-sdk/issues/78)) ([d0f9ea9](https://github.com/open-feature/php-sdk/commit/d0f9ea95063166b2a56b18f0ad86696b0a7ce8b8))
+
 ## [1.4.0](https://github.com/open-feature/php-sdk/compare/1.3.1...1.4.0) (2023-02-10)
 
 
