@@ -72,9 +72,11 @@ jobs:
 
       - name: Prepare test-harness
         working-directory: integration
+        # this only supports the evaluation feature currently
+        # caching will be supported in a future release
         run: |
           git submodule update --init --recursive
-          cp ./test-harness/features/*.feature ./features/
+          cp ./test-harness/features/evaluation.feature ./features/
 
       - name: Cache Composer packages
         id: behat-composer-cache
