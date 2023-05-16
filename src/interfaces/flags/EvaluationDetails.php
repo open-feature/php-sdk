@@ -11,8 +11,8 @@ use OpenFeature\interfaces\provider\ResolutionError;
  * A structure representing the result of the flag evaluation process,
  * and made available in the detailed flag resolution functions
  *
- * @see https://docs.openfeature.dev/docs/specification/glossary#evaluating-flag-values
- * @see https://docs.openfeature.dev/docs/specification/sections/flag-evaluation#detailed-flag-evaluation
+ * @see https://openfeature.dev/docs/specification/glossary#evaluating-flag-values
+ * @see https://openfeature.dev/docs/specification/sections/flag-evaluation#detailed-flag-evaluation
  */
 interface EvaluationDetails
 {

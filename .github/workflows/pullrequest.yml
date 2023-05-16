@@ -49,7 +49,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.root-composer-cache.outputs.cache-hit != 'true'
-        run: composer install --prefer-dist --no-progress --no-suggest
+        run: composer install --prefer-dist --no-progress
 
       - name: Check Style
         run: vendor/bin/phpcs
@@ -72,9 +72,11 @@ jobs:
 
       - name: Prepare test-harness
         working-directory: integration
+        # this only supports the evaluation feature currently
+        # caching will be supported in a future release
         run: |
           git submodule update --init --recursive
-          cp ./test-harness/features/*.feature ./features/
+          cp ./test-harness/features/evaluation.feature ./features/
 
       - name: Cache Composer packages
         id: behat-composer-cache
@@ -88,7 +90,7 @@ jobs:
       - name: Install dependencies
         working-directory: integration
         if: steps.behat-composer-cache.outputs.cache-hit != 'true'
-        run: composer install --prefer-dist --no-progress --no-suggest
+        run: composer install --prefer-dist --no-progress
 
       - name: Start test-harness container
         run: docker run --rm -d -p 8013:8013 ghcr.io/open-feature/flagd-testbed:latest

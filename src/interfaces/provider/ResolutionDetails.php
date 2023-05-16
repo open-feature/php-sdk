@@ -10,7 +10,7 @@ use DateTime;
  * A structure which contains a subset of the fields defined in the evaluation
  * details, representing the result of the provider's flag resolution process
  *
- * @see https://docs.openfeature.dev/docs/specification/glossary#resolving-flag-values
+ * @see https://openfeature.dev/docs/specification/glossary#resolving-flag-values
  */
 interface ResolutionDetails
 {

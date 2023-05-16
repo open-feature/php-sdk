@@ -16,8 +16,8 @@
     ],
     "require": {
         "php": "^8",
-        "open-feature/sdk": "^1.1.1",
-        "open-feature/flagd-provider": "^0.3.0",
+        "open-feature/sdk": "^2.0.0",
+        "open-feature/flagd-provider": "^0.4.0",
         "guzzlehttp/guzzle": "^7.5",
         "guzzlehttp/psr7": "^2.4"
     },
@@ -31,7 +31,7 @@
             "url": "../",
             "options": {
                 "versions": {
-                    "open-feature/sdk": "1.4.0"
+                    "open-feature/sdk": "2.0.0"
                 }
             }
         }
@@ -49,7 +49,7 @@
         ],
         "dev:test:features:init": "git submodule update --recursive",
         "dev:test:features:run": "vendor/bin/behat",
-        "dev:test:features:setup": "cp ./test-harness/features/*.feature ./features/",
+        "dev:test:features:setup": "cp ./test-harness/features/evaluation.feature ./features/",
         "test": "@dev:test"
     }
 }
