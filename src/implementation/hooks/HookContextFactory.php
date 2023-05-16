@@ -21,7 +21,7 @@ class HookContextFactory
         bool | string | int | float | DateTime | array | null $defaultValue,
         ?EvaluationContextInterface $evaluationContext,
         Metadata $clientMetadata,
-        Metadata $providerMetadata
+        Metadata $providerMetadata,
     ): HookContext {
         $builder = new HookContextBuilder();
 
