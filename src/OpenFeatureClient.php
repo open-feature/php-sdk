@@ -294,7 +294,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
         string $flagKey,
         bool | string | int | float | DateTime | array | null $defaultValue,
         ?EvaluationContextInterface $invocationContext = null,
-        ?EvaluationOptionsInterface $options = null
+        ?EvaluationOptionsInterface $options = null,
     ): EvaluationDetailsInterface {
         $api = $this->api;
         $provider = $api->getProvider();
@@ -393,7 +393,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
         string $key,
         mixed $defaultValue,
         Provider $provider,
-        EvaluationContextInterface $context
+        EvaluationContextInterface $context,
     ): ResolutionDetails {
         switch ($type) {
             case FlagValueType::BOOLEAN:

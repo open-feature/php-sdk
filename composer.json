@@ -17,7 +17,7 @@
     "require": {
         "php": "^8",
         "myclabs/php-enum": "^1.8",
-        "psr/log": "^1.1"
+        "psr/log": "^2.0 || ^3.0"
     },
     "require-dev": {
         "behat/behat": "^3.11",

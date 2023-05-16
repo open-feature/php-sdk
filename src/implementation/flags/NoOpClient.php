@@ -64,7 +64,7 @@ class NoOpClient implements Client
         string $flagKey,
         array $defaultValue,
         ?EvaluationContextInterface $context = null,
-        ?EvaluationOptions $options = null
+        ?EvaluationOptions $options = null,
     ): array {
         return $defaultValue;
     }
