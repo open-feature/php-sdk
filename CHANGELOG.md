@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.1](https://github.com/open-feature/php-sdk/compare/2.0.0...2.0.1) (2023-05-16)
+
+
+### Miscellaneous Chores
+
+* **deps:** update dependency php to v8.2.3 ([#73](https://github.com/open-feature/php-sdk/issues/73)) ([27d1bbc](https://github.com/open-feature/php-sdk/commit/27d1bbc476b926c6a72b91c104e1aca58431edf0))
+* **deps:** update dependency phpstan/phpstan to ~1.10.0 ([#87](https://github.com/open-feature/php-sdk/issues/87)) ([f59da40](https://github.com/open-feature/php-sdk/commit/f59da404264dcefc5933c1b9309bd192b17a7534))
+* **deps:** update dependency vimeo/psalm to ~5.8.0 ([#72](https://github.com/open-feature/php-sdk/issues/72)) ([800119f](https://github.com/open-feature/php-sdk/commit/800119f0783f0d519d3fd30733d2ae572d0dffc8))
+* remove deprecated --no-suggest composer flag ([#89](https://github.com/open-feature/php-sdk/issues/89)) ([2adecfb](https://github.com/open-feature/php-sdk/commit/2adecfb0b626c35b906d3a507e235b39317e922c))
+* update psr/log ([#74](https://github.com/open-feature/php-sdk/issues/74)) ([f8a67c7](https://github.com/open-feature/php-sdk/commit/f8a67c7279ddc05c29615ecf04b7cfad71f03068))
+
 ## [2.0.0](https://github.com/open-feature/php-sdk/compare/1.4.0...2.0.0) (2023-02-12)
 
 
