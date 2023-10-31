@@ -78,7 +78,7 @@ function example()
     $client = $api->getClient();
     
     // get a bool flag value
-    $client->getBooleanValue('v2_enabled', false)
+    $client->getBooleanValue('v2_enabled', false);
 }
 ```
 
