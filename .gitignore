@@ -8,4 +8,4 @@
 
 /features/*.feature
 
-/.devenv*
+/.direnv
