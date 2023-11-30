@@ -74,21 +74,15 @@ class ValueTypeValidator
     /**
      * Validates whether the value is valid for the given type
      */
-    public static function is(string $type, mixed $value): bool
+    public static function is(FlagValueType $type, mixed $value): bool
     {
-        switch ($type) {
-            case FlagValueType::BOOLEAN:
-                return self::isBoolean($value);
-            case FlagValueType::FLOAT:
-                return self::isFloat($value);
-            case FlagValueType::INTEGER:
-                return self::isInteger($value);
-            case FlagValueType::STRING:
-                return self::isString($value);
-            case FlagValueType::OBJECT:
-                return self::isStructure($value) || self::isArray($value);
-            default:
-                return false;
-        }
+        return match ($type) {
+            FlagValueType::Boolean => self::isBoolean($value),
+            FlagValueType::Float => self::isFloat($value),
+            FlagValueType::Integer => self::isInteger($value),
+            FlagValueType::String => self::isString($value),
+            FlagValueType::Object => self::isStructure($value) || self::isArray($value),
+            default => false,
+        };
     }
 }

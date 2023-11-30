@@ -7,7 +7,6 @@ namespace OpenFeature;
 use DateTime;
 use OpenFeature\implementation\common\Metadata;
 use OpenFeature\implementation\common\ValueTypeValidator;
-use OpenFeature\implementation\errors\FlagValueTypeError;
 use OpenFeature\implementation\errors\InvalidResolutionValueError;
 use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\implementation\flags\EvaluationDetailsBuilder;
@@ -142,7 +141,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      */
     public function getBooleanDetails(string $flagKey, bool $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptionsInterface $options = null): EvaluationDetailsInterface
     {
-        return $this->evaluateFlag(FlagValueType::BOOLEAN, $flagKey, $defaultValue, $context, $options);
+        return $this->evaluateFlag(FlagValueType::Boolean, $flagKey, $defaultValue, $context, $options);
     }
 
     /**
@@ -171,7 +170,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      */
     public function getStringDetails(string $flagKey, string $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptionsInterface $options = null): EvaluationDetailsInterface
     {
-        return $this->evaluateFlag(FlagValueType::STRING, $flagKey, $defaultValue, $context, $options);
+        return $this->evaluateFlag(FlagValueType::String, $flagKey, $defaultValue, $context, $options);
     }
 
     /**
@@ -205,7 +204,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      */
     public function getIntegerDetails(string $flagKey, int $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptionsInterface $options = null): EvaluationDetailsInterface
     {
-        return $this->evaluateFlag(FlagValueType::INTEGER, $flagKey, $defaultValue, $context, $options);
+        return $this->evaluateFlag(FlagValueType::Integer, $flagKey, $defaultValue, $context, $options);
     }
 
     /**
@@ -239,7 +238,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      */
     public function getFloatDetails(string $flagKey, float $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptionsInterface $options = null): EvaluationDetailsInterface
     {
-        return $this->evaluateFlag(FlagValueType::FLOAT, $flagKey, $defaultValue, $context, $options);
+        return $this->evaluateFlag(FlagValueType::Float, $flagKey, $defaultValue, $context, $options);
     }
 
     /**
@@ -274,7 +273,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      */
     public function getObjectDetails(string $flagKey, $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptionsInterface $options = null): EvaluationDetailsInterface
     {
-        return $this->evaluateFlag(FlagValueType::OBJECT, $flagKey, $defaultValue, $context, $options);
+        return $this->evaluateFlag(FlagValueType::Object, $flagKey, $defaultValue, $context, $options);
     }
 
     /**
@@ -286,7 +285,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      * @param bool|string|int|float|DateTime|mixed[]|null $defaultValue
      */
     private function evaluateFlag(
-        string $flagValueType,
+        FlagValueType $flagValueType,
         string $flagKey,
         bool | string | int | float | DateTime | array | null $defaultValue,
         ?EvaluationContextInterface $invocationContext = null,
@@ -353,7 +352,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
             );
 
             if (!$resolutionDetails->getError() && !ValueTypeValidator::is($flagValueType, $resolutionDetails->getValue())) {
-                throw new InvalidResolutionValueError($flagValueType);
+                throw new InvalidResolutionValueError($flagValueType->value);
             }
 
             $details = EvaluationDetailsFactory::fromResolution($flagKey, $resolutionDetails);
@@ -385,40 +384,45 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
     }
 
     private function createProviderEvaluation(
-        string $type,
+        FlagValueType $type,
         string $key,
-        mixed $defaultValue,
+        bool | string | int | float | array | null $defaultValue,
         Provider $provider,
         EvaluationContextInterface $context,
     ): ResolutionDetails {
-        switch ($type) {
-            case FlagValueType::BOOLEAN:
-                /** @var bool $defaultValue */
+        switch ($type->value) {
+            case FlagValueType::Boolean->value:
+                /** @var bool $defaultValue */;
                 $defaultValue = $defaultValue;
+                $resolver = $provider->resolveBooleanValue(...);
 
-                return $provider->resolveBooleanValue($key, $defaultValue, $context);
-            case FlagValueType::STRING:
-                /** @var string $defaultValue */
+                break;
+            case FlagValueType::String->value:
+                /** @var string $defaultValue */;
                 $defaultValue = $defaultValue;
+                $resolver = $provider->resolveStringValue(...);
 
-                return $provider->resolveStringValue($key, $defaultValue, $context);
-            case FlagValueType::INTEGER:
-                /** @var int $defaultValue */
+                break;
+            case FlagValueType::Integer->value:
+                /** @var int $defaultValue */;
                 $defaultValue = $defaultValue;
+                $resolver = $provider->resolveIntegerValue(...);
 
-                return $provider->resolveIntegerValue($key, $defaultValue, $context);
-            case FlagValueType::FLOAT:
-                /** @var float $defaultValue */
+                break;
+            case FlagValueType::Float->value:
+                /** @var float $defaultValue */;
                 $defaultValue = $defaultValue;
+                $resolver = $provider->resolveFloatValue(...);
 
-                return $provider->resolveFloatValue($key, $defaultValue, $context);
-            case FlagValueType::OBJECT:
-                /** @var mixed[] $defaultValue */
+                break;
+            case FlagValueType::Object->value:
+                /** @var object $defaultValue */;
                 $defaultValue = $defaultValue;
+                $resolver = $provider->resolveObjectValue(...);
 
-                return $provider->resolveObjectValue($key, $defaultValue, $context);
-            default:
-                throw new FlagValueTypeError($type);
+                break;
         }
+
+        return $resolver($key, $defaultValue, $context);
     }
 }

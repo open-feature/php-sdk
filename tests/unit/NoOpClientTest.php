@@ -9,6 +9,7 @@ use OpenFeature\implementation\common\Metadata;
 use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\implementation\flags\EvaluationDetailsBuilder;
 use OpenFeature\implementation\flags\NoOpClient;
+use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\hooks\Hook;
 use OpenFeature\interfaces\hooks\HookContext;
 use OpenFeature\interfaces\hooks\HookHints;
@@ -198,7 +199,7 @@ class NoOpClientTest extends TestCase
                 // no-op
             }
 
-            public function supportsFlagValueType(string $flagValueType): bool
+            public function supportsFlagValueType(FlagValueType $flagValueType): bool
             {
                 return true;
             }

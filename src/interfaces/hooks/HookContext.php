@@ -7,6 +7,7 @@ namespace OpenFeature\interfaces\hooks;
 use DateTime;
 use OpenFeature\interfaces\common\Metadata;
 use OpenFeature\interfaces\flags\EvaluationContext;
+use OpenFeature\interfaces\flags\FlagValueType;
 
 interface HookContext
 {
@@ -36,7 +37,7 @@ interface HookContext
      * The flag key, flag type, and default value properties MUST be immutable. If
      * the language does not support immutability, the hook MUST NOT modify these properties.
      */
-    public function getType(): string;
+    public function getType(): FlagValueType;
 
     /**
      * -----------------

@@ -8,6 +8,7 @@ use DateTime;
 use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\interfaces\common\Metadata;
 use OpenFeature\interfaces\flags\EvaluationContext as EvaluationContextInterface;
+use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\hooks\HookContext;
 
 class HookContextFactory
@@ -17,7 +18,7 @@ class HookContextFactory
      */
     public static function from(
         string $flagKey,
-        string $type,
+        FlagValueType $type,
         bool | string | int | float | DateTime | array | null $defaultValue,
         ?EvaluationContextInterface $evaluationContext,
         Metadata $clientMetadata,

@@ -7,6 +7,7 @@ namespace OpenFeature\implementation\hooks;
 use DateTime;
 use OpenFeature\interfaces\common\Metadata;
 use OpenFeature\interfaces\flags\EvaluationContext;
+use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\hooks\HookContext as HookContextInterface;
 
 class HookContextBuilder
@@ -26,7 +27,7 @@ class HookContextBuilder
         return $this;
     }
 
-    public function withType(string $type): self
+    public function withType(FlagValueType $type): self
     {
         $this->hookContext->setType($type);
 

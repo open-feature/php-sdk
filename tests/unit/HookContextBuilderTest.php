@@ -8,6 +8,7 @@ use OpenFeature\Test\TestCase;
 use OpenFeature\implementation\hooks\HookContextBuilder;
 use OpenFeature\implementation\hooks\ImmutableHookContext;
 use OpenFeature\implementation\hooks\MutableHookContext;
+use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\hooks\HookContext;
 
 class HookContextBuilderTest extends TestCase
@@ -24,9 +25,9 @@ class HookContextBuilderTest extends TestCase
 
     public function testAsImmutable(): void
     {
-        $expectedValue = new ImmutableHookContext(['flagKey' => 'test-key']);
+        $expectedValue = new ImmutableHookContext(['flagKey' => 'test-key', 'type' => FlagValueType::Boolean]);
 
-        $actualValue = (new HookContextBuilder())->withFlagKey('test-key')->asImmutable()->build();
+        $actualValue = (new HookContextBuilder())->withFlagKey('test-key')->withType(FlagValueType::Boolean)->asImmutable()->build();
 
         $this->assertInstanceOf(HookContext::class, $actualValue);
         $this->assertEqualsCanonicalizing($expectedValue, $actualValue);
