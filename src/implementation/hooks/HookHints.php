@@ -17,7 +17,6 @@ class HookHints implements HookHintsInterface
      */
     public function __construct(private readonly array $hints = [])
     {
-        $this->hints = $hints;
     }
 
     /**

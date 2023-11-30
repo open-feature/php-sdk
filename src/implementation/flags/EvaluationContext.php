@@ -13,7 +13,7 @@ class EvaluationContext implements EvaluationContextInterface
 
     public function __construct(
         private ?string $targetingKey = null,
-        protected ?AttributesInterface $attributes = new Attributes(),
+        protected readonly AttributesInterface $attributes = new Attributes(),
     ) {
     }
 
