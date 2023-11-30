@@ -16,7 +16,6 @@ use OpenFeature\interfaces\provider\Provider;
 use Psr\Log\LoggerAwareInterface;
 use Throwable;
 
-use function array_merge;
 use function is_null;
 
 final class OpenFeatureAPI implements API, LoggerAwareInterface
@@ -130,7 +129,7 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
      */
     public function addHooks(Hook ...$hooks): void
     {
-        $this->hooks = array_merge($this->hooks, $hooks);
+        $this->hooks = [...$this->hooks, ...$hooks];
     }
 
     public function clearHooks(): void

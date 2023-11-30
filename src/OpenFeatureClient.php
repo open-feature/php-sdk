@@ -36,7 +36,6 @@ use OpenFeature\interfaces\provider\ThrowableWithResolutionError;
 use Psr\Log\LoggerAwareInterface;
 use Throwable;
 
-use function array_merge;
 use function array_reverse;
 use function sprintf;
 
@@ -45,9 +44,6 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
     use HooksAwareTrait;
     use LoggerAwareTrait;
 
-    private API $api;
-    private string $name;
-    private string $version;
     private ?EvaluationContextInterface $evaluationContext = null;
 
     /**
@@ -57,11 +53,11 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      * @param string $name Name of the client (used by observability tools).
      * @param string $version Version of the client (used by observability tools).
      */
-    public function __construct(API $api, string $name, string $version)
-    {
-        $this->api = $api;
-        $this->name = $name;
-        $this->version = $version;
+    public function __construct(
+        private readonly API $api,
+        private readonly string $name,
+        private readonly string $version,
+    ) {
         $this->hooks = [];
     }
 
@@ -102,7 +98,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      */
     public function addHooks(Hook ...$hooks): void
     {
-        $this->hooks = array_merge($this->hooks, $hooks);
+        $this->hooks = [...$this->hooks, ...$hooks];
     }
 
     /**
@@ -326,14 +322,14 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
         //   after: Provider, Invocation, Client, API
         //   error (if applicable): Provider, Invocation, Client, API
         //   finally: Provider, Invocation, Client, API
-        $mergedBeforeHooks = array_merge(
-            $api->getHooks(),
-            $this->getHooks(),
-            $options->getHooks(),
-            $provider->getHooks(),
-        );
+        $mergedBeforeHooks = [
+            ...$api->getHooks(),
+            ...$this->getHooks(),
+            ...$options->getHooks(),
+            ...$provider->getHooks(),
+        ];
 
-        $mergedRemainingHooks = array_reverse(array_merge([], $mergedBeforeHooks));
+        $mergedRemainingHooks = array_reverse([...$mergedBeforeHooks]);
 
         try {
             $contextFromBeforeHook = $hookExecutor->beforeHooks($flagValueType, $hookContext, $mergedBeforeHooks, $hookHints);

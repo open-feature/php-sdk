@@ -11,13 +11,10 @@ class EvaluationContext implements EvaluationContextInterface
 {
     use EvaluationContextMerger;
 
-    private ?string $targetingKey;
-    protected AttributesInterface $attributes;
-
-    public function __construct(?string $targetingKey = null, ?AttributesInterface $attributes = null)
-    {
-        $this->targetingKey = $targetingKey;
-        $this->attributes = $attributes ?? new Attributes();
+    public function __construct(
+        private ?string $targetingKey = null,
+        protected ?AttributesInterface $attributes = new Attributes(),
+    ) {
     }
 
     public function getTargetingKey(): ?string

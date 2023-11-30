@@ -20,7 +20,6 @@ class EvaluationDetails implements EvaluationDetailsInterface
 
     public function __construct()
     {
-        $this->value = null;
     }
 
     public function getFlagKey(): string

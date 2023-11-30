@@ -7,19 +7,18 @@ namespace OpenFeature\implementation\provider;
 use OpenFeature\implementation\common\Metadata;
 use OpenFeature\interfaces\common\Metadata as MetadataInterface;
 use OpenFeature\interfaces\flags\EvaluationContext;
-use OpenFeature\interfaces\hooks\Hook;
+use OpenFeature\interfaces\hooks\HooksAware;
+use OpenFeature\interfaces\hooks\HooksAwareTrait;
 use OpenFeature\interfaces\provider\Provider;
 use OpenFeature\interfaces\provider\ResolutionDetails as ResolutionDetailsInterface;
 use Psr\Log\LoggerAwareTrait;
 
-abstract class AbstractProvider implements Provider
+abstract class AbstractProvider implements HooksAware, Provider
 {
+    use HooksAwareTrait;
     use LoggerAwareTrait;
 
     protected static string $NAME = 'AbstractProvider';
-
-    /** @var Hook[] $hooks */
-    private array $hooks = [];
 
     public function getMetadata(): MetadataInterface
     {
@@ -38,20 +37,4 @@ abstract class AbstractProvider implements Provider
      * @param mixed[] $defaultValue
      */
     abstract public function resolveObjectValue(string $flagKey, array $defaultValue, ?EvaluationContext $context = null): ResolutionDetailsInterface;
-
-    /**
-     * @return Hook[]
-     */
-    public function getHooks(): array
-    {
-        return $this->hooks;
-    }
-
-    /**
-     * @param Hook[] $hooks
-     */
-    public function setHooks(array $hooks): void
-    {
-        $this->hooks = $hooks;
-    }
 }
