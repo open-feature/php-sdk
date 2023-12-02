@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.0.3](https://github.com/open-feature/php-sdk/compare/2.0.2...2.0.3) (2023-12-01)
+
+
+### Miscellaneous Chores
+
+* **deps:** update dependency php to v8.2.11 ([#101](https://github.com/open-feature/php-sdk/issues/101)) ([f84ecdd](https://github.com/open-feature/php-sdk/commit/f84ecdd5a3ed3620a1df40f324a2c28ff56a3c62))
+* **deps:** update dependency php to v8.2.12 ([#103](https://github.com/open-feature/php-sdk/issues/103)) ([34355ef](https://github.com/open-feature/php-sdk/commit/34355ef123d440f73d2a5a97d33ad30c62056c4c))
+* **deps:** update dependency vimeo/psalm to ~5.16.0 ([#107](https://github.com/open-feature/php-sdk/issues/107)) ([82d58d2](https://github.com/open-feature/php-sdk/commit/82d58d23217c9bc2b74ed0fecde9d26feaae1b38))
+* **deps:** update google-github-actions/release-please-action action to v4 ([#110](https://github.com/open-feature/php-sdk/issues/110)) ([a26c61d](https://github.com/open-feature/php-sdk/commit/a26c61d66154352110ecb5b84a44ae17188d17a3))
+
 ## [2.0.2](https://github.com/open-feature/php-sdk/compare/2.0.1...2.0.2) (2023-09-21)
 
 
