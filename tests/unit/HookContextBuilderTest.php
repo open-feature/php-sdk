@@ -10,9 +10,17 @@ use OpenFeature\implementation\hooks\ImmutableHookContext;
 use OpenFeature\implementation\hooks\MutableHookContext;
 use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\hooks\HookContext;
+use Throwable;
 
 class HookContextBuilderTest extends TestCase
 {
+    public function testHookMissingKeysFromArray(): void
+    {
+        $this->expectException(Throwable::class);
+
+        new MutableHookContext(['flagKey' => 'test-key']);
+    }
+
     public function testAsMutable(): void
     {
         $expectedValue = new MutableHookContext(['flagKey' => 'test-key', 'type' => FlagValueType::Boolean]);
