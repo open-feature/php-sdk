@@ -13,12 +13,10 @@ class EvaluationOptions implements EvaluationOptionsInterface
 {
     use HooksAwareTrait;
 
-    private ?HookHints $hookHints;
-
     /**
      * @param Hook[] $hooks
      */
-    public function __construct(array $hooks = [], ?HookHints $hookHints = null)
+    public function __construct(array $hooks = [], private ?HookHints $hookHints = null)
     {
         $this->setHooks($hooks);
         $this->hookHints = $hookHints;

@@ -8,8 +8,6 @@ use DateTime;
 use OpenFeature\implementation\common\ArrayHelper;
 use OpenFeature\interfaces\flags\Attributes as AttributesInterface;
 
-use function array_merge;
-
 class Attributes implements AttributesInterface
 {
     /** @var Array<array-key, bool|string|int|float|DateTime|mixed[]|null> $attributesMap */
@@ -50,6 +48,6 @@ class Attributes implements AttributesInterface
      */
     public function toArray(): array
     {
-        return array_merge([], $this->attributesMap);
+        return [...$this->attributesMap];
     }
 }

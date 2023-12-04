@@ -5,7 +5,7 @@
 [![Specification](https://img.shields.io/static/v1?label=Specification&message=v0.5.1&color=yellow)](https://github.com/open-feature/spec/tree/v0.5.1)
 [![Latest Stable Version](http://poser.pugx.org/open-feature/sdk/v)](https://packagist.org/packages/open-feature/sdk)
 [![Total Downloads](http://poser.pugx.org/open-feature/sdk/downloads)](https://packagist.org/packages/open-feature/sdk)
-![PHP 8.0+](https://img.shields.io/badge/php->=8.0-blue.svg)
+![PHP 8.1+](https://img.shields.io/badge/php->=8.0-blue.svg)
 [![License](http://poser.pugx.org/open-feature/sdk/license)](https://packagist.org/packages/open-feature/sdk)
 [![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/6853/badge)](https://bestpractices.coreinfrastructure.org/projects/6853)
 
@@ -108,7 +108,17 @@ The OpenFeature project maintains the [open-feature/php-sdk-contrib](https://git
 
 This library targets PHP version 8.0 and newer. As long as you have any compatible version of PHP on your system you should be able to utilize the OpenFeature SDK.
 
-This package also has a `.tool-versions` file for use with PHP version managers like `asdf`.
+#### asdf
+
+This package has a `.tool-versions` file for use with PHP version managers like `asdf`.
+
+#### Nix
+
+This package includes a `flake.nix` file which defines reproducible development shells powered by [Nix](https://nixos.org/). You can manually drop into a shell with `nix develop`, or provide a specific PHP minor version target with `nix develop .#php82`.
+
+#### direnv
+
+This package includes a `.envrc` file which automatically infers the usage of the default shell for the project, which is set to the minimum supported version of PHP.
 
 ### Installation and Dependencies
 

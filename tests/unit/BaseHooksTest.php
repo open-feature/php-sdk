@@ -22,7 +22,7 @@ class BaseHooksTest extends TestCase
   /**
    * @dataProvider dataBooleanHook
    */
-    public function testBooleanHook(string $flagValueType, bool $supportsFlagValueType): void
+    public function testBooleanHook(FlagValueType $flagValueType, bool $supportsFlagValueType): void
     {
         $testBooleanHook = new class extends BooleanHook {
             public function before(HookContext $context, HookHints $hints): ?EvaluationContext
@@ -55,18 +55,18 @@ class BaseHooksTest extends TestCase
     public function dataBooleanHook(): array
     {
         return [
-            [FlagValueType::BOOLEAN, true],
-            [FlagValueType::FLOAT, false],
-            [FlagValueType::INTEGER, false],
-            [FlagValueType::OBJECT, false],
-            [FlagValueType::STRING, false],
+            [FlagValueType::Boolean, true],
+            [FlagValueType::Float, false],
+            [FlagValueType::Integer, false],
+            [FlagValueType::Object, false],
+            [FlagValueType::String, false],
         ];
     }
 
   /**
    * @dataProvider dataFloatHook
    */
-    public function testFloatHook(string $flagValueType, bool $supportsFlagValueType): void
+    public function testFloatHook(FlagValueType $flagValueType, bool $supportsFlagValueType): void
     {
         $testFloatHook = new class extends FloatHook {
             public function before(HookContext $context, HookHints $hints): ?EvaluationContext
@@ -99,18 +99,18 @@ class BaseHooksTest extends TestCase
     public function dataFloatHook(): array
     {
         return [
-            [FlagValueType::BOOLEAN, false],
-            [FlagValueType::FLOAT, true],
-            [FlagValueType::INTEGER, false],
-            [FlagValueType::OBJECT, false],
-            [FlagValueType::STRING, false],
+            [FlagValueType::Boolean, false],
+            [FlagValueType::Float, true],
+            [FlagValueType::Integer, false],
+            [FlagValueType::Object, false],
+            [FlagValueType::String, false],
         ];
     }
 
   /**
    * @dataProvider dataIntegerHook
    */
-    public function testIntegerHook(string $flagValueType, bool $supportsFlagValueType): void
+    public function testIntegerHook(FlagValueType $flagValueType, bool $supportsFlagValueType): void
     {
         $testIntegerHook = new class extends IntegerHook {
             public function before(HookContext $context, HookHints $hints): ?EvaluationContext
@@ -143,18 +143,18 @@ class BaseHooksTest extends TestCase
     public function dataIntegerHook(): array
     {
         return [
-            [FlagValueType::BOOLEAN, false],
-            [FlagValueType::FLOAT, false],
-            [FlagValueType::INTEGER, true],
-            [FlagValueType::OBJECT, false],
-            [FlagValueType::STRING, false],
+            [FlagValueType::Boolean, false],
+            [FlagValueType::Float, false],
+            [FlagValueType::Integer, true],
+            [FlagValueType::Object, false],
+            [FlagValueType::String, false],
         ];
     }
 
   /**
    * @dataProvider dataObjectHook
    */
-    public function testObjectHook(string $flagValueType, bool $supportsFlagValueType): void
+    public function testObjectHook(FlagValueType $flagValueType, bool $supportsFlagValueType): void
     {
         $testObjectHook = new class extends ObjectHook {
             public function before(HookContext $context, HookHints $hints): ?EvaluationContext
@@ -187,18 +187,18 @@ class BaseHooksTest extends TestCase
     public function dataObjectHook(): array
     {
         return [
-            [FlagValueType::BOOLEAN, false],
-            [FlagValueType::FLOAT, false],
-            [FlagValueType::INTEGER, false],
-            [FlagValueType::OBJECT, true],
-            [FlagValueType::STRING, false],
+            [FlagValueType::Boolean, false],
+            [FlagValueType::Float, false],
+            [FlagValueType::Integer, false],
+            [FlagValueType::Object, true],
+            [FlagValueType::String, false],
         ];
     }
 
   /**
    * @dataProvider dataStringHook
    */
-    public function testStringHook(string $flagValueType, bool $supportsFlagValueType): void
+    public function testStringHook(FlagValueType $flagValueType, bool $supportsFlagValueType): void
     {
         $testStringHook = new class extends StringHook {
             public function before(HookContext $context, HookHints $hints): ?EvaluationContext
@@ -231,11 +231,11 @@ class BaseHooksTest extends TestCase
     public function dataStringHook(): array
     {
         return [
-            [FlagValueType::BOOLEAN, false],
-            [FlagValueType::FLOAT, false],
-            [FlagValueType::INTEGER, false],
-            [FlagValueType::OBJECT, false],
-            [FlagValueType::STRING, true],
+            [FlagValueType::Boolean, false],
+            [FlagValueType::Float, false],
+            [FlagValueType::Integer, false],
+            [FlagValueType::Object, false],
+            [FlagValueType::String, true],
         ];
     }
 }

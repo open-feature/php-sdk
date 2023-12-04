@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace OpenFeature\interfaces\provider;
 
-use DateTime;
-
 /**
  * A structure which contains a subset of the fields defined in the evaluation
  * details, representing the result of the provider's flag resolution process
@@ -21,9 +19,9 @@ interface ResolutionDetails
      * In cases of normal execution, the provider MUST populate the flag resolution structure's value field with
      * the resolved flag value.
      *
-     * @return bool|string|int|float|DateTime|mixed[]|null
+     * @return bool|string|int|float|mixed[]|null
      */
-    public function getValue(): bool | string | int | float | DateTime | array | null;
+    public function getValue(): bool | string | int | float | array | null;
 
     /**
      * ---------------

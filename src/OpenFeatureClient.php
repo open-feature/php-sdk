@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace OpenFeature;
 
-use DateTime;
 use OpenFeature\implementation\common\Metadata;
 use OpenFeature\implementation\common\ValueTypeValidator;
-use OpenFeature\implementation\errors\FlagValueTypeError;
 use OpenFeature\implementation\errors\InvalidResolutionValueError;
 use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\implementation\flags\EvaluationDetailsBuilder;
@@ -17,7 +15,6 @@ use OpenFeature\implementation\hooks\HookContextBuilder;
 use OpenFeature\implementation\hooks\HookContextFactory;
 use OpenFeature\implementation\hooks\HookExecutor;
 use OpenFeature\implementation\hooks\HookHints;
-use OpenFeature\implementation\provider\Reason;
 use OpenFeature\implementation\provider\ResolutionError;
 use OpenFeature\interfaces\common\LoggerAwareTrait;
 use OpenFeature\interfaces\common\Metadata as MetadataInterface;
@@ -31,12 +28,12 @@ use OpenFeature\interfaces\hooks\Hook;
 use OpenFeature\interfaces\hooks\HooksAwareTrait;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
+use OpenFeature\interfaces\provider\Reason;
 use OpenFeature\interfaces\provider\ResolutionDetails;
 use OpenFeature\interfaces\provider\ThrowableWithResolutionError;
 use Psr\Log\LoggerAwareInterface;
 use Throwable;
 
-use function array_merge;
 use function array_reverse;
 use function sprintf;
 
@@ -45,9 +42,6 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
     use HooksAwareTrait;
     use LoggerAwareTrait;
 
-    private API $api;
-    private string $name;
-    private string $version;
     private ?EvaluationContextInterface $evaluationContext = null;
 
     /**
@@ -57,11 +51,11 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      * @param string $name Name of the client (used by observability tools).
      * @param string $version Version of the client (used by observability tools).
      */
-    public function __construct(API $api, string $name, string $version)
-    {
-        $this->api = $api;
-        $this->name = $name;
-        $this->version = $version;
+    public function __construct(
+        private readonly API $api,
+        private readonly string $name,
+        private readonly string $version,
+    ) {
         $this->hooks = [];
     }
 
@@ -102,7 +96,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      */
     public function addHooks(Hook ...$hooks): void
     {
-        $this->hooks = array_merge($this->hooks, $hooks);
+        $this->hooks = [...$this->hooks, ...$hooks];
     }
 
     /**
@@ -146,7 +140,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      */
     public function getBooleanDetails(string $flagKey, bool $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptionsInterface $options = null): EvaluationDetailsInterface
     {
-        return $this->evaluateFlag(FlagValueType::BOOLEAN, $flagKey, $defaultValue, $context, $options);
+        return $this->evaluateFlag(FlagValueType::Boolean, $flagKey, $defaultValue, $context, $options);
     }
 
     /**
@@ -175,7 +169,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      */
     public function getStringDetails(string $flagKey, string $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptionsInterface $options = null): EvaluationDetailsInterface
     {
-        return $this->evaluateFlag(FlagValueType::STRING, $flagKey, $defaultValue, $context, $options);
+        return $this->evaluateFlag(FlagValueType::String, $flagKey, $defaultValue, $context, $options);
     }
 
     /**
@@ -209,7 +203,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      */
     public function getIntegerDetails(string $flagKey, int $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptionsInterface $options = null): EvaluationDetailsInterface
     {
-        return $this->evaluateFlag(FlagValueType::INTEGER, $flagKey, $defaultValue, $context, $options);
+        return $this->evaluateFlag(FlagValueType::Integer, $flagKey, $defaultValue, $context, $options);
     }
 
     /**
@@ -243,7 +237,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      */
     public function getFloatDetails(string $flagKey, float $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptionsInterface $options = null): EvaluationDetailsInterface
     {
-        return $this->evaluateFlag(FlagValueType::FLOAT, $flagKey, $defaultValue, $context, $options);
+        return $this->evaluateFlag(FlagValueType::Float, $flagKey, $defaultValue, $context, $options);
     }
 
     /**
@@ -278,7 +272,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      */
     public function getObjectDetails(string $flagKey, $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptionsInterface $options = null): EvaluationDetailsInterface
     {
-        return $this->evaluateFlag(FlagValueType::OBJECT, $flagKey, $defaultValue, $context, $options);
+        return $this->evaluateFlag(FlagValueType::Object, $flagKey, $defaultValue, $context, $options);
     }
 
     /**
@@ -287,12 +281,12 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      * -----------------
      * Methods, functions, or operations on the client MUST NOT throw exceptions, or otherwise abnormally terminate. Flag evaluation calls must always return the default value in the event of abnormal execution. Exceptions include functions or methods for the purposes for configuration or setup.
      *
-     * @param bool|string|int|float|DateTime|mixed[]|null $defaultValue
+     * @param bool|string|int|float|mixed[]|null $defaultValue
      */
     private function evaluateFlag(
-        string $flagValueType,
+        FlagValueType $flagValueType,
         string $flagKey,
-        bool | string | int | float | DateTime | array | null $defaultValue,
+        bool | string | int | float | array | null $defaultValue,
         ?EvaluationContextInterface $invocationContext = null,
         ?EvaluationOptionsInterface $options = null,
     ): EvaluationDetailsInterface {
@@ -326,14 +320,14 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
         //   after: Provider, Invocation, Client, API
         //   error (if applicable): Provider, Invocation, Client, API
         //   finally: Provider, Invocation, Client, API
-        $mergedBeforeHooks = array_merge(
-            $api->getHooks(),
-            $this->getHooks(),
-            $options->getHooks(),
-            $provider->getHooks(),
-        );
+        $mergedBeforeHooks = [
+            ...$api->getHooks(),
+            ...$this->getHooks(),
+            ...$options->getHooks(),
+            ...$provider->getHooks(),
+        ];
 
-        $mergedRemainingHooks = array_reverse(array_merge([], $mergedBeforeHooks));
+        $mergedRemainingHooks = array_reverse([...$mergedBeforeHooks]);
 
         try {
             $contextFromBeforeHook = $hookExecutor->beforeHooks($flagValueType, $hookContext, $mergedBeforeHooks, $hookHints);
@@ -357,7 +351,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
             );
 
             if (!$resolutionDetails->getError() && !ValueTypeValidator::is($flagValueType, $resolutionDetails->getValue())) {
-                throw new InvalidResolutionValueError($flagValueType);
+                throw new InvalidResolutionValueError($flagValueType->value);
             }
 
             $details = EvaluationDetailsFactory::fromResolution($flagKey, $resolutionDetails);
@@ -388,41 +382,42 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
         return $details;
     }
 
+    /**
+     * @param bool|string|int|float|mixed[]|null $defaultValue
+     */
     private function createProviderEvaluation(
-        string $type,
+        FlagValueType $type,
         string $key,
-        mixed $defaultValue,
+        bool | string | int | float | array | null $defaultValue,
         Provider $provider,
         EvaluationContextInterface $context,
     ): ResolutionDetails {
-        switch ($type) {
-            case FlagValueType::BOOLEAN:
-                /** @var bool $defaultValue */
+        switch ($type->value) {
+            case FlagValueType::Boolean->value:
+                /** @var bool $defaultValue */;
                 $defaultValue = $defaultValue;
 
                 return $provider->resolveBooleanValue($key, $defaultValue, $context);
-            case FlagValueType::STRING:
-                /** @var string $defaultValue */
+            case FlagValueType::String->value:
+                /** @var string $defaultValue */;
                 $defaultValue = $defaultValue;
 
                 return $provider->resolveStringValue($key, $defaultValue, $context);
-            case FlagValueType::INTEGER:
-                /** @var int $defaultValue */
+            case FlagValueType::Integer->value:
+                /** @var int $defaultValue */;
                 $defaultValue = $defaultValue;
 
                 return $provider->resolveIntegerValue($key, $defaultValue, $context);
-            case FlagValueType::FLOAT:
-                /** @var float $defaultValue */
+            case FlagValueType::Float->value:
+                /** @var float $defaultValue */;
                 $defaultValue = $defaultValue;
 
                 return $provider->resolveFloatValue($key, $defaultValue, $context);
-            case FlagValueType::OBJECT:
-                /** @var mixed[] $defaultValue */
+            case FlagValueType::Object->value:
+                /** @var mixed[] $defaultValue */;
                 $defaultValue = $defaultValue;
 
                 return $provider->resolveObjectValue($key, $defaultValue, $context);
-            default:
-                throw new FlagValueTypeError($type);
         }
     }
 }

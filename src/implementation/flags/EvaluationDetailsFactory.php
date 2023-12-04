@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace OpenFeature\implementation\flags;
 
-use DateTime;
 use OpenFeature\interfaces\flags\EvaluationDetails;
 use OpenFeature\interfaces\provider\ResolutionDetails;
 
@@ -13,9 +12,9 @@ class EvaluationDetailsFactory
     /**
      * Provides a simple method for building EvaluationDetails from a given value\
      *
-     * @param bool|string|int|float|DateTime|mixed[]|null $value
+     * @param bool|string|int|float|mixed[]|null $value
      */
-    public static function from(string $flagKey, bool | string | int | float | DateTime | array | null $value): EvaluationDetails
+    public static function from(string $flagKey, bool | string | int | float | array | null $value): EvaluationDetails
     {
         return (new EvaluationDetailsBuilder())
                     ->withFlagKey($flagKey)
