@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace OpenFeature\implementation\flags;
 
-use DateTime;
 use OpenFeature\implementation\common\Metadata;
 use OpenFeature\interfaces\flags\Client;
 use OpenFeature\interfaces\flags\EvaluationContext as EvaluationContextInterface;
@@ -69,7 +68,7 @@ class NoOpClient implements Client
         return $defaultValue;
     }
 
-    public function getObjectDetails(string $flagKey, bool | string | int | float | DateTime | array | null $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptions $options = null): EvaluationDetails
+    public function getObjectDetails(string $flagKey, bool | string | int | float | array | null $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptions $options = null): EvaluationDetails
     {
         return EvaluationDetailsFactory::from($flagKey, $defaultValue);
     }

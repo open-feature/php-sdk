@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace OpenFeature\interfaces\hooks;
 
-use DateTime;
 use OpenFeature\interfaces\common\Metadata;
 use OpenFeature\interfaces\flags\EvaluationContext;
 use OpenFeature\interfaces\flags\FlagValueType;
@@ -51,9 +50,9 @@ interface HookContext
      * The flag key, flag type, and default value properties MUST be immutable. If
      * the language does not support immutability, the hook MUST NOT modify these properties.
      *
-     * @return bool|string|int|float|DateTime|mixed[]|null
+     * @return bool|string|int|float|mixed[]|null
      */
-    public function getDefaultValue(): bool | string | int | float | DateTime | array | null;
+    public function getDefaultValue(): bool | string | int | float | array | null;
 
     /**
      * -----------------

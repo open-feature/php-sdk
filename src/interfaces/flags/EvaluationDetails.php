@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace OpenFeature\interfaces\flags;
 
-use DateTime;
 use OpenFeature\interfaces\provider\ResolutionError;
 
 /**
@@ -31,9 +30,9 @@ interface EvaluationDetails
      * -----------------
      * The evaluation details structure's value field MUST contain the evaluated flag value.
      *
-     * @return bool|string|int|float|DateTime|mixed[]|null
+     * @return bool|string|int|float|mixed[]|null
      */
-    public function getValue(): bool | string | int | float | DateTime | array | null;
+    public function getValue(): bool | string | int | float | array | null;
 
     /**
      * -----------------

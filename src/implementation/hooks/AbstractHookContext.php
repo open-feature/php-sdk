@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace OpenFeature\implementation\hooks;
 
-use DateTime;
 use Exception;
 use OpenFeature\implementation\common\Metadata;
 use OpenFeature\implementation\flags\EvaluationContext;
@@ -13,15 +12,14 @@ use OpenFeature\interfaces\flags\EvaluationContext as EvaluationContextInterface
 use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\hooks\HookContext;
 
-use function array_values;
 use function is_array;
 
 abstract class AbstractHookContext
 {
-    protected string $flagKey;
-    protected FlagValueType $type;
-    /** @var bool|string|int|float|DateTime|mixed[]|null $defaultValue */
-    protected bool | string | int | float | DateTime | array | null $defaultValue = null;
+    protected string $flagKey = '';
+    protected FlagValueType $type = FlagValueType::Boolean;
+    /** @var bool|string|int|float|mixed[]|null $defaultValue */
+    protected bool | string | int | float | array | null $defaultValue = null;
     protected EvaluationContextInterface $evaluationContext;
     protected MetadataInterface $clientMetadata;
     protected MetadataInterface $providerMetadata;
@@ -48,7 +46,7 @@ abstract class AbstractHookContext
             $this->clientMetadata = $hookContext->getClientMetadata();
             $this->providerMetadata = $hookContext->getProviderMetadata();
         } elseif (is_array($hookContext)) {
-            foreach (array_values(self::REQUIRED_PROPERTIES) as $requiredProperty) {
+            foreach (self::REQUIRED_PROPERTIES as $requiredProperty) {
                 if (!isset($hookContext[$requiredProperty])) {
                     throw new Exception('Required property missing from hook context');
                 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace OpenFeature\interfaces\hooks;
 
-use DateTime;
 use OpenFeature\interfaces\common\Metadata;
 use OpenFeature\interfaces\flags\EvaluationContext;
 use OpenFeature\interfaces\flags\FlagValueType;
@@ -16,9 +15,9 @@ interface MutableHookContext
     public function setType(FlagValueType $type): void;
 
     /**
-     * @param bool|string|int|float|DateTime|mixed[]|null $defaultValue
+     * @param bool|string|int|float|mixed[]|null $defaultValue
      */
-    public function setDefaultValue(bool | string | int | float | DateTime | array | null $defaultValue): void;
+    public function setDefaultValue(bool | string | int | float | array | null $defaultValue): void;
 
     public function setEvaluationContext(EvaluationContext $evaluationContext): void;
 

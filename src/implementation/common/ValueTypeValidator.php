@@ -82,7 +82,6 @@ class ValueTypeValidator
             FlagValueType::Integer => self::isInteger($value),
             FlagValueType::String => self::isString($value),
             FlagValueType::Object => self::isStructure($value) || self::isArray($value),
-            default => false,
         };
     }
 }

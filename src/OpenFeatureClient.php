@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace OpenFeature;
 
-use DateTime;
 use OpenFeature\implementation\common\Metadata;
 use OpenFeature\implementation\common\ValueTypeValidator;
 use OpenFeature\implementation\errors\InvalidResolutionValueError;
@@ -16,7 +15,6 @@ use OpenFeature\implementation\hooks\HookContextBuilder;
 use OpenFeature\implementation\hooks\HookContextFactory;
 use OpenFeature\implementation\hooks\HookExecutor;
 use OpenFeature\implementation\hooks\HookHints;
-use OpenFeature\implementation\provider\Reason;
 use OpenFeature\implementation\provider\ResolutionError;
 use OpenFeature\interfaces\common\LoggerAwareTrait;
 use OpenFeature\interfaces\common\Metadata as MetadataInterface;
@@ -30,6 +28,7 @@ use OpenFeature\interfaces\hooks\Hook;
 use OpenFeature\interfaces\hooks\HooksAwareTrait;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
+use OpenFeature\interfaces\provider\Reason;
 use OpenFeature\interfaces\provider\ResolutionDetails;
 use OpenFeature\interfaces\provider\ThrowableWithResolutionError;
 use Psr\Log\LoggerAwareInterface;
@@ -282,12 +281,12 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      * -----------------
      * Methods, functions, or operations on the client MUST NOT throw exceptions, or otherwise abnormally terminate. Flag evaluation calls must always return the default value in the event of abnormal execution. Exceptions include functions or methods for the purposes for configuration or setup.
      *
-     * @param bool|string|int|float|DateTime|mixed[]|null $defaultValue
+     * @param bool|string|int|float|mixed[]|null $defaultValue
      */
     private function evaluateFlag(
         FlagValueType $flagValueType,
         string $flagKey,
-        bool | string | int | float | DateTime | array | null $defaultValue,
+        bool | string | int | float | array | null $defaultValue,
         ?EvaluationContextInterface $invocationContext = null,
         ?EvaluationOptionsInterface $options = null,
     ): EvaluationDetailsInterface {
@@ -383,6 +382,9 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
         return $details;
     }
 
+    /**
+     * @param bool|string|int|float|mixed[]|null $defaultValue
+     */
     private function createProviderEvaluation(
         FlagValueType $type,
         string $key,
@@ -394,35 +396,28 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
             case FlagValueType::Boolean->value:
                 /** @var bool $defaultValue */;
                 $defaultValue = $defaultValue;
-                $resolver = $provider->resolveBooleanValue(...);
 
-                break;
+                return $provider->resolveBooleanValue($key, $defaultValue, $context);
             case FlagValueType::String->value:
                 /** @var string $defaultValue */;
                 $defaultValue = $defaultValue;
-                $resolver = $provider->resolveStringValue(...);
 
-                break;
+                return $provider->resolveStringValue($key, $defaultValue, $context);
             case FlagValueType::Integer->value:
                 /** @var int $defaultValue */;
                 $defaultValue = $defaultValue;
-                $resolver = $provider->resolveIntegerValue(...);
 
-                break;
+                return $provider->resolveIntegerValue($key, $defaultValue, $context);
             case FlagValueType::Float->value:
                 /** @var float $defaultValue */;
                 $defaultValue = $defaultValue;
-                $resolver = $provider->resolveFloatValue(...);
 
-                break;
+                return $provider->resolveFloatValue($key, $defaultValue, $context);
             case FlagValueType::Object->value:
-                /** @var object $defaultValue */;
+                /** @var mixed[] $defaultValue */;
                 $defaultValue = $defaultValue;
-                $resolver = $provider->resolveObjectValue(...);
 
-                break;
+                return $provider->resolveObjectValue($key, $defaultValue, $context);
         }
-
-        return $resolver($key, $defaultValue, $context);
     }
 }

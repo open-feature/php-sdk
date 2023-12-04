@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace OpenFeature\implementation\flags;
 
-use DateTime;
 use OpenFeature\interfaces\flags\EvaluationDetails as EvaluationDetailsInterface;
 use OpenFeature\interfaces\provider\ResolutionError;
 
@@ -12,8 +11,8 @@ class EvaluationDetails implements EvaluationDetailsInterface
 {
     private string $flagKey = '';
 
-    /** @var bool|string|int|float|DateTime|mixed[]|null $value */
-    private bool | string | int | float | DateTime | array | null $value = null;
+    /** @var bool|string|int|float|mixed[]|null $value */
+    private bool | string | int | float | array | null $value = null;
     private ?ResolutionError $error = null;
     private ?string $reason = null;
     private ?string $variant = null;
@@ -38,17 +37,17 @@ class EvaluationDetails implements EvaluationDetailsInterface
      * -----------------
      * The evaluation details structure's value field MUST contain the evaluated flag value.
      *
-     * @return bool|string|int|float|DateTime|mixed[]|null
+     * @return bool|string|int|float|mixed[]|null
      */
-    public function getValue(): bool | string | int | float | DateTime | array | null
+    public function getValue(): bool | string | int | float | array | null
     {
         return $this->value;
     }
 
     /**
-     * @param bool|string|int|float|DateTime|mixed[]|null $value
+     * @param bool|string|int|float|mixed[]|null $value
      */
-    public function setValue(bool | string | int | float | DateTime | array | null $value): void
+    public function setValue(bool | string | int | float | array | null $value): void
     {
         $this->value = $value;
     }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace OpenFeature\implementation\hooks;
 
-use DateTime;
 use OpenFeature\interfaces\common\Metadata;
 use OpenFeature\interfaces\flags\EvaluationContext;
 use OpenFeature\interfaces\flags\FlagValueType;
@@ -23,9 +22,9 @@ class ImmutableHookContext extends AbstractHookContext implements HookContextInt
     }
 
     /**
-     * @return bool|string|int|float|DateTime|mixed[]|null
+     * @return bool|string|int|float|mixed[]|null
      */
-    public function getDefaultValue(): bool | string | int | float | DateTime | array | null
+    public function getDefaultValue(): bool | string | int | float | array | null
     {
         return $this->defaultValue;
     }

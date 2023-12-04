@@ -15,7 +15,7 @@ class HookContextBuilderTest extends TestCase
 {
     public function testAsMutable(): void
     {
-        $expectedValue = new MutableHookContext(['flagKey' => 'test-key']);
+        $expectedValue = new MutableHookContext(['flagKey' => 'test-key', 'type' => FlagValueType::Boolean]);
 
         $actualValue = (new HookContextBuilder())->withFlagKey('test-key')->asMutable()->build();
 
