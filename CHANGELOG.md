@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.4](https://github.com/open-feature/php-sdk/compare/2.0.3...2.0.4) (2023-12-05)
+
+
+### 🧹 Chore
+
+* **deps:** update dependency vimeo/psalm to ~5.17.0 ([#111](https://github.com/open-feature/php-sdk/issues/111)) ([ea4fed3](https://github.com/open-feature/php-sdk/commit/ea4fed3bc5ef2200da435bb4c90fb3114ba1545b))
+* update README for web site inclusion ([#104](https://github.com/open-feature/php-sdk/issues/104)) ([5d393b5](https://github.com/open-feature/php-sdk/commit/5d393b5fe275d342f0b80a59d6415239cb2fb927))
+
 ## [2.0.3](https://github.com/open-feature/php-sdk/compare/2.0.2...2.0.3) (2023-12-01)
 
 
