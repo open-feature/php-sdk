@@ -170,7 +170,20 @@ Sometimes, the value of a flag must consider some dynamic criteria about the app
 In OpenFeature, we refer to this as [targeting](https://openfeature.dev/specification/glossary#targeting).
 If the flag management system you're using supports targeting, you can provide the input data using the [evaluation context](https://openfeature.dev/docs/reference/concepts/evaluation-context).
 
-<!-- TODO: code examples using context and different levels -->
+```php
+// add a value to the global context
+$api = OpenFeatureAPI.getInstance();
+$api->setEvaluationContext(new EvaluationContext('targetingKey', ['myGlobalKey' => 'myGlobalValue']));
+
+// add a value to the client context
+$client = $api->getClient();
+$client->setEvaluationContext(new EvaluationContext('targetingKey', ['myClientKey' => 'myClientValue']));
+
+// add a value to the invocation context
+$context = new EvaluationContext('targetingKey', ['myInvocationKey' => 'myInvocationValue']);
+
+$boolValue = $client->getBooleanValue('boolFlag', false, $context);
+```
 
 ### Hooks
 
@@ -180,7 +193,18 @@ If the hook you're looking for hasn't been created yet, see the [develop a hook]
 
 Once you've added a hook as a dependency, it can be registered at the global, client, or flag invocation level.
 
-<!-- TODO: code example of setting hooks at all levels -->
+```php
+// add a hook globally, to run on all evaluations
+$api = OpenFeatureAPI.getInstance();
+$api->addHook(new ExampleGlobalHook());
+
+// add a hook on this client, to run on all evaluations made by this client
+$client = $api->getClient();
+$client->addHook(new ExampleClientHook());
+
+// add a hook for this evaluation only
+$value = $client->getBooleanValue("boolFlag", false, $context, new EvaluationOptions([new ExampleInvocationHook()]));
+```
 
 ### Logging
 
