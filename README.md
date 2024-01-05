@@ -40,6 +40,7 @@
   <a href="https://bestpractices.coreinfrastructure.org/projects/6853">
     <img alt="OpenSSF Best Practices" src="https://bestpractices.coreinfrastructure.org/projects/6853/badge" />
   </a>
+<a href="https://app.fossa.com/projects/git%2Bgithub.com%2Fopen-feature%2Fphp-sdk?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2Fopen-feature%2Fphp-sdk.svg?type=shield"/></a>
 
 </p>
 <!-- x-hide-in-docs-start -->
@@ -47,6 +48,9 @@
 [OpenFeature](https://openfeature.dev) is an open specification that provides a vendor-agnostic, community-driven API for feature flagging that works with your favorite feature flag management tool.
 
 <!-- x-hide-in-docs-end -->
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fopen-feature%2Fphp-sdk.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fopen-feature%2Fphp-sdk?ref=badge_large)
+
 ## 🚀 Quick start
 
 ### Requirements
