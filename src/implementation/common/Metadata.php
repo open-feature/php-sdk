@@ -8,11 +8,8 @@ use OpenFeature\interfaces\common\Metadata as MetadataInterface;
 
 class Metadata implements MetadataInterface
 {
-    private string $name;
-
-    public function __construct(string $name)
+    public function __construct(private string $name)
     {
-        $this->name = $name;
     }
 
     public function getName(): string

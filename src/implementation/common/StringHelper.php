@@ -13,25 +13,19 @@ class StringHelper
 {
     public static function capitalize(string $input): string
     {
-        switch (strlen($input)) {
-            case 0:
-                return '';
-            case 1:
-                return strtoupper($input);
-            default:
-                return strtoupper(substr($input, 0, 1)) . substr($input, 1);
-        }
+        return match (strlen($input)) {
+            0 => '',
+            1 => strtoupper($input),
+            default => strtoupper(substr($input, 0, 1)) . substr($input, 1),
+        };
     }
 
     public static function decapitalize(string $input): string
     {
-        switch (strlen($input)) {
-            case 0:
-                return '';
-            case 1:
-                return strtolower($input);
-            default:
-                return strtolower(substr($input, 0, 1)) . substr($input, 1);
-        }
+        return match (strlen($input)) {
+            0 => '',
+            1 => strtolower($input),
+            default => strtolower(substr($input, 0, 1)) . substr($input, 1),
+        };
     }
 }

@@ -12,15 +12,11 @@ use function array_merge;
 
 class Attributes implements AttributesInterface
 {
-    /** @var Array<array-key, bool|string|int|float|DateTime|mixed[]|null> $attributesMap */
-    protected array $attributesMap;
-
     /**
      * @param Array<array-key, bool|string|int|float|DateTime|mixed[]|null> $attributesMap
      */
-    public function __construct(array $attributesMap = [])
+    public function __construct(protected array $attributesMap = [])
     {
-        $this->attributesMap = $attributesMap;
     }
 
     /**

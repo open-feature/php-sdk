@@ -12,15 +12,11 @@ use function key_exists;
 
 class EventMetadata implements EventMetadataInterface
 {
-    /** @var Array<string, bool|string|int|float> $eventMetadataMap */
-    protected array $eventMetadataMap;
-
     /**
      * @param Array<string, bool|string|int|float> $eventMetadataMap
      */
-    public function __construct(array $eventMetadataMap = [])
+    public function __construct(protected array $eventMetadataMap = [])
     {
-        $this->eventMetadataMap = $eventMetadataMap;
     }
 
     public function has(string $key): bool
