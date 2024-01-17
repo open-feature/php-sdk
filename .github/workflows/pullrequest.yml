@@ -40,7 +40,7 @@ jobs:
 
       - name: Cache Composer packages
         id: root-composer-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: vendor
           key: ${{ runner.os }}-${{ matrix.php-version }}-php-${{ hashFiles('composer.json') }}
@@ -80,7 +80,7 @@ jobs:
 
       - name: Cache Composer packages
         id: behat-composer-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: integration/vendor
           key: ${{ runner.os }}-${{ matrix.php-version }}-php-${{ hashFiles('integration/composer.json') }}
