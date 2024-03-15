@@ -172,7 +172,7 @@ If the flag management system you're using supports targeting, you can provide t
 
 ```php
 // add a value to the global context
-$api = OpenFeatureAPI.getInstance();
+$api = OpenFeatureAPI::getInstance();
 $api->setEvaluationContext(new EvaluationContext('targetingKey', ['myGlobalKey' => 'myGlobalValue']));
 
 // add a value to the client context
@@ -195,7 +195,7 @@ Once you've added a hook as a dependency, it can be registered at the global, cl
 
 ```php
 // add a hook globally, to run on all evaluations
-$api = OpenFeatureAPI.getInstance();
+$api = OpenFeatureAPI::getInstance();
 $api->addHook(new ExampleGlobalHook());
 
 // add a hook on this client, to run on all evaluations made by this client
