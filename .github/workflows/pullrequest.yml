@@ -64,7 +64,7 @@ jobs:
         run: vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml --testsuite=unit
       
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
 
       - name: Validate composer.json and composer.lock
         working-directory: integration
