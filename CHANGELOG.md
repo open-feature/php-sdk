@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.0.5](https://github.com/open-feature/php-sdk/compare/2.0.4...2.0.5) (2024-03-15)
+
+
+### 🧹 Chore
+
+* **deps:** update actions/cache action to v4 ([#116](https://github.com/open-feature/php-sdk/issues/116)) ([f047d21](https://github.com/open-feature/php-sdk/commit/f047d21a8625e66e3c6a9e3dd1536aed0af14ef5))
+
+
+### 📚 Documentation
+
+* Fix PHP syntax in Readme file ([#120](https://github.com/open-feature/php-sdk/issues/120)) ([0312152](https://github.com/open-feature/php-sdk/commit/0312152da02d12c676ae1eb66928a9047a6f7043))
+* update PHP provider link ([68993da](https://github.com/open-feature/php-sdk/commit/68993da3eb7d728c395b571b7d26e0a01156e019))
+
 ## [2.0.4](https://github.com/open-feature/php-sdk/compare/2.0.3...2.0.4) (2023-12-05)
 
 
