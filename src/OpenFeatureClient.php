@@ -372,9 +372,10 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
                 ),
             );
 
-            $error = $err instanceof ThrowableWithResolutionError ? $err->getResolutionError() : new ResolutionError(ErrorCode::GENERAL());
+            $error = $err instanceof ThrowableWithResolutionError ? $err->getResolutionError() : new ResolutionError(ErrorCode::GENERAL(), $err->getMessage());
 
             $details = (new EvaluationDetailsBuilder())
+                            ->withFlagKey($flagKey)
                             ->withValue($defaultValue)
                             ->withReason(Reason::ERROR)
                             ->withError($error)
