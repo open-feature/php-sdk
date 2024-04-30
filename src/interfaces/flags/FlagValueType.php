@@ -4,17 +4,32 @@ declare(strict_types=1);
 
 namespace OpenFeature\interfaces\flags;
 
-/**
- * A pseudo-enumerator to support PHP 7.x
- *
- * TODO: Bump to PHP 8.x + support after EOL with
- * native enum implementation
- */
-class FlagValueType
+enum FlagValueType: string
 {
+    case String = 'STRING';
+    case Integer = 'INTEGER';
+    case Float = 'FLOAT';
+    case Object = 'OBJECT';
+    case Boolean = 'BOOLEAN';
+
+    /**
+     * @deprecated prefer enum value over const
+     */
     public const STRING = 'STRING';
+    /**
+     * @deprecated prefer enum value over const
+     */
     public const INTEGER = 'INTEGER';
+    /**
+     * @deprecated prefer enum value over const
+     */
     public const FLOAT = 'FLOAT';
+    /**
+     * @deprecated prefer enum value over const
+     */
     public const OBJECT = 'OBJECT';
+    /**
+     * @deprecated prefer enum value over const
+     */
     public const BOOLEAN = 'BOOLEAN';
 }

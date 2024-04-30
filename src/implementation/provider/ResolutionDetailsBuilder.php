@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace OpenFeature\implementation\provider;
 
-use DateTime;
+use OpenFeature\interfaces\flags\FlagMetadata;
 use OpenFeature\interfaces\provider\ResolutionDetails as ResolutionDetailsInterface;
 use OpenFeature\interfaces\provider\ResolutionError;
 
@@ -18,9 +18,9 @@ class ResolutionDetailsBuilder
     }
 
     /**
-     * @param bool|string|int|float|DateTime|mixed[]|null $value
+     * @param bool|string|int|float|mixed[]|null $value
      */
-    public function withValue(bool | string | int | float | DateTime | array | null $value): ResolutionDetailsBuilder
+    public function withValue(bool | string | int | float | array | null $value): ResolutionDetailsBuilder
     {
         $this->details->setValue($value);
 
@@ -44,6 +44,13 @@ class ResolutionDetailsBuilder
     public function withVariant(string $variant): ResolutionDetailsBuilder
     {
         $this->details->setVariant($variant);
+
+        return $this;
+    }
+
+    public function withFlagMetadata(FlagMetadata $flagMetadata): ResolutionDetailsBuilder
+    {
+        $this->details->setFlagMetadata($flagMetadata);
 
         return $this;
     }

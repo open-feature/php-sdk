@@ -4,31 +4,50 @@ declare(strict_types=1);
 
 namespace OpenFeature;
 
+use League\Event\EventDispatcher;
+use OpenFeature\implementation\events\Event;
 use OpenFeature\implementation\flags\NoOpClient;
-use OpenFeature\implementation\provider\NoOpProvider;
+use OpenFeature\implementation\provider\ProviderAwareTrait;
 use OpenFeature\interfaces\common\LoggerAwareTrait;
 use OpenFeature\interfaces\common\Metadata;
+use OpenFeature\interfaces\events\EventDetails;
+use OpenFeature\interfaces\events\ProviderEvent;
 use OpenFeature\interfaces\flags\API;
 use OpenFeature\interfaces\flags\Client;
 use OpenFeature\interfaces\flags\EvaluationContext;
 use OpenFeature\interfaces\hooks\Hook;
 use OpenFeature\interfaces\provider\Provider;
+use OpenFeature\interfaces\provider\ProviderAware;
 use Psr\Log\LoggerAwareInterface;
 use Throwable;
 
-use function array_merge;
 use function is_null;
+use function key_exists;
 
 final class OpenFeatureAPI implements API, LoggerAwareInterface
 {
     use LoggerAwareTrait;
+    /**
+     * -----------------
+     * Requirement 1.1.2
+     * -----------------
+     * The API MUST provide a function to set the global provider singleton, which
+     * accepts an API-conformant provider implementation.
+     */
+    use ProviderAwareTrait;
 
     private static ?OpenFeatureAPI $instance = null;
 
-    private Provider $provider;
+    private EventDispatcher $dispatcher;
+
+    /** @var (Client & ProviderAware) | null $defaultClient */
+    private $defaultClient;
+    /** @var Array<string,Client & ProviderAware> $clientMap */
+    private array $clientMap = [];
 
     /** @var Hook[] $hooks */
     private array $hooks = [];
+
     private ?EvaluationContext $evaluationContext = null;
 
     /**
@@ -58,29 +77,28 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
      */
     private function __construct()
     {
-        $this->provider = new NoOpProvider();
-    }
-
-    public function getProvider(): Provider
-    {
-        return $this->provider;
+        $this->dispatcher = new EventDispatcher();
     }
 
     /**
      * -----------------
-     * Requirement 1.1.2
+     * Requirement 1.1.3
      * -----------------
-     * The API MUST provide a function to set the global provider singleton, which
-     * accepts an API-conformant provider implementation.
+     * The API MUST provide a function to bind a given provider to one or more client names.
+     * If the client-name already has a bound provider, it is overwritten with the new mapping.
      */
-    public function setProvider(Provider $provider): void
+    public function setClientProvider(string $clientDomain, Provider $provider): void
     {
-        $this->provider = $provider;
+        if (!isset($this->clientMap[$clientDomain])) {
+            return;
+        }
+
+        $this->clientMap[$clientDomain]->setProvider($provider);
     }
 
     /**
      * -----------------
-     * Requirement 1.1.4
+     * Requirement 1.1.5
      * -----------------
      * The API MUST provide a function for retrieving the metadata field of the
      * configured provider.
@@ -92,22 +110,48 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
 
     /**
      * -----------------
-     * Requirement 1.1.4
+     * Requirement 1.1.6
      * -----------------
      * The API MUST provide a function for creating a client which accepts the following options:
-     *   name (optional): A logical string identifier for the client.
+     *   domain (optional): A logical string identifier for the client.
      */
-    public function getClient(?string $name = null, ?string $version = null): Client
+    public function getClient(?string $domain = null): Client
     {
-        $name = $name ?? 'OpenFeature';
-        $version = $version ?? 'OpenFeature';
-
         try {
-            $client = new OpenFeatureClient($this, $name, $version);
-            $client->setLogger($this->getLogger());
+            $isDefaultClient = is_null($domain);
+            $domain = $domain ?? self::class;
+
+            if ($isDefaultClient) {
+                $currentClient = $this->defaultClient ?? null;
+            } else {
+                $currentClient = key_exists($domain, $this->clientMap) ? $this->clientMap[$domain] : null;
+            }
+
+            if (!is_null($currentClient)) {
+                return $currentClient;
+            }
+
+            try {
+                $client = new OpenFeatureClient($this, $domain);
+                $client->setLogger($this->getLogger());
+            } catch (Throwable $err) {
+                $client = new NoOpClient();
+            }
+
+            if ($isDefaultClient) {
+                $this->defaultClient = $client;
+            } else {
+                $this->clientMap[$domain] = $client;
+            }
 
             return $client;
         } catch (Throwable $err) {
+            /**
+             * -----------------
+             * Requirement 1.1.7
+             * -----------------
+             * The client creation function MUST NOT throw, or otherwise abnormally terminate.
+             */
             return new NoOpClient();
         }
     }
@@ -122,7 +166,7 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
 
     /**
      * -----------------
-     * Requirement 1.1.3
+     * Requirement 1.1.4
      * -----------------
      * The API MUST provide a function to add hooks which accepts one or more API-conformant
      * hooks, and appends them to the collection of any previously added hooks. When new
@@ -130,7 +174,7 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
      */
     public function addHooks(Hook ...$hooks): void
     {
-        $this->hooks = array_merge($this->hooks, $hooks);
+        $this->hooks = [...$this->hooks, ...$hooks];
     }
 
     public function clearHooks(): void
@@ -146,5 +190,56 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
     public function setEvaluationContext(EvaluationContext $context): void
     {
         $this->evaluationContext = $context;
+    }
+
+    /**
+     * -----------------
+     * Requirement 1.6.1
+     * -----------------
+     * The API MUST define a shutdown function which, when called, must call the respective
+     * shutdown function on the active provider.
+     */
+    public function dispose(): void
+    {
+        $this->getProvider()->dispose();
+    }
+
+    /**
+     * -----------------
+     * Requirement 5.1.1
+     * -----------------
+     * The provider MAY define a mechanism for signaling the occurrence of one of a set
+     * of events, including PROVIDER_READY, PROVIDER_ERROR, PROVIDER_CONFIGURATION_CHANGED
+     * and PROVIDER_STALE, with a provider event details payload.
+     */
+    public function dispatch(ProviderEvent $providerEvent, EventDetails $eventDetails): void
+    {
+        $this->dispatcher->dispatch(new Event($providerEvent->value, $eventDetails));
+    }
+
+    public function addHandler(ProviderEvent $providerEvent, callable $handler): void
+    {
+        $this->dispatcher->subscribeTo($providerEvent->value, $handler);
+    }
+
+    public function removeHandler(ProviderEvent $providerEvent, callable $handler): void
+    {
+    }
+
+    /**
+     * TESTING UTILITY
+     */
+    protected function resetClients(): void
+    {
+        $this->defaultClient = null;
+        $this->clientMap = [];
+    }
+
+    /**
+     * TESTING UTILITY
+     */
+    protected function resetProviders(): void
+    {
+        $this->provider = null;
     }
 }

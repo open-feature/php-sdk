@@ -15,8 +15,10 @@
         }
     ],
     "require": {
-        "php": "^8",
+        "php": "^8.1",
+        "league/event": "^3.0",
         "myclabs/php-enum": "^1.8",
+        "psr/event-dispatcher": "^1.0",
         "psr/log": "^2.0 || ^3.0"
     },
     "require-dev": {
@@ -56,10 +58,10 @@
     },
     "config": {
         "allow-plugins": {
-            "phpstan/extension-installer": true,
+            "captainhook/plugin-composer": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "ergebnis/composer-normalize": true,
-            "captainhook/plugin-composer": true,
+            "phpstan/extension-installer": true,
             "ramsey/composer-repl": true
         },
         "sort-packages": true

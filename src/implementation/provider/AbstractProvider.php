@@ -7,19 +7,21 @@ namespace OpenFeature\implementation\provider;
 use OpenFeature\implementation\common\Metadata;
 use OpenFeature\interfaces\common\Metadata as MetadataInterface;
 use OpenFeature\interfaces\flags\EvaluationContext;
-use OpenFeature\interfaces\hooks\Hook;
+use OpenFeature\interfaces\hooks\HooksAware;
+use OpenFeature\interfaces\hooks\HooksAwareTrait;
 use OpenFeature\interfaces\provider\Provider;
+use OpenFeature\interfaces\provider\ProviderState;
 use OpenFeature\interfaces\provider\ResolutionDetails as ResolutionDetailsInterface;
 use Psr\Log\LoggerAwareTrait;
 
-abstract class AbstractProvider implements Provider
+abstract class AbstractProvider implements HooksAware, Provider
 {
+    use HooksAwareTrait;
     use LoggerAwareTrait;
 
     protected static string $NAME = 'AbstractProvider';
 
-    /** @var Hook[] $hooks */
-    private array $hooks = [];
+    protected ProviderState $status = ProviderState::NOT_READY;
 
     public function getMetadata(): MetadataInterface
     {
@@ -40,18 +42,23 @@ abstract class AbstractProvider implements Provider
     abstract public function resolveObjectValue(string $flagKey, array $defaultValue, ?EvaluationContext $context = null): ResolutionDetailsInterface;
 
     /**
-     * @return Hook[]
+     * The default is that this is not required, and must be overridden by the implementing provider
      */
-    public function getHooks(): array
+    public function dispose(): void
     {
-        return $this->hooks;
+        $this->status = ProviderState::NOT_READY;
     }
 
     /**
-     * @param Hook[] $hooks
+     * The default is that this is not required, and must be overridden by the implementing provider
      */
-    public function setHooks(array $hooks): void
+    public function initialize(EvaluationContext $evaluationContext): void
     {
-        $this->hooks = $hooks;
+        $this->status = ProviderState::READY;
+    }
+
+    public function getStatus(): ProviderState
+    {
+        return $this->status;
     }
 }

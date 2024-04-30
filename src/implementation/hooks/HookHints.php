@@ -12,8 +12,12 @@ use function key_exists;
 
 class HookHints implements HookHintsInterface
 {
-    /** @var Array<string, bool | string | float | int | DateTime | mixed[] | null> $hints */
-    private array $hints = [];
+    /**
+     * @param Array<string, bool | string | float | int | DateTime | mixed[] | null> $hints
+     */
+    public function __construct(private readonly array $hints = [])
+    {
+    }
 
     /**
      * @return bool|string|int|float|DateTime|mixed[]|null
@@ -33,13 +37,5 @@ class HookHints implements HookHintsInterface
     public function keys(): array
     {
         return array_keys($this->hints);
-    }
-
-    /**
-     * @param Array<string, bool | string | float | int | DateTime | mixed[] | null> $hints
-     */
-    public function __construct(array $hints = [])
-    {
-        $this->hints = $hints;
     }
 }

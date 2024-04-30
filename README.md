@@ -9,6 +9,15 @@
 
 <h2 align="center">OpenFeature PHP SDK</h2>
 
+[![a](https://img.shields.io/badge/slack-%40cncf%2Fopenfeature-brightgreen?style=flat&logo=slack)](https://cloud-native.slack.com/archives/C0344AANLA1)
+[![codecov](https://codecov.io/gh/open-feature/php-sdk/branch/main/graph/badge.svg?token=3DC5XOEHMY)](https://codecov.io/gh/open-feature/php-sdk)
+[![Specification](https://img.shields.io/static/v1?label=Specification&message=v0.5.1&color=yellow)](https://github.com/open-feature/spec/tree/v0.5.1)
+[![Latest Stable Version](http://poser.pugx.org/open-feature/sdk/v)](https://packagist.org/packages/open-feature/sdk)
+[![Total Downloads](http://poser.pugx.org/open-feature/sdk/downloads)](https://packagist.org/packages/open-feature/sdk)
+![PHP 8.1+](https://img.shields.io/badge/php->=8.0-blue.svg)
+[![License](http://poser.pugx.org/open-feature/sdk/license)](https://packagist.org/packages/open-feature/sdk)
+[![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/6853/badge)](https://bestpractices.coreinfrastructure.org/projects/6853)
+
 <!-- x-hide-in-docs-end -->
 <!-- The 'github-badges' class is used in the docs -->
 <p align="center" class="github-badges">

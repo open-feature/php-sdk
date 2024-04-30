@@ -8,20 +8,30 @@ use OpenFeature\interfaces\common\Metadata as MetadataInterface;
 
 class Metadata implements MetadataInterface
 {
-    private string $name;
-
-    public function __construct(string $name)
+    public function __construct(private string $domain)
     {
-        $this->name = $name;
     }
 
+    public function getDomain(): string
+    {
+        return $this->domain;
+    }
+
+    public function setDomain(string $domain): void
+    {
+        $this->domain = $domain;
+    }
+
+    /**
+     * @deprecated Use getDomain
+     */
     public function getName(): string
     {
-        return $this->name;
+        return $this->domain;
     }
 
     public function setName(string $name): void
     {
-        $this->name = $name;
+        $this->domain = $name;
     }
 }

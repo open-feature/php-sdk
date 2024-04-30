@@ -11,7 +11,9 @@ use function sizeof;
 class ArrayHelper
 {
     /**
-     * Determines whether the array is indexed or associative
+     * Returns a list of the keys from an associative array
+     *
+     * Non-associative arrays will return empty lists
      *
      * @param mixed[] $array
      *

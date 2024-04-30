@@ -8,8 +8,8 @@ use OpenFeature\interfaces\flags\FlagValueType;
 
 abstract class IntegerHook extends AbstractHook
 {
-    public function supportsFlagValueType(string $flagValueType): bool
+    public function supportsFlagValueType(FlagValueType $flagValueType): bool
     {
-        return $flagValueType === FlagValueType::INTEGER;
+        return $flagValueType === FlagValueType::Integer;
     }
 }

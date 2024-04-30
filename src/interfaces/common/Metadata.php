@@ -6,5 +6,10 @@ namespace OpenFeature\interfaces\common;
 
 interface Metadata
 {
+    public function getDomain(): string;
+
+    /**
+     * @deprecated use getDomain
+     */
     public function getName(): string;
 }

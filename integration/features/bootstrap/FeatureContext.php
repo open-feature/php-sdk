@@ -82,7 +82,7 @@ class FeatureContext implements BehatContext
      */
     public function aBooleanFlagWithKeyIsEvaluatedWithDefaultValue(string $flagKey, bool $defaultValue)
     {
-        $this->flagType = FlagValueType::BOOLEAN;
+        $this->flagType = FlagValueType::Boolean;
         $this->inputFlagKey = $flagKey;
         $this->inputFlagDefaultValue = $defaultValue;
     }
@@ -103,7 +103,7 @@ class FeatureContext implements BehatContext
      */
     public function aStringFlagWithKeyIsEvaluatedWithDefaultValue(string $flagKey, string $defaultValue)
     {
-        $this->flagType = FlagValueType::STRING;
+        $this->flagType = FlagValueType::String;
         $this->inputFlagKey = $flagKey;
         $this->inputFlagDefaultValue = $defaultValue;
     }
@@ -124,7 +124,7 @@ class FeatureContext implements BehatContext
      */
     public function anIntegerFlagWithKeyIsEvaluatedWithDefaultValue(string $flagKey, int $defaultValue)
     {
-        $this->flagType = FlagValueType::INTEGER;
+        $this->flagType = FlagValueType::Integer;
         $this->inputFlagKey = $flagKey;
         $this->inputFlagDefaultValue = $defaultValue;
         print_r("Setting integer...\n");
@@ -146,7 +146,7 @@ class FeatureContext implements BehatContext
      */
     public function aFloatFlagWithKeyIsEvaluatedWithDefaultValue(string $flagKey, float $defaultValue)
     {
-        $this->flagType = FlagValueType::FLOAT;
+        $this->flagType = FlagValueType::Float;
         $this->inputFlagKey = $flagKey;
         $this->inputFlagDefaultValue = $defaultValue;
     }
@@ -167,7 +167,7 @@ class FeatureContext implements BehatContext
      */
     public function anObjectFlagWithKeyIsEvaluatedWithANullDefaultValue(string $flagKey, mixed $defaultValue)
     {
-        $this->flagType = FlagValueType::OBJECT;
+        $this->flagType = FlagValueType::Object;
         $this->inputFlagKey = $flagKey;
         $this->inputFlagDefaultValue = $defaultValue;
     }
@@ -192,7 +192,7 @@ class FeatureContext implements BehatContext
      */
     public function aBooleanFlagWithKeyIsEvaluatedWithDetailsAndDefaultValue(string $flagKey, bool $defaultValue)
     {
-        $this->flagType = FlagValueType::BOOLEAN;
+        $this->flagType = FlagValueType::Boolean;
         $this->inputFlagKey = $flagKey;
         $this->inputFlagDefaultValue = $defaultValue;
     }
@@ -214,7 +214,7 @@ class FeatureContext implements BehatContext
      */
     public function aStringFlagWithKeyIsEvaluatedWithDetailsAndDefaultValue(string $flagKey, string $defaultValue)
     {
-        $this->flagType = FlagValueType::STRING;
+        $this->flagType = FlagValueType::String;
         $this->inputFlagKey = $flagKey;
         $this->inputFlagDefaultValue = $defaultValue;
     }
@@ -236,7 +236,7 @@ class FeatureContext implements BehatContext
      */
     public function anIntegerFlagWithKeyIsEvaluatedWithDetailsAndDefaultValue(string $flagKey, int $defaultValue)
     {
-        $this->flagType = FlagValueType::INTEGER;
+        $this->flagType = FlagValueType::Integer;
         $this->inputFlagKey = $flagKey;
         $this->inputFlagDefaultValue = $defaultValue;
     }
@@ -258,7 +258,7 @@ class FeatureContext implements BehatContext
      */
     public function aFloatFlagWithKeyIsEvaluatedWithDetailsAndDefaultValue(string $flagKey, float $defaultValue)
     {
-        $this->flagType = FlagValueType::FLOAT;
+        $this->flagType = FlagValueType::Float;
         $this->inputFlagKey = $flagKey;
         $this->inputFlagDefaultValue = $defaultValue;
     }
@@ -280,7 +280,7 @@ class FeatureContext implements BehatContext
      */
     public function anObjectFlagWithKeyIsEvaluatedWithDetailsAndANullDefaultValue(string $flagKey, mixed $defaultValue)
     {
-        $this->flagType = FlagValueType::OBJECT;
+        $this->flagType = FlagValueType::Object;
         $this->inputFlagKey = $flagKey;
         $this->inputFlagDefaultValue = $defaultValue;
     }
@@ -409,7 +409,7 @@ class FeatureContext implements BehatContext
      */
     public function aStringFlagWithKeyIsEvaluatedAsAnIntegerWithDetailsAndADefaultValue(string $flagKey, int $defaultValue)
     {
-        $this->flagType = FlagValueType::INTEGER;
+        $this->flagType = FlagValueType::Integer;
         $this->inputFlagKey = $flagKey;
         $this->inputFlagDefaultValue = $defaultValue;
     }
@@ -447,23 +447,23 @@ class FeatureContext implements BehatContext
     {
         $value = null;
         switch ($this->flagType) {
-            case FlagValueType::BOOLEAN:
+            case FlagValueType::Boolean:
                 $value = $this->client->getBooleanValue($this->inputFlagKey, $this->inputFlagDefaultValue, $this->inputContext, $this->inputOptions);
 
                 break;
-            case FlagValueType::FLOAT:
+            case FlagValueType::Float:
                 $value = $this->client->getFloatValue($this->inputFlagKey, $this->inputFlagDefaultValue, $this->inputContext, $this->inputOptions);
 
                 break;
-            case FlagValueType::INTEGER:
+            case FlagValueType::Integer:
                 $value = $this->client->getIntegerValue($this->inputFlagKey, $this->inputFlagDefaultValue, $this->inputContext, $this->inputOptions);
 
                 break;
-            case FlagValueType::OBJECT:
+            case FlagValueType::Object:
                 $value = $this->client->getObjectValue($this->inputFlagKey, $this->inputFlagDefaultValue, $this->inputContext, $this->inputOptions);
 
                 break;
-            case FlagValueType::STRING:
+            case FlagValueType::String:
                 $value = $this->client->getStringValue($this->inputFlagKey, $this->inputFlagDefaultValue, $this->inputContext, $this->inputOptions);
 
                 break;
@@ -479,23 +479,23 @@ class FeatureContext implements BehatContext
     {
         $details = null;
         switch ($this->flagType) {
-            case FlagValueType::BOOLEAN:
+            case FlagValueType::Boolean:
                 $details = $this->client->getBooleanDetails($this->inputFlagKey, $this->inputFlagDefaultValue, $this->inputContext, $this->inputOptions);
 
                 break;
-            case FlagValueType::FLOAT:
+            case FlagValueType::Float:
                 $details = $this->client->getFloatDetails($this->inputFlagKey, $this->inputFlagDefaultValue, $this->inputContext, $this->inputOptions);
 
                 break;
-            case FlagValueType::INTEGER:
+            case FlagValueType::Integer:
                 $details = $this->client->getIntegerDetails($this->inputFlagKey, $this->inputFlagDefaultValue, $this->inputContext, $this->inputOptions);
 
                 break;
-            case FlagValueType::OBJECT:
+            case FlagValueType::Object:
                 $details = $this->client->getObjectDetails($this->inputFlagKey, $this->inputFlagDefaultValue, $this->inputContext, $this->inputOptions);
 
                 break;
-            case FlagValueType::STRING:
+            case FlagValueType::String:
                 $details = $this->client->getStringDetails($this->inputFlagKey, $this->inputFlagDefaultValue, $this->inputContext, $this->inputOptions);
 
                 break;
@@ -518,23 +518,23 @@ class FeatureContext implements BehatContext
     private function getFlagTypeOf(mixed $value): ?string
     {
         if (is_string($value)) {
-            return FlagValueType::STRING;
+            return FlagValueType::String;
         }
 
         if (is_array($value)) {
-            return FlagValueType::OBJECT;
+            return FlagValueType::Object;
         }
 
         if (is_float($value)) {
-            return FlagValueType::FLOAT;
+            return FlagValueType::Float;
         }
 
         if (is_int($value)) {
-            return FlagValueType::INTEGER;
+            return FlagValueType::Integer;
         }
 
         if (is_bool($value)) {
-            return FlagValueType::BOOLEAN;
+            return FlagValueType::Boolean;
         }
     }
 

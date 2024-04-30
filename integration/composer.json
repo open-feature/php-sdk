@@ -15,7 +15,7 @@
         }
     ],
     "require": {
-        "php": "^8",
+        "php": "^8.1",
         "open-feature/sdk": "^2.0.0",
         "open-feature/flagd-provider": "^0.7.0",
         "guzzlehttp/guzzle": "^7.5",

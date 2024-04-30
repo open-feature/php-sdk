@@ -6,7 +6,7 @@ namespace OpenFeature\interfaces\hooks;
 
 trait HooksAwareTrait
 {
-    /** @var Hook[] $hooks */
+    /** @var Array<Hook> $hooks */
     private array $hooks = [];
 
     /**
