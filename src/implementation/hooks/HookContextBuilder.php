@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace OpenFeature\implementation\hooks;
 
-use DateTime;
 use OpenFeature\interfaces\common\Metadata;
 use OpenFeature\interfaces\flags\EvaluationContext;
+use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\hooks\HookContext as HookContextInterface;
 
 class HookContextBuilder
@@ -26,7 +26,7 @@ class HookContextBuilder
         return $this;
     }
 
-    public function withType(string $type): self
+    public function withType(FlagValueType $type): self
     {
         $this->hookContext->setType($type);
 
@@ -34,9 +34,9 @@ class HookContextBuilder
     }
 
     /**
-     * @param bool|string|int|float|DateTime|mixed[]|null $defaultValue
+     * @param bool|string|int|float|mixed[]|null $defaultValue
      */
-    public function withDefaultValue(bool | string | int | float | DateTime | array | null $defaultValue): self
+    public function withDefaultValue(bool | string | int | float | array | null $defaultValue): self
     {
         $this->hookContext->setDefaultValue($defaultValue);
 

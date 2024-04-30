@@ -8,19 +8,13 @@ use DateTime;
 use OpenFeature\implementation\common\ArrayHelper;
 use OpenFeature\interfaces\flags\Attributes as AttributesInterface;
 
-use function array_merge;
-
 class Attributes implements AttributesInterface
 {
-    /** @var Array<array-key, bool|string|int|float|DateTime|mixed[]|null> $attributesMap */
-    protected array $attributesMap;
-
     /**
      * @param Array<array-key, bool|string|int|float|DateTime|mixed[]|null> $attributesMap
      */
-    public function __construct(array $attributesMap = [])
+    public function __construct(protected array $attributesMap = [])
     {
-        $this->attributesMap = $attributesMap;
     }
 
     /**
@@ -38,11 +32,7 @@ class Attributes implements AttributesInterface
      */
     public function get(string $key): bool | string | int | float | DateTime | array | null
     {
-        if (isset($this->attributesMap[$key])) {
-            return $this->attributesMap[$key];
-        }
-
-        return null;
+        return $this->attributesMap[$key] ?? null;
     }
 
     /**
@@ -50,6 +40,6 @@ class Attributes implements AttributesInterface
      */
     public function toArray(): array
     {
-        return array_merge([], $this->attributesMap);
+        return [...$this->attributesMap];
     }
 }

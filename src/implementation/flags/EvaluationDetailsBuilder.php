@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace OpenFeature\implementation\flags;
 
-use DateTime;
 use OpenFeature\interfaces\flags\EvaluationDetails as EvaluationDetailsInterface;
 use OpenFeature\interfaces\provider\ResolutionError;
 
@@ -25,9 +24,9 @@ class EvaluationDetailsBuilder
     }
 
     /**
-     * @param bool|string|int|float|DateTime|mixed[]|null $value
+     * @param bool|string|int|float|mixed[]|null $value
      */
-    public function withValue(bool | string | int | float | DateTime | array | null $value): EvaluationDetailsBuilder
+    public function withValue(bool | string | int | float | array | null $value): EvaluationDetailsBuilder
     {
         $this->details->setValue($value);
 

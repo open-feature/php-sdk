@@ -8,6 +8,7 @@ use Mockery;
 use OpenFeature\Test\TestCase;
 use OpenFeature\Test\TestHook;
 use OpenFeature\Test\TestProvider;
+use OpenFeature\implementation\flags\FlagMetadata;
 use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
 use OpenFeature\implementation\provider\ResolutionDetailsFactory;
 use OpenFeature\implementation\provider\ResolutionError;
@@ -200,6 +201,47 @@ class ProviderTest extends TestCase
         $actualResolution = $mockProvider->resolveBooleanValue('flagKey', false, null);
 
         $this->assertEquals($expectedReason, $actualResolution->getReason());
+    }
+
+    /**
+     * Requirement 2.6
+     *
+     * The provider SHOULD populate the flag resolution structure's reason field with "DEFAULT", "TARGETING_MATCH", "SPLIT", "DISABLED", "UNKNOWN", "ERROR" or some other string indicating the semantic reason for the returned flag value.
+     */
+    public function testShouldPopulateFlagMetadataField(): void
+    {
+        $expectedFlagMetadata = new FlagMetadata(['str' => 'value', 'num' => 42, 'bool' => true]);
+
+        /** @var Mockery\MockInterface|Provider $mockProvider */
+        $mockProvider = $this->mockery(TestProvider::class)->makePartial();
+        $mockProvider->shouldReceive('resolveBooleanValue')
+                     ->andReturn((new ResolutionDetailsBuilder())
+                                    ->withValue(true)
+                                    ->withFlagMetadata($expectedFlagMetadata)
+                                    ->build());
+
+        $actualResolution = $mockProvider->resolveBooleanValue('flagKey', false, null);
+
+        $this->assertEquals($expectedFlagMetadata, $actualResolution->getFlagMetadata());
+    }
+
+    /**
+     * Requirement 2.6
+     *
+     * The provider SHOULD populate the flag resolution structure's reason field with "DEFAULT", "TARGETING_MATCH", "SPLIT", "DISABLED", "UNKNOWN", "ERROR" or some other string indicating the semantic reason for the returned flag value.
+     */
+    public function testShouldDefaultAnEmptyFlagMetadataField(): void
+    {
+        $expectedFlagMetadata = new FlagMetadata();
+
+        /** @var Mockery\MockInterface|Provider $mockProvider */
+        $mockProvider = $this->mockery(TestProvider::class)->makePartial();
+        $mockProvider->shouldReceive('resolveBooleanValue')
+                     ->andReturn(ResolutionDetailsFactory::fromSuccess(true));
+
+        $actualResolution = $mockProvider->resolveBooleanValue('flagKey', false, null);
+
+        $this->assertEquals($expectedFlagMetadata, $actualResolution->getFlagMetadata());
     }
 
     /**

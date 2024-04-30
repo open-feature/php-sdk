@@ -4,30 +4,37 @@ declare(strict_types=1);
 
 namespace OpenFeature\implementation\provider;
 
-use DateTime;
+use OpenFeature\implementation\flags\FlagMetadata;
+use OpenFeature\interfaces\flags\FlagMetadata as FlagMetadataInterface;
 use OpenFeature\interfaces\provider\ResolutionDetails as ResolutionDetailsInterface;
 use OpenFeature\interfaces\provider\ResolutionError;
 
 class ResolutionDetails implements ResolutionDetailsInterface
 {
-    /** @var bool|string|int|float|DateTime|mixed[]|null $value */
-    private bool | string | int | float | DateTime | array | null $value = null;
+    /** @var bool|string|int|float|mixed[]|null $value */
+    private bool | string | int | float | array | null $value = null;
     private ?ResolutionError $error = null;
     private ?string $reason = null;
     private ?string $variant = null;
+    private FlagMetadataInterface $flagMetadata;
+
+    public function __construct()
+    {
+        $this->flagMetadata = new FlagMetadata();
+    }
 
     /**
-     * @return bool|string|int|float|DateTime|mixed[]|null
+     * @return bool|string|int|float|mixed[]|null
      */
-    public function getValue(): bool | string | int | float | DateTime | array | null
+    public function getValue(): bool | string | int | float | array | null
     {
         return $this->value;
     }
 
     /**
-     * @param bool|string|int|float|DateTime|mixed[]|null $value
+     * @param bool|string|int|float|mixed[]|null $value
      */
-    public function setValue(bool | string | int | float | DateTime | array | null $value): void
+    public function setValue(bool | string | int | float | array | null $value): void
     {
         $this->value = $value;
     }
@@ -60,5 +67,15 @@ class ResolutionDetails implements ResolutionDetailsInterface
     public function setVariant(?string $variant): void
     {
         $this->variant = $variant;
+    }
+
+    public function getFlagMetadata(): FlagMetadataInterface
+    {
+        return $this->flagMetadata;
+    }
+
+    public function setFlagMetadata(FlagMetadataInterface $flagMetadata): void
+    {
+        $this->flagMetadata = $flagMetadata;
     }
 }

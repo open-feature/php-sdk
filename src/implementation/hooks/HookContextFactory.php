@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace OpenFeature\implementation\hooks;
 
-use DateTime;
 use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\interfaces\common\Metadata;
 use OpenFeature\interfaces\flags\EvaluationContext as EvaluationContextInterface;
+use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\hooks\HookContext;
 
 class HookContextFactory
 {
     /**
-     * @param bool|string|int|float|DateTime|mixed[]|null $defaultValue
+     * @param bool|string|int|float|mixed[]|null $defaultValue
      */
     public static function from(
         string $flagKey,
-        string $type,
-        bool | string | int | float | DateTime | array | null $defaultValue,
+        FlagValueType $type,
+        bool | string | int | float | array | null $defaultValue,
         ?EvaluationContextInterface $evaluationContext,
         Metadata $clientMetadata,
         Metadata $providerMetadata,

@@ -10,6 +10,7 @@ use OpenFeature\interfaces\common\Metadata as MetadataInterface;
 use OpenFeature\interfaces\flags\EvaluationContext;
 use OpenFeature\interfaces\hooks\HooksAwareTrait;
 use OpenFeature\interfaces\provider\Provider;
+use OpenFeature\interfaces\provider\ProviderState;
 use OpenFeature\interfaces\provider\ResolutionDetails;
 use Psr\Log\LoggerAwareTrait;
 
@@ -63,5 +64,20 @@ class TestProvider implements Provider
     public function resolveObjectValue(string $flagKey, array $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
         return ResolutionDetailsFactory::fromSuccess($defaultValue);
+    }
+
+    public function dispose(): void
+    {
+        // no-op
+    }
+
+    public function initialize(EvaluationContext $evaluationContext): void
+    {
+        // no-op
+    }
+
+    public function getStatus(): ProviderState
+    {
+        return ProviderState::READY;
     }
 }

@@ -128,6 +128,8 @@ class OpenFeatureAPITest extends TestCase
     }
 
     /**
+     * @runInSeparateProcess
+     *
      * Requirement 1.1.5
      *
      * The API MUST provide a function for creating a client which accepts the following options:
@@ -136,14 +138,13 @@ class OpenFeatureAPITest extends TestCase
      */
     public function testApiCanCreateClient(): void
     {
-        $name = 'test-name';
-        $version = 'test-version';
+        $name = 'ApiCanCreateClient.test';
 
         $api = APITestHelper::new();
 
-        $client = $api->getClient($name, $version);
+        $client = $api->getClient($name);
 
-        $this->assertEquals($name, $client->getMetadata()->getName());
+        $this->assertEquals($name, $client->getMetadata()->getDomain());
         $this->assertInstanceOf(NoOpProvider::class, $api->getProvider());
     }
 
@@ -194,30 +195,34 @@ class OpenFeatureAPITest extends TestCase
         $this->assertInstanceOf(NoOpProvider::class, $actualProvider);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testApiWillCreateClientWithoutProvider(): void
     {
-        $name = 'test-name';
-        $version = 'test-version';
+        $domain = 'ApiWillCreateClientWithoutProvider.test';
 
         $api = APITestHelper::new();
 
-        $client = $api->getClient($name, $version);
+        $client = $api->getClient($domain);
 
-        $this->assertEquals($name, $client->getMetadata()->getName());
+        $this->assertEquals($domain, $client->getMetadata()->getDomain());
         $this->assertInstanceOf(NoOpProvider::class, $api->getProvider());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testApiWillCreateClientWithProvider(): void
     {
-        $name = 'test-name';
-        $version = 'test-version';
+        $domain = 'ApiWillCreateClientWithProvider.test';
 
         $api = APITestHelper::new();
         $api->setProvider(new TestProvider());
 
-        $client = $api->getClient($name, $version);
+        $client = $api->getClient($domain);
 
-        $this->assertEquals($name, $client->getMetadata()->getName());
+        $this->assertEquals($domain, $client->getMetadata()->getDomain());
         $this->assertInstanceOf(TestProvider::class, $api->getProvider());
     }
 }

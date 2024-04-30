@@ -38,7 +38,7 @@ class HooksTest extends TestCase
     public function testHookContextMustProvideArguments(): void
     {
         $flagKey = 'test-key';
-        $flagValueType = FlagValueType::BOOLEAN;
+        $flagValueType = FlagValueType::Boolean;
         $evaluationContext = new EvaluationContext();
         $defaultValue = false;
 
@@ -60,7 +60,7 @@ class HooksTest extends TestCase
         $clientMetadata = new Metadata('client');
         $providerMetadata = new Metadata('provider');
 
-        $hookContext = HookContextFactory::from('key', FlagValueType::BOOLEAN, false, new EvaluationContext(), $clientMetadata, $providerMetadata);
+        $hookContext = HookContextFactory::from('key', FlagValueType::Boolean, false, new EvaluationContext(), $clientMetadata, $providerMetadata);
 
         $this->assertEquals($clientMetadata, $hookContext->getClientMetadata());
         $this->assertEquals($providerMetadata, $hookContext->getProviderMetadata());
@@ -73,7 +73,7 @@ class HooksTest extends TestCase
      */
     public function testValuePropertiesMustBeImmutable(): void
     {
-        $expectedHookContext = HookContextFactory::from('key', FlagValueType::BOOLEAN, false, new EvaluationContext(), new Metadata('client'), new Metadata('provider'));
+        $expectedHookContext = HookContextFactory::from('key', FlagValueType::Boolean, false, new EvaluationContext(), new Metadata('client'), new Metadata('provider'));
         $testRunner = $this;
 
         $hook = $this->mockery(TestHook::class)->makePartial();
@@ -83,7 +83,7 @@ class HooksTest extends TestCase
             $testRunner->assertEquals($expectedHookContext, $context);
         });
 
-        (new HookExecutor(null))->beforeHooks(FlagValueType::BOOLEAN, $expectedHookContext, [$hook], new HookHints());
+        (new HookExecutor(null))->beforeHooks(FlagValueType::Boolean, $expectedHookContext, [$hook], new HookHints());
     }
 
     /**
@@ -106,8 +106,8 @@ class HooksTest extends TestCase
 
         $additionalEvaluationContext = (new HookExecutor())
                                 ->beforeHooks(
-                                    FlagValueType::BOOLEAN,
-                                    HookContextFactory::from('flagKey', FlagValueType::BOOLEAN, false, new EvaluationContext(), new Metadata('client'), new Metadata('provider')),
+                                    FlagValueType::Boolean,
+                                    HookContextFactory::from('flagKey', FlagValueType::Boolean, false, new EvaluationContext(), new Metadata('client'), new Metadata('provider')),
                                     [$mutationHook],
                                     new HookHints(),
                                 );
@@ -137,13 +137,12 @@ class HooksTest extends TestCase
         // @phpstan-ignore-next-line
         $additionalEvaluationContext = (new HookExecutor())
                                 ->afterHooks(
-                                    FlagValueType::BOOLEAN,
-                                    HookContextFactory::from('flagKey', FlagValueType::BOOLEAN, false, new EvaluationContext(), new Metadata('client'), new Metadata('provider')),
+                                    FlagValueType::Boolean,
+                                    HookContextFactory::from('flagKey', FlagValueType::Boolean, false, new EvaluationContext(), new Metadata('client'), new Metadata('provider')),
                                     ResolutionDetailsFactory::fromSuccess(true),
                                     [$mutationHook],
                                     new HookHints(),
                                 );
-        // @phpstan-ignore-next-line
         $this->assertNull($additionalEvaluationContext);
     }
 
@@ -168,14 +167,13 @@ class HooksTest extends TestCase
         //@phpstan-ignore-next-line
         $additionalEvaluationContext = (new HookExecutor())
                                 ->errorHooks(
-                                    FlagValueType::BOOLEAN,
-                                    HookContextFactory::from('flagKey', FlagValueType::BOOLEAN, false, new EvaluationContext(), new Metadata('client'), new Metadata('provider')),
+                                    FlagValueType::Boolean,
+                                    HookContextFactory::from('flagKey', FlagValueType::Boolean, false, new EvaluationContext(), new Metadata('client'), new Metadata('provider')),
                                     new Exception('Error'),
                                     [$mutationHook],
                                     new HookHints(),
                                 );
 
-        //@phpstan-ignore-next-line
         $this->assertNull($additionalEvaluationContext);
     }
 
@@ -200,13 +198,12 @@ class HooksTest extends TestCase
         // @phpstan-ignore-next-line
         $additionalEvaluationContext = (new HookExecutor())
                                 ->finallyHooks(
-                                    FlagValueType::BOOLEAN,
-                                    HookContextFactory::from('flagKey', FlagValueType::BOOLEAN, false, new EvaluationContext(), new Metadata('client'), new Metadata('provider')),
+                                    FlagValueType::Boolean,
+                                    HookContextFactory::from('flagKey', FlagValueType::Boolean, false, new EvaluationContext(), new Metadata('client'), new Metadata('provider')),
                                     [$mutationHook],
                                     new HookHints(),
                                 );
 
-        // @phpstan-ignore-next-line
         $this->assertNull($additionalEvaluationContext);
     }
 
@@ -289,7 +286,7 @@ class HooksTest extends TestCase
 
         $hookContext = (new HookContextBuilder())->withClientMetadata($clientMetadata)->build();
 
-        (new HookExecutor())->beforeHooks(FlagValueType::BOOLEAN, $hookContext, [], new HookHints());
+        (new HookExecutor())->beforeHooks(FlagValueType::Boolean, $hookContext, [], new HookHints());
 
         $this->assertEquals($originalName, $hookContext->getClientMetadata()->getName());
     }
@@ -326,7 +323,7 @@ class HooksTest extends TestCase
 
         $hookContext = (new HookContextBuilder())->withProviderMetadata($providerMetadata)->build();
 
-        (new HookExecutor())->beforeHooks(FlagValueType::BOOLEAN, $hookContext, [], new HookHints());
+        (new HookExecutor())->beforeHooks(FlagValueType::Boolean, $hookContext, [], new HookHints());
 
         $this->assertEquals($originalName, $hookContext->getProviderMetadata()->getName());
     }
@@ -398,7 +395,7 @@ class HooksTest extends TestCase
 
         $api = APITestHelper::new();
 
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $client->getBooleanValue('flagKey', false, null, new EvaluationOptions([$hook], $expectedHookHints));
     }
@@ -436,7 +433,7 @@ class HooksTest extends TestCase
 
         $hookContext = new ImmutableHookContext();
 
-        (new HookExecutor())->beforeHooks(FlagValueType::BOOLEAN, $hookContext, [], $expectedHookHints);
+        (new HookExecutor())->beforeHooks(FlagValueType::Boolean, $hookContext, [], $expectedHookHints);
 
         $this->assertEquals('value', $expectedHookHints->get('key'));
     }

@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace OpenFeature\implementation\flags;
 
-use DateTime;
 use OpenFeature\implementation\common\Metadata;
+use OpenFeature\implementation\provider\ProviderAwareTrait;
 use OpenFeature\interfaces\flags\Client;
 use OpenFeature\interfaces\flags\EvaluationContext as EvaluationContextInterface;
 use OpenFeature\interfaces\flags\EvaluationDetails;
 use OpenFeature\interfaces\flags\EvaluationOptions;
+use OpenFeature\interfaces\provider\ProviderAware;
 
-class NoOpClient implements Client
+class NoOpClient implements Client, ProviderAware
 {
+    use ProviderAwareTrait;
+
     private const CLIENT_NAME = 'no-op-client';
 
     public function getBooleanValue(string $flagKey, bool $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptions $options = null): ?bool
@@ -69,7 +72,7 @@ class NoOpClient implements Client
         return $defaultValue;
     }
 
-    public function getObjectDetails(string $flagKey, bool | string | int | float | DateTime | array | null $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptions $options = null): EvaluationDetails
+    public function getObjectDetails(string $flagKey, bool | string | int | float | array | null $defaultValue, ?EvaluationContextInterface $context = null, ?EvaluationOptions $options = null): EvaluationDetails
     {
         return EvaluationDetailsFactory::from($flagKey, $defaultValue);
     }

@@ -41,7 +41,7 @@ class OpenFeatureClientTest extends TestCase
     public function testClientCanAddHooks(): void
     {
         $api = APITestHelper::new();
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         /** @var Hook|MockInterface $firstHook */
         $firstHook = $this->mockery(TestHook::class)->makePartial();
@@ -67,11 +67,12 @@ class OpenFeatureClientTest extends TestCase
     {
         $api = APITestHelper::new();
         $clientName = 'test-name';
-        $client = new OpenFeatureClient($api, $clientName, 'test-version');
+        $client = new OpenFeatureClient($api, $clientName);
 
         $metadata = $client->getMetadata();
 
         $this->assertEquals($clientName, $metadata->getName());
+        $this->assertEquals($clientName, $metadata->getDomain());
     }
 
     /**
@@ -83,7 +84,7 @@ class OpenFeatureClientTest extends TestCase
     public function testClientHasMethodForTypedFlagEvaluationValueForBoolean(): void
     {
         $api = APITestHelper::new();
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $expectedValue = true;
 
@@ -105,7 +106,7 @@ class OpenFeatureClientTest extends TestCase
     public function testClientHasMethodForTypedFlagEvaluationValueForFloat(): void
     {
         $api = APITestHelper::new();
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $expectedValue = 3.14;
 
@@ -127,7 +128,7 @@ class OpenFeatureClientTest extends TestCase
     public function testClientHasMethodForTypedFlagEvaluationValueForInteger(): void
     {
         $api = APITestHelper::new();
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $expectedValue = 42;
 
@@ -145,7 +146,7 @@ class OpenFeatureClientTest extends TestCase
     public function testClientHasMethodForTypedFlagEvaluationValueForString(): void
     {
         $api = APITestHelper::new();
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $expectedValue = 'STRING VALUE';
 
@@ -163,7 +164,7 @@ class OpenFeatureClientTest extends TestCase
     public function testClientHasMethodForTypedFlagEvaluationValueForStructure(): void
     {
         $api = APITestHelper::new();
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $expectedValue = [];
 
@@ -181,7 +182,7 @@ class OpenFeatureClientTest extends TestCase
     public function testClientValidatesReturnTypeForRetrievalOfBoolean(): void
     {
         $api = APITestHelper::new();
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $invalidValue = 'not a bool';
         $expectedValue = true;
@@ -205,7 +206,7 @@ class OpenFeatureClientTest extends TestCase
     public function testClientValidatesReturnTypeForRetrievalOfFloat(): void
     {
         $api = APITestHelper::new();
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $invalidValue = 'not a float';
         $expectedValue = 3.14;
@@ -229,7 +230,7 @@ class OpenFeatureClientTest extends TestCase
     public function testClientValidatesReturnTypeForRetrievalOfInteger(): void
     {
         $api = APITestHelper::new();
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $invalidValue = 'not an integer';
         $expectedValue = 42;
@@ -253,7 +254,7 @@ class OpenFeatureClientTest extends TestCase
     public function testClientValidatesReturnTypeForRetrievalOfString(): void
     {
         $api = APITestHelper::new();
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $invalidValue = 42;
         $expectedValue = 'a string';
@@ -277,7 +278,7 @@ class OpenFeatureClientTest extends TestCase
     public function testClientValidatesReturnTypeForRetrievalOfStructure(): void
     {
         $api = APITestHelper::new();
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $invalidValue = 42;
         $expectedValue = ['key' => 'value'];
@@ -301,7 +302,7 @@ class OpenFeatureClientTest extends TestCase
     public function testClientHasMethodForTypedFlagEvaluationDetailsForBoolean(): void
     {
         $api = APITestHelper::new();
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $expectedValue = true;
 
@@ -319,7 +320,7 @@ class OpenFeatureClientTest extends TestCase
     public function testClientHasMethodForTypedFlagEvaluationDetailsForFloat(): void
     {
         $api = APITestHelper::new();
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $expectedValue = 3.14;
 
@@ -337,7 +338,7 @@ class OpenFeatureClientTest extends TestCase
     public function testClientHasMethodForTypedFlagEvaluationDetailsForInteger(): void
     {
         $api = APITestHelper::new();
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $expectedValue = 42;
 
@@ -355,7 +356,7 @@ class OpenFeatureClientTest extends TestCase
     public function testClientHasMethodForTypedFlagEvaluationDetailsForString(): void
     {
         $api = APITestHelper::new();
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $expectedValue = 'STRING VALUE';
 
@@ -373,7 +374,7 @@ class OpenFeatureClientTest extends TestCase
     public function testClientHasMethodForTypedFlagEvaluationDetailsForStructure(): void
     {
         $api = APITestHelper::new();
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $expectedValue = [];
 
@@ -391,7 +392,7 @@ class OpenFeatureClientTest extends TestCase
     public function testClientEvaluationDetailsHasFlagValue(): void
     {
         $api = APITestHelper::new();
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $expectedValue = ['key' => 'value'];
 
@@ -421,7 +422,7 @@ class OpenFeatureClientTest extends TestCase
     public function testClientEvaluationDetailsHasFlagKey(): void
     {
         $api = APITestHelper::new();
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $expectedValue = 'flagKey';
         $actualDetails = $client->getBooleanDetails($expectedValue, false);
@@ -438,7 +439,7 @@ class OpenFeatureClientTest extends TestCase
     public function testClientEvaluationDetailsHasVariantField(): void
     {
         $api = APITestHelper::new();
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $expectedVariant = 'VARIANT VALUE';
 
@@ -461,7 +462,7 @@ class OpenFeatureClientTest extends TestCase
     public function testClientEvaluationDetailsHasReasonField(): void
     {
         $api = APITestHelper::new();
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $expectedReason = 'REASON VALUE';
 
@@ -484,7 +485,7 @@ class OpenFeatureClientTest extends TestCase
     public function testClientEvaluationDetailsAbnormalExecutionHasErrorCodeField(): void
     {
         $api = APITestHelper::new();
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $expectedErrorCode = ErrorCode::FLAG_NOT_FOUND();
 
@@ -510,7 +511,7 @@ class OpenFeatureClientTest extends TestCase
     public function testClientEvaluationDetailsAbnormalExecutionHasReasonField(): void
     {
         $api = APITestHelper::new();
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $expectedErrorCode = ErrorCode::FLAG_NOT_FOUND();
         $expectedReason = 'Failed to reach target server';
@@ -560,7 +561,7 @@ class OpenFeatureClientTest extends TestCase
             ->andThrows(new Exception('NETWORK_ERROR'));
         $api->setProvider($mockProvider);
 
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
         $client->setLogger($mockLogger);
 
         $value = $client->getBooleanValue('flagKey', false);
@@ -577,7 +578,7 @@ class OpenFeatureClientTest extends TestCase
     public function testEvaluationOptionsHooksAreCalled(): void
     {
         $api = APITestHelper::new();
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $expectedValue = true;
 
@@ -664,7 +665,7 @@ class OpenFeatureClientTest extends TestCase
         $api->setProvider($mockProvider);
         $api->setEvaluationContext(new EvaluationContext(null, new Attributes(['api' => 'api'])));
 
-        $client = new OpenFeatureClient($api, 'name', 'version');
+        $client = new OpenFeatureClient($api, 'name');
         $client->setEvaluationContext(new EvaluationContext(null, new Attributes(['client' => 'client'])));
 
         $testRunner = $this;
@@ -737,7 +738,7 @@ class OpenFeatureClientTest extends TestCase
         $api->setProvider($mockProvider);
         $api->setEvaluationContext(new EvaluationContext(null, new Attributes(['api' => 'api'])));
 
-        $client = new OpenFeatureClient($api, 'name', 'version');
+        $client = new OpenFeatureClient($api, 'name');
         $client->setEvaluationContext(new EvaluationContext(null, new Attributes(['client' => 'client'])));
 
         $testRunner = $this;
@@ -783,7 +784,7 @@ class OpenFeatureClientTest extends TestCase
         $api = APITestHelper::new();
         $api->setProvider($mockProvider);
 
-        $client = new OpenFeatureClient($api, 'name', 'version');
+        $client = new OpenFeatureClient($api, 'name');
 
         $mockHook->shouldReceive('before')->andReturnUsing(function () use ($mockHook, $mockProvider) {
             $mockHook->shouldNotHaveReceived('after');
@@ -864,7 +865,7 @@ class OpenFeatureClientTest extends TestCase
         $api = APITestHelper::new();
         $api->setProvider($mockProvider);
 
-        $client = new OpenFeatureClient($api, 'name', 'version');
+        $client = new OpenFeatureClient($api, 'name');
 
         $evaluationContext = new EvaluationContext(null, new Attributes([
             'oldKey' => 'oldValue',
@@ -923,7 +924,7 @@ class OpenFeatureClientTest extends TestCase
         });
 
         $api = APITestHelper::new();
-        $client = new OpenFeatureClient($api, 'name', 'version');
+        $client = new OpenFeatureClient($api, 'name');
 
         $evaluationContext = new EvaluationContext(null, new Attributes([
             'initialKey' => 'initialValue',
@@ -962,7 +963,7 @@ class OpenFeatureClientTest extends TestCase
         $api->setProvider($mockProvider);
         $api->addHooks($mockHook);
 
-        $client = new OpenFeatureClient($api, 'name', 'version');
+        $client = new OpenFeatureClient($api, 'name');
 
         $actualValue = $client->getBooleanValue('key', false);
 
@@ -999,7 +1000,7 @@ class OpenFeatureClientTest extends TestCase
         $api->setProvider($mockProvider);
         $api->addHooks($mockHook);
 
-        $client = new OpenFeatureClient($api, 'name', 'version');
+        $client = new OpenFeatureClient($api, 'name');
 
         $actualValue = $client->getBooleanValue('key', false);
 
@@ -1036,7 +1037,7 @@ class OpenFeatureClientTest extends TestCase
         $api->setProvider($mockProvider);
         $api->addHooks($mockHook);
 
-        $client = new OpenFeatureClient($api, 'name', 'version');
+        $client = new OpenFeatureClient($api, 'name');
 
         $actualValue = $client->getBooleanValue('key', false);
 
@@ -1062,7 +1063,7 @@ class OpenFeatureClientTest extends TestCase
         $api->setProvider($mockProvider);
         $api->setEvaluationContext(new EvaluationContext(null, new Attributes(['api' => 'api'])));
 
-        $client = new OpenFeatureClient($api, 'name', 'version');
+        $client = new OpenFeatureClient($api, 'name');
         $client->setEvaluationContext(new EvaluationContext(null, new Attributes(['client' => 'client'])));
 
         $testRunner = $this;
@@ -1128,7 +1129,7 @@ class OpenFeatureClientTest extends TestCase
         $api->setProvider($mockProvider);
         $api->addHooks($apiHook);
 
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
         $client->addHooks($clientHook);
 
         $actualValue = $client->getBooleanValue('key', false, new EvaluationContext(null, new Attributes(['invocation' => 'invocation'])), new EvaluationOptions([$invocationHook]));
@@ -1183,7 +1184,7 @@ class OpenFeatureClientTest extends TestCase
         $api->setProvider($testProvider);
         $api->addHooks($apiHook);
 
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
         $client->addHooks($clientHook);
 
         $actualValue = $client->getBooleanValue('key', false, new EvaluationContext(null, new Attributes(['invocation' => 'invocation'])), new EvaluationOptions([$invocationHook]));
@@ -1240,7 +1241,7 @@ class OpenFeatureClientTest extends TestCase
         $api->setProvider($mockProvider);
         $api->addHooks($apiHook);
 
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
         $client->addHooks($clientHook);
 
         $actualValue = $client->getBooleanValue('key', false, new EvaluationContext(null, new Attributes(['invocation' => 'invocation'])), new EvaluationOptions([$invocationHook]));
@@ -1295,7 +1296,7 @@ class OpenFeatureClientTest extends TestCase
         $api->setProvider($testProvider);
         $api->addHooks($apiHook);
 
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
         $client->addHooks($clientHook);
 
         $actualValue = $client->getBooleanValue('key', false, new EvaluationContext(null, new Attributes(['invocation' => 'invocation'])), new EvaluationOptions([$invocationHook]));
@@ -1326,7 +1327,7 @@ class OpenFeatureClientTest extends TestCase
         $api->setProvider($mockProvider);
         $api->addHooks($erroringHook, $subsequentHook);
 
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $actualValue = $client->getBooleanValue('key', false);
 
@@ -1356,7 +1357,7 @@ class OpenFeatureClientTest extends TestCase
         $api->setProvider($mockProvider);
         $api->addHooks($erroringHook, $subsequentHook);
 
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $actualValue = $client->getBooleanValue('key', false);
 
@@ -1386,7 +1387,7 @@ class OpenFeatureClientTest extends TestCase
         $api->setProvider($mockProvider);
         $api->addHooks($errorHook, $failingBeforeHook);
 
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $actualValue = $client->getBooleanValue('key', false);
 
@@ -1416,7 +1417,7 @@ class OpenFeatureClientTest extends TestCase
         $api->setProvider($mockProvider);
         $api->addHooks($errorHook, $failingAfterHook);
 
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $actualValue = $client->getBooleanValue('key', false);
 
@@ -1446,7 +1447,7 @@ class OpenFeatureClientTest extends TestCase
         $api->setProvider($mockProvider);
         $api->addHooks($erroringHook, $subsequentHook);
 
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $actualValue = $client->getBooleanValue('key', false);
 
@@ -1477,7 +1478,7 @@ class OpenFeatureClientTest extends TestCase
         // error hooks run in reverse order
         $api->addHooks($subsequentHook, $erroringHook);
 
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $actualValue = $client->getBooleanValue('key', false);
 
@@ -1504,22 +1505,11 @@ class OpenFeatureClientTest extends TestCase
         $api->setProvider($mockProvider);
         $api->addHooks($erroringBeforeHook);
 
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
+        $client = new OpenFeatureClient($api, 'test-name');
 
         $actualValue = $client->getBooleanValue('key', false);
 
         $this->assertEquals($actualValue, false);
-    }
-
-    public function testCanGetVersion(): void
-    {
-        $expectedVersion = 'a.b.c';
-
-        $client = new OpenFeatureClient(APITestHelper::new(), 'name', $expectedVersion);
-
-        $actualVersion = $client->getVersion();
-
-        $this->assertEquals($expectedVersion, $actualVersion);
     }
 
     /**

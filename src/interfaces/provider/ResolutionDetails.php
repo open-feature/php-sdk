@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace OpenFeature\interfaces\provider;
 
-use DateTime;
+use OpenFeature\interfaces\flags\FlagMetadata;
 
 /**
  * A structure which contains a subset of the fields defined in the evaluation
@@ -21,9 +21,9 @@ interface ResolutionDetails
      * In cases of normal execution, the provider MUST populate the flag resolution structure's value field with
      * the resolved flag value.
      *
-     * @return bool|string|int|float|DateTime|mixed[]|null
+     * @return bool|string|int|float|mixed[]|null
      */
-    public function getValue(): bool | string | int | float | DateTime | array | null;
+    public function getValue(): bool | string | int | float | array | null;
 
     /**
      * ---------------
@@ -51,4 +51,13 @@ interface ResolutionDetails
      * with a string identifier corresponding to the returned flag value.
      */
     public function getVariant(): ?string;
+
+    /**
+     * ---------------
+     * Requirement 2.2.10
+     * ---------------
+     * `flag metadata` **MUST** be a structure supporting the definition of arbitrary properties, with keys of type
+     * `string`, and values of type `boolean | string | number`.
+     */
+    public function getFlagMetadata(): FlagMetadata;
 }

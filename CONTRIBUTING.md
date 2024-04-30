@@ -4,17 +4,29 @@
 
 ### System Requirements
 
-PHP 8+ is required.
+PHP 8.1+ is required.
 
 ### Compilation target(s)
 
-We target compatibility with PHP versions 8.0, 8.1, and 8.2.
+We target compatibility with supported versions of PHP. Currently, this includes PHP versions 8.1, 8.2, and 8.3.
 
 ### Installation and Dependencies
 
 Install dependencies with `composer install`.
 
 We value having as few runtime dependencies as possible. The addition of any dependencies requires careful consideration and review.
+
+#### asdf
+
+This package has a `.tool-versions` file for use with PHP version managers like `asdf`.
+
+#### Nix
+
+This package includes a `flake.nix` file which defines reproducible development shells powered by [Nix](https://nixos.org/). You can manually drop into a shell with `nix develop`, or provide a specific PHP minor version target with `nix develop .#php82`.
+
+#### direnv
+
+This package includes a `.envrc` file which automatically infers the usage of the default shell for the project, which is set to the minimum supported version of PHP for the project.
 
 ### Testing
 
