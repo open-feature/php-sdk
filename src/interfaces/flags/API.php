@@ -6,8 +6,6 @@ namespace OpenFeature\interfaces\flags;
 
 use OpenFeature\interfaces\common\Disposable;
 use OpenFeature\interfaces\common\Metadata;
-use OpenFeature\interfaces\events\EventDetails;
-use OpenFeature\interfaces\events\ProviderEvent;
 use OpenFeature\interfaces\hooks\HooksAdder;
 use OpenFeature\interfaces\hooks\HooksGetter;
 use OpenFeature\interfaces\provider\Provider;
@@ -23,6 +21,4 @@ interface API extends Disposable, EvaluationContextAware, HooksAdder, HooksGette
     public function clearHooks(): void;
 
     public function setClientProvider(string $clientDomain, Provider $provider): void;
-
-    public function dispatch(ProviderEvent $providerEvent, EventDetails $eventDetails): void;
 }

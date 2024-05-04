@@ -8,6 +8,7 @@ use OpenFeature\interfaces\common\Disposable;
 use OpenFeature\interfaces\common\MetadataGetter;
 use OpenFeature\interfaces\flags\EvaluationContext;
 use OpenFeature\interfaces\hooks\HooksGetter;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerAwareInterface;
 
 /**
@@ -72,4 +73,6 @@ interface Provider extends Disposable, HooksGetter, Initializable, LoggerAwareIn
      * of the provider, with possible values NOT_READY, READY, or ERROR.
      */
     public function getStatus(): ProviderState;
+
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void;
 }

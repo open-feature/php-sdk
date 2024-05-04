@@ -33,6 +33,7 @@ use OpenFeature\interfaces\provider\ProviderAware;
 use OpenFeature\interfaces\provider\Reason;
 use OpenFeature\interfaces\provider\ResolutionDetails;
 use OpenFeature\interfaces\provider\ThrowableWithResolutionError;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerAwareInterface;
 use Throwable;
 
@@ -46,6 +47,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface, ProviderAware
     use ProviderAwareTrait;
 
     private ?EvaluationContextInterface $evaluationContext = null;
+    private ?EventDispatcherInterface $eventDispatcher = null;
 
     /**
      * Client for evaluating the flag. There may be multiples of these floating around.
@@ -76,6 +78,19 @@ class OpenFeatureClient implements Client, LoggerAwareInterface, ProviderAware
     public function setEvaluationContext(EvaluationContextInterface $context): void
     {
         $this->evaluationContext = $context;
+    }
+
+    /**
+     * -----------------
+     * Requirement 5.1.1
+     * -----------------
+     * The provider MAY define a mechanism for signaling the occurrence of one of a set
+     * of events, including PROVIDER_READY, PROVIDER_ERROR, PROVIDER_CONFIGURATION_CHANGED
+     * and PROVIDER_STALE, with a provider event details payload.
+     */
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
+    {
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**

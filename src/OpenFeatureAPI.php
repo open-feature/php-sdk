@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace OpenFeature;
 
 use League\Event\EventDispatcher;
-use OpenFeature\implementation\events\Event;
+use OpenFeature\implementation\events\listener\ListenerRegistry;
 use OpenFeature\implementation\flags\NoOpClient;
 use OpenFeature\implementation\provider\ProviderAwareTrait;
 use OpenFeature\interfaces\common\LoggerAwareTrait;
 use OpenFeature\interfaces\common\Metadata;
-use OpenFeature\interfaces\events\EventDetails;
+use OpenFeature\interfaces\events\Priority;
 use OpenFeature\interfaces\events\ProviderEvent;
 use OpenFeature\interfaces\flags\API;
 use OpenFeature\interfaces\flags\Client;
@@ -38,7 +38,8 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
 
     private static ?OpenFeatureAPI $instance = null;
 
-    private EventDispatcher $dispatcher;
+    private ListenerRegistry $listenerRegistry;
+    private EventDispatcher $eventDispatcher;
 
     /** @var (Client & ProviderAware) | null $defaultClient */
     private $defaultClient;
@@ -77,7 +78,8 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
      */
     private function __construct()
     {
-        $this->dispatcher = new EventDispatcher();
+        $this->listenerRegistry = new ListenerRegistry();
+        $this->eventDispatcher = new EventDispatcher($this->listenerRegistry);
     }
 
     /**
@@ -92,6 +94,8 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
         if (!isset($this->clientMap[$clientDomain])) {
             return;
         }
+
+        $provider->setEventDispatcher($this->eventDispatcher);
 
         $this->clientMap[$clientDomain]->setProvider($provider);
     }
@@ -119,7 +123,6 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
     {
         try {
             $isDefaultClient = is_null($domain);
-            $domain = $domain ?? self::class;
 
             if ($isDefaultClient) {
                 $currentClient = $this->defaultClient ?? null;
@@ -134,6 +137,7 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
             try {
                 $client = new OpenFeatureClient($this, $domain);
                 $client->setLogger($this->getLogger());
+                $client->setEventDispatcher($this->eventDispatcher);
             } catch (Throwable $err) {
                 $client = new NoOpClient();
             }
@@ -206,40 +210,24 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
 
     /**
      * -----------------
-     * Requirement 5.1.1
+     * Requirement 5.2.2
      * -----------------
-     * The provider MAY define a mechanism for signaling the occurrence of one of a set
-     * of events, including PROVIDER_READY, PROVIDER_ERROR, PROVIDER_CONFIGURATION_CHANGED
-     * and PROVIDER_STALE, with a provider event details payload.
+     * The API MUST provide a function for associating handler functions with a particular
+     * provider event type.
      */
-    public function dispatch(ProviderEvent $providerEvent, EventDetails $eventDetails): void
-    {
-        $this->dispatcher->dispatch(new Event($providerEvent->value, $eventDetails));
-    }
-
     public function addHandler(ProviderEvent $providerEvent, callable $handler): void
     {
-        $this->dispatcher->subscribeTo($providerEvent->value, $handler);
+        $this->listenerRegistry->subscribeTo($providerEvent, $handler, Priority::API);
     }
 
+    /**
+     * -----------------
+     * Requirement 5.2.7
+     * -----------------
+     * The API and client MUST provide a function allowing the removal of event handlers.
+     */
     public function removeHandler(ProviderEvent $providerEvent, callable $handler): void
     {
-    }
-
-    /**
-     * TESTING UTILITY
-     */
-    protected function resetClients(): void
-    {
-        $this->defaultClient = null;
-        $this->clientMap = [];
-    }
-
-    /**
-     * TESTING UTILITY
-     */
-    protected function resetProviders(): void
-    {
-        $this->provider = null;
+        $this->listenerRegistry->unsubscribeFrom($providerEvent, $handler);
     }
 }
