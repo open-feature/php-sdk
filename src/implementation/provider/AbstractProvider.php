@@ -23,7 +23,7 @@ abstract class AbstractProvider implements Provider
 
     public function getMetadata(): MetadataInterface
     {
-        return new Metadata(self::$NAME);
+        return new Metadata(static::$NAME);
     }
 
     abstract public function resolveBooleanValue(string $flagKey, bool $defaultValue, ?EvaluationContext $context = null): ResolutionDetailsInterface;

@@ -143,7 +143,6 @@ class HooksTest extends TestCase
                                     [$mutationHook],
                                     new HookHints(),
                                 );
-        // @phpstan-ignore-next-line
         $this->assertNull($additionalEvaluationContext);
     }
 
@@ -175,7 +174,6 @@ class HooksTest extends TestCase
                                     new HookHints(),
                                 );
 
-        //@phpstan-ignore-next-line
         $this->assertNull($additionalEvaluationContext);
     }
 
@@ -206,7 +204,6 @@ class HooksTest extends TestCase
                                     new HookHints(),
                                 );
 
-        // @phpstan-ignore-next-line
         $this->assertNull($additionalEvaluationContext);
     }
 
