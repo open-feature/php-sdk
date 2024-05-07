@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.7](https://github.com/open-feature/php-sdk/compare/2.0.6...2.0.7) (2024-05-07)
+
+
+### 🧹 Chore
+
+* **deps:** update codecov/codecov-action action to v4 ([#117](https://github.com/open-feature/php-sdk/issues/117)) ([b3f6d6f](https://github.com/open-feature/php-sdk/commit/b3f6d6f20d9e24d02a2e7c6e0d4a3d1e3195ebb2))
+* **deps:** update dependency vimeo/psalm to ~5.24.0 ([#113](https://github.com/open-feature/php-sdk/issues/113)) ([03d4a69](https://github.com/open-feature/php-sdk/commit/03d4a698b05f8a1f77ca3d2028166ee2a7baa299))
+
 ## [2.0.6](https://github.com/open-feature/php-sdk/compare/2.0.5...2.0.6) (2024-05-07)
 
 
