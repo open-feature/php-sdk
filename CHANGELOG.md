@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.0.6](https://github.com/open-feature/php-sdk/compare/2.0.5...2.0.6) (2024-05-07)
+
+
+### 🐛 Bug Fixes
+
+* Improve error handling in OpenFeatureClient ([#121](https://github.com/open-feature/php-sdk/issues/121)) ([58e97d2](https://github.com/open-feature/php-sdk/commit/58e97d2aade08efb924beefcabde9268ffaeeb2f))
+* Use late static binding in AbstractProvider ([#123](https://github.com/open-feature/php-sdk/issues/123)) ([2123274](https://github.com/open-feature/php-sdk/commit/2123274111df939c63543dd8328057eccc904851))
+
+
+### 🧹 Chore
+
+* **deps:** update dependency psalm/plugin-phpunit to ^0.19.0 ([#119](https://github.com/open-feature/php-sdk/issues/119)) ([09f9d47](https://github.com/open-feature/php-sdk/commit/09f9d47a95d59c22fd558747fe6bf4b674eb1d36))
+
 ## [2.0.5](https://github.com/open-feature/php-sdk/compare/2.0.4...2.0.5) (2024-03-15)
 
 
