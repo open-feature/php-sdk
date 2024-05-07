@@ -499,6 +499,7 @@ class OpenFeatureClientTest extends TestCase
         $resolutionError = $actualDetails->getError();
         $this->assertNotNull($resolutionError);
         $this->assertEquals($expectedErrorCode, $resolutionError->getResolutionErrorCode());
+        $this->assertEquals('flagKey', $actualDetails->getFlagKey());
     }
 
     /**
@@ -563,9 +564,14 @@ class OpenFeatureClientTest extends TestCase
         $client = new OpenFeatureClient($api, 'test-name', 'test-version');
         $client->setLogger($mockLogger);
 
-        $value = $client->getBooleanValue('flagKey', false);
+        $details = $client->getBooleanDetails('flagKey', false);
 
-        $this->assertEquals($value, false);
+        $this->assertEquals(false, $details->getValue());
+        $this->assertEquals('flagKey', $details->getFlagKey());
+
+        $this->assertInstanceOf(ResolutionError::class, $details->getError());
+        $this->assertEquals(ErrorCode::GENERAL(), $details->getError()->getResolutionErrorCode());
+        $this->assertEquals('NETWORK_ERROR', $details->getError()->getResolutionErrorMessage());
     }
 
     /**
