@@ -18,8 +18,8 @@
   </a>
   <!-- x-release-please-start-version -->
 
-  <a href="https://github.com/open-feature/php-sdk/releases/tag/2.0.6">
-    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v2.0.6&color=blue&style=for-the-badge" />
+  <a href="https://github.com/open-feature/php-sdk/releases/tag/2.0.7">
+    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v2.0.7&color=blue&style=for-the-badge" />
   </a>  
 
   <!-- x-release-please-end -->
