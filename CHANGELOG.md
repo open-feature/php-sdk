@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.8](https://github.com/open-feature/php-sdk/compare/2.0.7...2.0.8) (2024-08-05)
+
+
+### 🧹 Chore
+
+* **deps:** update dependency vimeo/psalm to ~5.25.0 ([#128](https://github.com/open-feature/php-sdk/issues/128)) ([2b041dd](https://github.com/open-feature/php-sdk/commit/2b041dd5d006cc9e735ceba4271f210e295c6494))
+
 ## [2.0.7](https://github.com/open-feature/php-sdk/compare/2.0.6...2.0.7) (2024-05-07)
 
 
