@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.9](https://github.com/open-feature/php-sdk/compare/2.0.8...2.0.9) (2024-09-25)
+
+
+### 🧹 Chore
+
+* **deps:** update dependency phpstan/phpstan to ~1.12.0 ([#127](https://github.com/open-feature/php-sdk/issues/127)) ([514ad05](https://github.com/open-feature/php-sdk/commit/514ad05c1d7d765833cfe9e8e8e0d6bc5e6480bd))
+* **deps:** update dependency vimeo/psalm to ~5.26.0 ([#131](https://github.com/open-feature/php-sdk/issues/131)) ([2c7a65e](https://github.com/open-feature/php-sdk/commit/2c7a65e18eb427268babdee0716447309b9ea659))
+
 ## [2.0.8](https://github.com/open-feature/php-sdk/compare/2.0.7...2.0.8) (2024-08-05)
 
 
