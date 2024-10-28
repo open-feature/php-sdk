@@ -127,4 +127,17 @@ class EvaluationContextTest extends TestCase
 
         $this->assertEquals($expectedEvaluationContextAttributes, $actualEvaluationContextAttributes);
     }
+
+    public function testEvaluationContextMergingTargetingKey(): void
+    {
+        $firstEvaluationContext = new EvaluationContext('default');
+        $secondEvaluationContext = new EvaluationContext('merged_key');
+
+        $expectedEvaluationContextAttributes = 'merged_key';
+
+        $actualEvaluationContext = EvaluationContext::merge($firstEvaluationContext, $secondEvaluationContext);
+        $actualEvaluationContextAttributes = $actualEvaluationContext->getTargetingKey();
+
+        $this->assertEquals($expectedEvaluationContextAttributes, $actualEvaluationContextAttributes);
+    }
 }
