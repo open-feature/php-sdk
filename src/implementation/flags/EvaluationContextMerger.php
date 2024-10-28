@@ -47,10 +47,10 @@ trait EvaluationContextMerger
 
                 /** @var ?string $newTargetingKey */
                 $newTargetingKey = null;
-                if (!is_null($calculatedTargetingKey) && strlen($calculatedTargetingKey) > 0) {
-                    $newTargetingKey = $calculatedTargetingKey;
-                } elseif (!is_null($additionalTargetingKey) && strlen($additionalTargetingKey) > 0) {
+                if (!is_null($additionalTargetingKey) && strlen($additionalTargetingKey) > 0) {
                     $newTargetingKey = $additionalTargetingKey;
+                } elseif (!is_null($calculatedTargetingKey) && strlen($calculatedTargetingKey) > 0) {
+                    $newTargetingKey = $calculatedTargetingKey;
                 }
 
                 $mergedAttributes = AttributesMerger::merge(
