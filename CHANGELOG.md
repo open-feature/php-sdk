@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.10](https://github.com/open-feature/php-sdk/compare/2.0.9...2.0.10) (2024-10-28)
+
+
+### 🐛 Bug Fixes
+
+* correct merging of contexts with targetingKey ([#136](https://github.com/open-feature/php-sdk/issues/136)) ([3f141d7](https://github.com/open-feature/php-sdk/commit/3f141d7a77099dd272164eacbbc7c0d90cec27ed))
+
 ## [2.0.9](https://github.com/open-feature/php-sdk/compare/2.0.8...2.0.9) (2024-09-25)
 
 
