@@ -9,7 +9,7 @@ interface EventDetails
     public function getClientName(): string;
 
   /**
-   * @return Array<string>
+   * @return array<string>
    */
     public function getChangedFlags(): array;
 

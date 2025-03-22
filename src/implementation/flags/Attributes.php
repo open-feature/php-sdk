@@ -11,7 +11,7 @@ use OpenFeature\interfaces\flags\Attributes as AttributesInterface;
 class Attributes implements AttributesInterface
 {
     /**
-     * @param Array<array-key, bool|string|int|float|DateTime|mixed[]|null> $attributesMap
+     * @param array<array-key, bool|string|int|float|DateTime|mixed[]|null> $attributesMap
      */
     public function __construct(protected array $attributesMap = [])
     {
@@ -20,7 +20,7 @@ class Attributes implements AttributesInterface
     /**
      * Return key-type pairs of the attributes
      *
-     * @return Array<int, string>
+     * @return array<int, string>
      */
     public function keys(): array
     {
@@ -36,7 +36,7 @@ class Attributes implements AttributesInterface
     }
 
     /**
-     * @return Array<array-key, bool|string|int|float|DateTime|mixed[]|null>
+     * @return array<array-key, bool|string|int|float|DateTime|mixed[]|null>
      */
     public function toArray(): array
     {

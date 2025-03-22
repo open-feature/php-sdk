@@ -13,7 +13,7 @@ use function key_exists;
 class HookHints implements HookHintsInterface
 {
     /**
-     * @param Array<string, bool | string | float | int | DateTime | mixed[] | null> $hints
+     * @param array<string, bool | string | float | int | DateTime | mixed[] | null> $hints
      */
     public function __construct(private readonly array $hints = [])
     {

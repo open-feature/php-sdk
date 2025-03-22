@@ -13,14 +13,14 @@ interface FlagMetadata
     /**
      * Return key-type pairs of the attributes
      *
-     * @return Array<int, string>
+     * @return array<int, string>
      */
     public function keys(): array;
 
     public function get(string $key): bool | string | int | float | null;
 
     /**
-     * @return Array<array-key, bool|string|int|float|null>
+     * @return array<array-key, bool|string|int|float|null>
      */
     public function toArray(): array;
 }
