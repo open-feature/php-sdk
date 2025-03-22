@@ -13,7 +13,7 @@ use function key_exists;
 class EventMetadata implements EventMetadataInterface
 {
     /**
-     * @param Array<string, bool|string|int|float> $eventMetadataMap
+     * @param array<string, bool|string|int|float> $eventMetadataMap
      */
     public function __construct(protected array $eventMetadataMap = [])
     {
@@ -27,7 +27,7 @@ class EventMetadata implements EventMetadataInterface
     /**
      * Return key-type pairs of the EventMetadata
      *
-     * @return Array<int, string>
+     * @return array<int, string>
      */
     public function keys(): array
     {
@@ -44,7 +44,7 @@ class EventMetadata implements EventMetadataInterface
     }
 
     /**
-     * @return Array<string, bool|string|int|float>
+     * @return array<string, bool|string|int|float>
      */
     public function toArray(): array
     {

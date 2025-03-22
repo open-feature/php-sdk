@@ -11,7 +11,7 @@ interface Attributes
     /**
      * Return key-type pairs of the attributes
      *
-     * @return Array<int, string>
+     * @return array<int, string>
      */
     public function keys(): array;
 
@@ -21,7 +21,7 @@ interface Attributes
     public function get(string $key): bool | string | int | float | DateTime | array | null;
 
     /**
-     * @return Array<array-key, bool|string|int|float|DateTime|mixed[]|null>
+     * @return array<array-key, bool|string|int|float|DateTime|mixed[]|null>
      */
     public function toArray(): array;
 }

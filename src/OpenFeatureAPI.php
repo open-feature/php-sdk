@@ -42,7 +42,7 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
 
     /** @var (Client & ProviderAware) | null $defaultClient */
     private $defaultClient;
-    /** @var Array<string,Client & ProviderAware> $clientMap */
+    /** @var array<string,Client & ProviderAware> $clientMap */
     private array $clientMap = [];
 
     /** @var Hook[] $hooks */

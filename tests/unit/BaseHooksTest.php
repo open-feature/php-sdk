@@ -50,7 +50,7 @@ class BaseHooksTest extends TestCase
     }
 
   /**
-   * @return Array<Array<mixed>>
+   * @return array<array<mixed>>
    */
     public function dataBooleanHook(): array
     {
@@ -94,7 +94,7 @@ class BaseHooksTest extends TestCase
     }
 
   /**
-   * @return Array<Array<mixed>>
+   * @return array<array<mixed>>
    */
     public function dataFloatHook(): array
     {
@@ -138,7 +138,7 @@ class BaseHooksTest extends TestCase
     }
 
   /**
-   * @return Array<Array<mixed>>
+   * @return array<array<mixed>>
    */
     public function dataIntegerHook(): array
     {
@@ -182,7 +182,7 @@ class BaseHooksTest extends TestCase
     }
 
   /**
-   * @return Array<Array<mixed>>
+   * @return array<array<mixed>>
    */
     public function dataObjectHook(): array
     {
@@ -226,7 +226,7 @@ class BaseHooksTest extends TestCase
     }
 
   /**
-   * @return Array<Array<mixed>>
+   * @return array<array<mixed>>
    */
     public function dataStringHook(): array
     {

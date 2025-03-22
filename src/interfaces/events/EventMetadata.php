@@ -16,7 +16,7 @@ interface EventMetadata
     public function keys(): array;
 
     /**
-     * @return Array<array-key, bool|string|int|float>
+     * @return array<array-key, bool|string|int|float>
      */
     public function toArray(): array;
 }

@@ -10,7 +10,7 @@ use OpenFeature\interfaces\flags\FlagMetadata as FlagMetadataInterface;
 class FlagMetadata implements FlagMetadataInterface
 {
     /**
-     * @param Array<array-key, bool|string|int|float> $metadata
+     * @param array<array-key, bool|string|int|float> $metadata
      */
     public function __construct(protected array $metadata = [])
     {
@@ -19,7 +19,7 @@ class FlagMetadata implements FlagMetadataInterface
     /**
      * Return key-type pairs of the attributes
      *
-     * @return Array<int, string>
+     * @return array<int, string>
      */
     public function keys(): array
     {
@@ -32,7 +32,7 @@ class FlagMetadata implements FlagMetadataInterface
     }
 
     /**
-     * @return Array<array-key, bool|string|int|float>
+     * @return array<array-key, bool|string|int|float>
      */
     public function toArray(): array
     {

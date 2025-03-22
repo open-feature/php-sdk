@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace OpenFeature;
 
 use OpenFeature\implementation\common\Metadata;
-use OpenFeature\implementation\common\ValueTypeValidator;
 use OpenFeature\implementation\errors\InvalidResolutionValueError;
 use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\implementation\flags\EvaluationDetailsBuilder;
@@ -346,7 +345,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface, ProviderAware
                 $mergedContext,
             );
 
-            if (!$resolutionDetails->getError() && !ValueTypeValidator::is($flagValueType, $resolutionDetails->getValue())) {
+            if (!$resolutionDetails->getError() && $flagValueType !== FlagValueType::tryFromResolutionDetails($resolutionDetails)) {
                 throw new InvalidResolutionValueError($flagValueType->value);
             }
 
@@ -388,33 +387,14 @@ class OpenFeatureClient implements Client, LoggerAwareInterface, ProviderAware
         Provider $provider,
         EvaluationContextInterface $context,
     ): ResolutionDetails {
-        switch ($type->value) {
-            case FlagValueType::Boolean->value:
-                /** @var bool $defaultValue */;
-                $defaultValue = $defaultValue;
-
-                return $provider->resolveBooleanValue($key, $defaultValue, $context);
-            case FlagValueType::String->value:
-                /** @var string $defaultValue */;
-                $defaultValue = $defaultValue;
-
-                return $provider->resolveStringValue($key, $defaultValue, $context);
-            case FlagValueType::Integer->value:
-                /** @var int $defaultValue */;
-                $defaultValue = $defaultValue;
-
-                return $provider->resolveIntegerValue($key, $defaultValue, $context);
-            case FlagValueType::Float->value:
-                /** @var float $defaultValue */;
-                $defaultValue = $defaultValue;
-
-                return $provider->resolveFloatValue($key, $defaultValue, $context);
-            case FlagValueType::Object->value:
-                /** @var mixed[] $defaultValue */;
-                $defaultValue = $defaultValue;
-
-                return $provider->resolveObjectValue($key, $defaultValue, $context);
-        }
+        /** @psalm-suppress InvalidArgument,PossiblyInvalidArgument,PossiblyInvalidCast */
+        return match ($type) {
+            FlagValueType::Boolean => $provider->resolveBooleanValue($key, $defaultValue, $context), // @phpstan-ignore argument.type
+            FlagValueType::String => $provider->resolveStringValue($key, $defaultValue, $context), // @phpstan-ignore argument.type
+            FlagValueType::Integer => $provider->resolveIntegerValue($key, $defaultValue, $context), // @phpstan-ignore argument.type
+            FlagValueType::Float => $provider->resolveFloatValue($key, $defaultValue, $context), // @phpstan-ignore argument.type
+            FlagValueType::Object => $provider->resolveObjectValue($key, $defaultValue, $context), // @phpstan-ignore argument.type
+        };
     }
 
     private function determineProvider(): Provider

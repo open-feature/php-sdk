@@ -20,7 +20,7 @@ class StringHelperTest extends TestCase
     }
 
     /**
-     * @return Array<Array<string>>
+     * @return array<array<string>>
      */
     public function capitalizeData(): array
     {
@@ -46,7 +46,7 @@ class StringHelperTest extends TestCase
     }
 
     /**
-     * @return Array<Array<string>>
+     * @return array<array<string>>
      */
     public function decapitalizeData(): array
     {

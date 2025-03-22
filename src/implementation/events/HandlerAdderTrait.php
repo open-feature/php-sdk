@@ -7,7 +7,7 @@ namespace OpenFeature\implementation\events;
 trait HandlerAdderTrait
 {
     /**
-     * @var Array<callable> $handlers
+     * @var array<callable> $handlers
      */
     private array $handlers = [];
 }
