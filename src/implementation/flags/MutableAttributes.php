@@ -21,7 +21,7 @@ class MutableAttributes extends Attributes implements MutableAttributesInterface
              *
              * @return array<string, bool|string|int|float|DateTime|mixed[]|null>
              */
-            function (array $map, string $key) use ($attributes) {
+            static function (array $map, string $key) use ($attributes) {
                 $map[$key] = $attributes->get($key);
 
                 return $map;
