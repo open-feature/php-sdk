@@ -64,6 +64,7 @@
             "phpstan/extension-installer": true,
             "ramsey/composer-repl": true
         },
+        "lock": false,
         "sort-packages": true
     },
     "extra": {
