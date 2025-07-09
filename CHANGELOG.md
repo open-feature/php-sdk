@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.0.11](https://github.com/open-feature/php-sdk/compare/2.0.10...2.0.11) (2025-07-09)
+
+
+### 🐛 Bug Fixes
+
+* **deps:** update dependency open-feature/flagd-provider to v1 ([#130](https://github.com/open-feature/php-sdk/issues/130)) ([398820c](https://github.com/open-feature/php-sdk/commit/398820cd28c04d294526cc73a6fdce897aee3dc0))
+
+
+### 🧹 Chore
+
+* reduce unnecessary package exports ([#148](https://github.com/open-feature/php-sdk/issues/148)) ([845d9d8](https://github.com/open-feature/php-sdk/commit/845d9d8d1b33b975b9a0871ffd6679096fa46fa0))
+
 ## [2.0.10](https://github.com/open-feature/php-sdk/compare/2.0.9...2.0.10) (2024-10-28)
 
 
