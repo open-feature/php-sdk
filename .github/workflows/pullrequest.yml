@@ -23,7 +23,7 @@ jobs:
         php-version: ['8.0', '8.1', '8.2']
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: true
           fetch-depth: 0
