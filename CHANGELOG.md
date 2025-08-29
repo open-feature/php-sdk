@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.12](https://github.com/open-feature/php-sdk/compare/2.0.11...2.0.12) (2025-08-29)
+
+
+### 🧹 Chore
+
+* **deps:** update actions/checkout action to v5 ([#151](https://github.com/open-feature/php-sdk/issues/151)) ([fa48aca](https://github.com/open-feature/php-sdk/commit/fa48aca79e612acee74a8ae345498159fe1a31ef))
+* **deps:** update amannn/action-semantic-pull-request action to v6 ([#152](https://github.com/open-feature/php-sdk/issues/152)) ([7f0e277](https://github.com/open-feature/php-sdk/commit/7f0e277a7f15c13439c50dc2616e3c7bd40497b7))
+
 ## [2.0.11](https://github.com/open-feature/php-sdk/compare/2.0.10...2.0.11) (2025-07-09)
 
 
