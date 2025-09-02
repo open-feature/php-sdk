@@ -556,7 +556,14 @@ class OpenFeatureClientTest extends TestCase
 
         /** @var LoggerInterface|MockInterface $mockLogger */
         $mockLogger = $this->mockery(LoggerInterface::class);
-        $mockLogger->shouldReceive('error')->once();
+        $mockLogger->shouldReceive('error')->with(
+            "An error occurred during feature flag evaluation of flag '{flagKey}': {errorMessage}",
+            Mockery::on(fn ($context) => isset($context['flagKey'], $context['errorMessage'], $context['exception']) &&
+                $context['flagKey'] === 'flagKey' &&
+                $context['errorMessage'] === 'NETWORK_ERROR' &&
+                $context['exception'] instanceof Exception &&
+                $context['exception']->getMessage() === 'NETWORK_ERROR'),
+        )->once();
         $api->setLogger($mockLogger);
 
         $mockProvider = $this->getDefaultMockProvider();
