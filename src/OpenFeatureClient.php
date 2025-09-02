@@ -38,7 +38,6 @@ use Throwable;
 
 use function array_merge;
 use function array_reverse;
-use function sprintf;
 
 class OpenFeatureClient implements Client, LoggerAwareInterface
 {
@@ -365,11 +364,12 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
             $hookExecutor->afterHooks($flagValueType, $hookContext, $resolutionDetails, $mergedRemainingHooks, $hookHints);
         } catch (Throwable $err) {
             $this->getLogger()->error(
-                sprintf(
-                    "An error occurred during feature flag evaluation of flag '%s': %s",
-                    $flagKey,
-                    $err->getMessage(),
-                ),
+                "An error occurred during feature flag evaluation of flag '{flagKey}': {errorMessage}",
+                [
+                    'flagKey' => $flagKey,
+                    'errorMessage' => $err->getMessage(),
+                    'exception' => $err,
+                ],
             );
 
             $error = $err instanceof ThrowableWithResolutionError ? $err->getResolutionError() : new ResolutionError(ErrorCode::GENERAL(), $err->getMessage());
