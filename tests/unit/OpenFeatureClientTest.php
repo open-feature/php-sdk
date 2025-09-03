@@ -27,6 +27,7 @@ use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
 use Psr\Log\LoggerInterface;
 use ReflectionClass;
+use Throwable;
 
 class OpenFeatureClientTest extends TestCase
 {
@@ -558,11 +559,18 @@ class OpenFeatureClientTest extends TestCase
         $mockLogger = $this->mockery(LoggerInterface::class);
         $mockLogger->shouldReceive('error')->with(
             "An error occurred during feature flag evaluation of flag '{flagKey}': {errorMessage}",
-            Mockery::on(fn ($context) => isset($context['flagKey'], $context['errorMessage'], $context['exception']) &&
-                $context['flagKey'] === 'flagKey' &&
-                $context['errorMessage'] === 'NETWORK_ERROR' &&
-                $context['exception'] instanceof Exception &&
-                $context['exception']->getMessage() === 'NETWORK_ERROR'),
+            Mockery::on(function ($context) {
+                $this->assertIsArray($context);
+                $this->assertArrayHasKey('flagKey', $context);
+                $this->assertSame('flagKey', $context['flagKey']);
+                $this->assertArrayHasKey('errorMessage', $context);
+                $this->assertSame('NETWORK_ERROR', $context['errorMessage']);
+                $this->assertArrayHasKey('exception', $context);
+                $this->assertInstanceOf(Throwable::class, $context['exception']);
+                $this->assertSame('NETWORK_ERROR', $context['exception']->getMessage());
+
+                return true;
+            }),
         )->once();
         $api->setLogger($mockLogger);
 
