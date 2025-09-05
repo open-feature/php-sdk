@@ -23,6 +23,7 @@
         "behat/behat": "^3.11",
         "captainhook/captainhook": "^5.10",
         "captainhook/plugin-composer": "^5.3",
+        "dg/bypass-finals": "^1.9",
         "ergebnis/composer-normalize": "^2.25",
         "hamcrest/hamcrest-php": "^2.0",
         "mdwheele/zalgo": "^0.3.1",
