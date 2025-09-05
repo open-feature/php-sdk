@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace OpenFeature\Test\unit;
 
+use DG\BypassFinals;
+use Exception;
 use Mockery\MockInterface;
 use OpenFeature\OpenFeatureAPI;
 use OpenFeature\Test\APITestHelper;
@@ -11,6 +13,7 @@ use OpenFeature\Test\TestCase;
 use OpenFeature\Test\TestHook;
 use OpenFeature\Test\TestProvider;
 use OpenFeature\implementation\flags\EvaluationContext;
+use OpenFeature\implementation\flags\NoOpClient;
 use OpenFeature\implementation\provider\NoOpProvider;
 use OpenFeature\interfaces\flags\API;
 use OpenFeature\interfaces\hooks\Hook;
@@ -219,5 +222,24 @@ class OpenFeatureAPITest extends TestCase
 
         $this->assertEquals($name, $client->getMetadata()->getName());
         $this->assertInstanceOf(TestProvider::class, $api->getProvider());
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testReturnsNoOpClientWhenClientResolutionFails(): void
+    {
+        BypassFinals::enable();
+        $name = 'test-name';
+        $version = 'test-version';
+        /** @var (MockInterface&OpenFeatureAPI) $api @phpstan-ignore-line */
+        $api = $this->mockery(OpenFeatureAPI::class)->shouldAllowMockingProtectedMethods()->makePartial(); // @phpstan-ignore-line
+
+        $api->shouldReceive('resolveClient')->once()
+            ->with($name, $version)
+            ->andThrow(new Exception('Simulated client resolution failure'));
+        $client = $api->getClient($name, $version);
+        $this->assertInstanceOf(NoOpClient::class, $client);
     }
 }
