@@ -66,6 +66,11 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
         return $this->provider;
     }
 
+    protected function resolveClient(string $name, string $version): OpenFeatureClient
+    {
+        return new OpenFeatureClient($this, $name, $version);
+    }
+
     /**
      * -----------------
      * Requirement 1.1.2
@@ -103,7 +108,7 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
         $version = $version ?? 'OpenFeature';
 
         try {
-            $client = new OpenFeatureClient($this, $name, $version);
+            $client = $this->resolveClient($name, $version);
             $client->setLogger($this->getLogger());
 
             return $client;
