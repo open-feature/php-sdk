@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/open-feature/php-sdk/compare/2.0.12...2.1.0) (2025-09-14)
+
+
+### ✨ New Features
+
+* **log:** Improve error log in OpenFeatureClient ([#156](https://github.com/open-feature/php-sdk/issues/156)) ([d28d9c3](https://github.com/open-feature/php-sdk/commit/d28d9c3d4ed86327e52961f3004d89ab277514b5))
+
 ## [2.0.12](https://github.com/open-feature/php-sdk/compare/2.0.11...2.0.12) (2025-08-29)
 
 
