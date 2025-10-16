@@ -9,7 +9,6 @@ use OpenFeature\implementation\multiprovider\ProviderResolutionResult;
 use Throwable;
 
 use function count;
-use function is_callable;
 
 /**
  * ComparisonStrategy requires all providers to agree on a value.
@@ -34,6 +33,16 @@ class ComparisonStrategy extends BaseEvaluationStrategy
         private ?string $fallbackProviderName = null,
         private $onMismatch = null,
     ) {
+    }
+
+    public function getFallbackProviderName(): ?string
+    {
+        return $this->fallbackProviderName;
+    }
+
+    public function getOnMismatch(): ?callable
+    {
+        return $this->onMismatch;
     }
 
     /**
@@ -73,7 +82,7 @@ class ComparisonStrategy extends BaseEvaluationStrategy
      * If no successful results, returns aggregated errors.
      *
      * @param StrategyEvaluationContext $context Context for the overall evaluation
-     * @param array<int, ProviderResolutionResult> $resolutions Array of resolution results from all providers
+     * @param ProviderResolutionResult[] $resolutions Array of resolution results from all providers
      *
      * @return FinalResult The final result of the evaluation
      */
@@ -86,19 +95,22 @@ class ComparisonStrategy extends BaseEvaluationStrategy
         $errors = [];
 
         foreach ($resolutions as $resolution) {
-            if ($resolution->isSuccessful()) {
+            if ($resolution->hasError()) {
+                $err = $resolution->getError();
+                if ($err instanceof Throwable) {
+                    $errors[] = [
+                        'providerName' => $resolution->getProviderName(),
+                        'error' => $err,
+                    ];
+                }
+            } else {
                 $successfulResults[] = $resolution;
-            } elseif ($resolution->hasError()) {
-                $errors[] = [
-                    'providerName' => $resolution->getProviderName(),
-                    'error' => $resolution->getError(),
-                ];
             }
         }
 
         // If no successful results, return errors
         if (count($successfulResults) === 0) {
-            return new FinalResult(null, null, $errors ?: null);
+            return new FinalResult(null, null, $errors !== [] ? $errors : null);
         }
 
         // If only one successful result, return it
@@ -113,11 +125,13 @@ class ComparisonStrategy extends BaseEvaluationStrategy
         }
 
         // Compare all successful values
-        $firstValue = $successfulResults[0]->getDetails()->getValue();
+        $firstDetails = $successfulResults[0]->getDetails();
+        $firstValue = $firstDetails ? $firstDetails->getValue() : null;
         $allMatch = true;
 
         foreach ($successfulResults as $result) {
-            if ($result->getDetails()->getValue() !== $firstValue) {
+            $details = $result->getDetails();
+            if (!$details || $details->getValue() !== $firstValue) {
                 $allMatch = false;
 
                 break;
@@ -136,18 +150,20 @@ class ComparisonStrategy extends BaseEvaluationStrategy
         }
 
         // Values don't match - call onMismatch callback if provided
-        if ($this->onMismatch !== null && is_callable($this->onMismatch)) {
+        $onMismatch = $this->getOnMismatch();
+        if ($onMismatch !== null) {
             try {
-                ($this->onMismatch)($successfulResults);
+                $onMismatch($successfulResults);
             } catch (Throwable $e) {
                 // Ignore errors from callback
             }
         }
 
         // Return fallback provider result if configured
-        if ($this->fallbackProviderName !== null) {
+        $fallbackProviderName = $this->getFallbackProviderName();
+        if ($fallbackProviderName !== null) {
             foreach ($successfulResults as $result) {
-                if ($result->getProviderName() === $this->fallbackProviderName) {
+                if ($result->getProviderName() === $fallbackProviderName) {
                     return new FinalResult(
                         $result->getDetails(),
                         $result->getProviderName(),
