@@ -6,6 +6,7 @@ namespace OpenFeature\implementation\multiprovider\strategy;
 
 use OpenFeature\implementation\multiprovider\FinalResult;
 use OpenFeature\implementation\multiprovider\ProviderResolutionResult;
+use Throwable;
 
 /**
  * FirstSuccessfulStrategy returns the first successful result from a provider.
@@ -58,7 +59,7 @@ class FirstSuccessfulStrategy extends BaseEvaluationStrategy
      * If no provider succeeds, returns all errors aggregated.
      *
      * @param StrategyEvaluationContext $context Context for the overall evaluation
-     * @param array<int, ProviderResolutionResult> $resolutions Array of resolution results from all providers
+     * @param ProviderResolutionResult[] $resolutions Array of resolution results from all providers
      *
      * @return FinalResult The final result of the evaluation
      */
@@ -81,10 +82,13 @@ class FirstSuccessfulStrategy extends BaseEvaluationStrategy
         $errors = [];
         foreach ($resolutions as $resolution) {
             if ($resolution->hasError()) {
-                $errors[] = [
-                    'providerName' => $resolution->getProviderName(),
-                    'error' => $resolution->getError(),
-                ];
+                $err = $resolution->getError();
+                if ($err instanceof Throwable) {
+                    $errors[] = [
+                        'providerName' => $resolution->getProviderName(),
+                        'error' => $err,
+                    ];
+                }
             }
         }
 

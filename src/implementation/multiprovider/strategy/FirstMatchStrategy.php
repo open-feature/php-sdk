@@ -8,6 +8,7 @@ use OpenFeature\implementation\multiprovider\FinalResult;
 use OpenFeature\implementation\multiprovider\ProviderResolutionResult;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\ThrowableWithResolutionError;
+use Throwable;
 
 /**
  * FirstMatchStrategy returns the first result from a provider that is not FLAG_NOT_FOUND.
@@ -60,7 +61,7 @@ class FirstMatchStrategy extends BaseEvaluationStrategy
             // Check if error is ThrowableWithResolutionError with FLAG_NOT_FOUND
             if ($error instanceof ThrowableWithResolutionError) {
                 $resolutionError = $error->getResolutionError();
-                if ($resolutionError && $resolutionError->getResolutionErrorCode() === ErrorCode::FLAG_NOT_FOUND()) {
+                if ($resolutionError->getResolutionErrorCode() === ErrorCode::FLAG_NOT_FOUND()) {
                     // Continue to next provider for FLAG_NOT_FOUND
                     return true;
                 }
@@ -79,7 +80,7 @@ class FirstMatchStrategy extends BaseEvaluationStrategy
      * If all providers returned FLAG_NOT_FOUND or no results, return error.
      *
      * @param StrategyEvaluationContext $context Context for the overall evaluation
-     * @param array<int, ProviderResolutionResult> $resolutions Array of resolution results from all providers
+     * @param ProviderResolutionResult[] $resolutions Array of resolution results from all providers
      *
      * @return FinalResult The final result of the evaluation
      */
@@ -107,12 +108,12 @@ class FirstMatchStrategy extends BaseEvaluationStrategy
                 $isFlagNotFound = false;
                 if ($error instanceof ThrowableWithResolutionError) {
                     $resolutionError = $error->getResolutionError();
-                    if ($resolutionError && $resolutionError->getResolutionErrorCode() === ErrorCode::FLAG_NOT_FOUND()) {
+                    if ($resolutionError->getResolutionErrorCode() === ErrorCode::FLAG_NOT_FOUND()) {
                         $isFlagNotFound = true;
                     }
                 }
 
-                if (!$isFlagNotFound) {
+                if (!$isFlagNotFound && $error instanceof Throwable) {
                     // Return this error
                     return new FinalResult(
                         null,
@@ -132,10 +133,13 @@ class FirstMatchStrategy extends BaseEvaluationStrategy
         $errors = [];
         foreach ($resolutions as $resolution) {
             if ($resolution->hasError()) {
-                $errors[] = [
-                    'providerName' => $resolution->getProviderName(),
-                    'error' => $resolution->getError(),
-                ];
+                $err = $resolution->getError();
+                if ($err instanceof Throwable) {
+                    $errors[] = [
+                        'providerName' => $resolution->getProviderName(),
+                        'error' => $err,
+                    ];
+                }
             }
         }
 
