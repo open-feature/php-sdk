@@ -49,9 +49,9 @@ class FirstSuccessfulStrategy extends BaseEvaluationStrategy
         StrategyPerProviderContext $context,
         ProviderResolutionResult $result,
     ): bool {
-        // If we found a successful result, stop here
-        // Otherwise, continue to next provider (even if there was an error)
-        return $result->isSuccessful();
+        // If we found a successful result, stop here (return false)
+        // Otherwise, continue to next provider (return true)
+        return !$result->isSuccessful();
     }
 
     /**
