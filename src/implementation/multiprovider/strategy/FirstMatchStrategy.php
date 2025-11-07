@@ -61,7 +61,7 @@ class FirstMatchStrategy extends BaseEvaluationStrategy
             // Check if error is ThrowableWithResolutionError with FLAG_NOT_FOUND
             if ($error instanceof ThrowableWithResolutionError) {
                 $resolutionError = $error->getResolutionError();
-                if ($resolutionError->getResolutionErrorCode() === ErrorCode::FLAG_NOT_FOUND()) {
+                if ($resolutionError->getResolutionErrorCode()->equals(ErrorCode::FLAG_NOT_FOUND())) {
                     // Continue to next provider for FLAG_NOT_FOUND
                     return true;
                 }
@@ -108,7 +108,7 @@ class FirstMatchStrategy extends BaseEvaluationStrategy
                 $isFlagNotFound = false;
                 if ($error instanceof ThrowableWithResolutionError) {
                     $resolutionError = $error->getResolutionError();
-                    if ($resolutionError->getResolutionErrorCode() === ErrorCode::FLAG_NOT_FOUND()) {
+                    if ($resolutionError->getResolutionErrorCode()->equals(ErrorCode::FLAG_NOT_FOUND())) {
                         $isFlagNotFound = true;
                     }
                 }
