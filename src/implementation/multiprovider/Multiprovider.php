@@ -296,18 +296,14 @@ class Multiprovider extends AbstractProvider
      */
     private function validateProviderData(array $providerData): void
     {
-        foreach ($providerData as $index => $entry) {
+        foreach ($providerData as $entry) {
             // check that entry contains only supported keys
             $unSupportedKeys = array_diff(array_keys($entry), self::$supportedProviderData);
             if (count($unSupportedKeys) !== 0) {
-                throw new InvalidArgumentException(
-                    'Unsupported keys in provider data entry at index ' . $index . ': ' . implode(', ', $unSupportedKeys),
-                );
+                throw new InvalidArgumentException('Unsupported keys in provider data entry');
             }
             if (isset($entry['name']) && trim($entry['name']) === '') {
-                throw new InvalidArgumentException(
-                    'Each provider data entry must have a non-empty string "name" key at index ' . $index,
-                );
+                throw new InvalidArgumentException('Each provider data entry must have a non-empty string "name" key');
             }
         }
 
