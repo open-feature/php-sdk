@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/open-feature/php-sdk/compare/2.1.0...2.1.1) (2025-11-19)
+
+
+### 🧹 Chore
+
+* update copyright to OpenFeature Maintainers ([#161](https://github.com/open-feature/php-sdk/issues/161)) ([e6984b6](https://github.com/open-feature/php-sdk/commit/e6984b607874f63a077a868f15ddc175f03ae096))
+
 ## [2.1.0](https://github.com/open-feature/php-sdk/compare/2.0.12...2.1.0) (2025-09-14)
 
 
