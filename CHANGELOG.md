@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.1.2](https://github.com/open-feature/php-sdk/compare/2.1.1...2.1.2) (2025-12-22)
+
+
+### 🧹 Chore
+
+* **deps:** replace google-github-actions/release-please-action action with googleapis/release-please-action v4 ([#160](https://github.com/open-feature/php-sdk/issues/160)) ([a32f0a7](https://github.com/open-feature/php-sdk/commit/a32f0a71fe07c7fde67835fb835003fb8066f093))
+* **deps:** update actions/cache action to v5 ([#164](https://github.com/open-feature/php-sdk/issues/164)) ([8df0877](https://github.com/open-feature/php-sdk/commit/8df08776609e21fa9fa8ac9c38c01992be8906d4))
+* **deps:** update actions/checkout action to v6 ([#163](https://github.com/open-feature/php-sdk/issues/163)) ([ce048b9](https://github.com/open-feature/php-sdk/commit/ce048b92ba286a16fc951a2d120d74d51cde0b6d))
+* **deps:** update codecov/codecov-action action to v5 ([#139](https://github.com/open-feature/php-sdk/issues/139)) ([db56790](https://github.com/open-feature/php-sdk/commit/db56790598c483476abecc31e9b967ea23c1f242))
+
 ## [2.1.1](https://github.com/open-feature/php-sdk/compare/2.1.0...2.1.1) (2025-11-19)
 
 
