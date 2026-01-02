@@ -240,24 +240,45 @@ class Multiprovider extends AbstractProvider
             $defaultValue = $context->getDefaultValue();
             $evalContext = $context->getEvaluationContext();
 
-            $details = match ($flagType) {
-                'boolean' => is_bool($defaultValue)
-                ? $provider->resolveBooleanValue($context->getFlagKey(), $defaultValue, $evalContext)
-                : throw new InvalidArgumentException('Default value for boolean flag must be bool'),
-                'string' => is_string($defaultValue)
-                ? $provider->resolveStringValue($context->getFlagKey(), $defaultValue, $evalContext)
-                : throw new InvalidArgumentException('Default value for string flag must be string'),
-                'integer' => is_int($defaultValue)
-                ? $provider->resolveIntegerValue($context->getFlagKey(), $defaultValue, $evalContext)
-                : throw new InvalidArgumentException('Default value for integer flag must be int'),
-                'float' => is_float($defaultValue)
-                ? $provider->resolveFloatValue($context->getFlagKey(), $defaultValue, $evalContext)
-                : throw new InvalidArgumentException('Default value for float flag must be float'),
-                'object' => is_array($defaultValue)
-                ? $provider->resolveObjectValue($context->getFlagKey(), $defaultValue, $evalContext)
-                : throw new InvalidArgumentException('Default value for object flag must be array'),
-                default => throw new InvalidArgumentException('Unknown flag type: ' . $flagType),
-            };
+            switch ($flagType) {
+                case 'boolean':
+                    if (!is_bool($defaultValue)) {
+                        throw new InvalidArgumentException('Default value for boolean flag must be bool');
+                    }
+                    $details = $provider->resolveBooleanValue($context->getFlagKey(), $defaultValue, $evalContext);
+
+                    break;
+                case 'string':
+                    if (!is_string($defaultValue)) {
+                        throw new InvalidArgumentException('Default value for string flag must be string');
+                    }
+                    $details = $provider->resolveStringValue($context->getFlagKey(), $defaultValue, $evalContext);
+
+                    break;
+                case 'integer':
+                    if (!is_int($defaultValue)) {
+                        throw new InvalidArgumentException('Default value for integer flag must be int');
+                    }
+                    $details = $provider->resolveIntegerValue($context->getFlagKey(), $defaultValue, $evalContext);
+
+                    break;
+                case 'float':
+                    if (!is_float($defaultValue)) {
+                        throw new InvalidArgumentException('Default value for float flag must be float');
+                    }
+                    $details = $provider->resolveFloatValue($context->getFlagKey(), $defaultValue, $evalContext);
+
+                    break;
+                case 'object':
+                    if (!is_array($defaultValue)) {
+                        throw new InvalidArgumentException('Default value for object flag must be array');
+                    }
+                    $details = $provider->resolveObjectValue($context->getFlagKey(), $defaultValue, $evalContext);
+
+                    break;
+                default:
+                    throw new InvalidArgumentException('Unknown flag type: ' . $flagType);
+            }
 
             return new ProviderResolutionResult($providerName, $provider, $details, null);
         } catch (Throwable $error) {
