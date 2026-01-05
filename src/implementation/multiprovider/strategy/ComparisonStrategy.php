@@ -6,6 +6,7 @@ namespace OpenFeature\implementation\multiprovider\strategy;
 
 use OpenFeature\implementation\multiprovider\FinalResult;
 use OpenFeature\implementation\multiprovider\ProviderResolutionResult;
+use OpenFeature\interfaces\provider\RunMode;
 use Throwable;
 
 use function count;
@@ -23,7 +24,7 @@ use function count;
  */
 class ComparisonStrategy extends BaseEvaluationStrategy
 {
-    public string $runMode = 'parallel';
+    public string $runMode = RunMode::PARALLEL;
 
     /**
      * @param string|null $fallbackProviderName Name of provider to use when results don't match

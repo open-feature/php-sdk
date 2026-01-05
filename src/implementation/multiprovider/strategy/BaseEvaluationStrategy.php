@@ -6,6 +6,7 @@ namespace OpenFeature\implementation\multiprovider\strategy;
 
 use OpenFeature\implementation\multiprovider\FinalResult;
 use OpenFeature\implementation\multiprovider\ProviderResolutionResult;
+use OpenFeature\interfaces\provider\RunMode;
 
 /**
  * Base class for multi-provider evaluation strategies per OpenFeature specification.
@@ -14,7 +15,7 @@ use OpenFeature\implementation\multiprovider\ProviderResolutionResult;
  */
 abstract class BaseEvaluationStrategy
 {
-    public string $runMode = 'sequential';
+    public string $runMode = RunMode::SEQUENTIAL;
 
     /**
      * Determine if the given provider should be evaluated.
