@@ -24,6 +24,7 @@ use function array_diff;
 use function array_filter;
 use function array_keys;
 use function array_map;
+use function assert;
 use function count;
 use function implode;
 use function is_array;
@@ -242,37 +243,27 @@ class Multiprovider extends AbstractProvider
 
             switch ($flagType) {
                 case 'boolean':
-                    if (!is_bool($defaultValue)) {
-                        throw new InvalidArgumentException('Default value for boolean flag must be bool');
-                    }
+                    assert(is_bool($defaultValue));
                     $details = $provider->resolveBooleanValue($context->getFlagKey(), $defaultValue, $evalContext);
 
                     break;
                 case 'string':
-                    if (!is_string($defaultValue)) {
-                        throw new InvalidArgumentException('Default value for string flag must be string');
-                    }
+                    assert(is_string($defaultValue));
                     $details = $provider->resolveStringValue($context->getFlagKey(), $defaultValue, $evalContext);
 
                     break;
                 case 'integer':
-                    if (!is_int($defaultValue)) {
-                        throw new InvalidArgumentException('Default value for integer flag must be int');
-                    }
+                    assert(is_int($defaultValue));
                     $details = $provider->resolveIntegerValue($context->getFlagKey(), $defaultValue, $evalContext);
 
                     break;
                 case 'float':
-                    if (!is_float($defaultValue)) {
-                        throw new InvalidArgumentException('Default value for float flag must be float');
-                    }
+                    assert(is_float($defaultValue));
                     $details = $provider->resolveFloatValue($context->getFlagKey(), $defaultValue, $evalContext);
 
                     break;
                 case 'object':
-                    if (!is_array($defaultValue)) {
-                        throw new InvalidArgumentException('Default value for object flag must be array');
-                    }
+                    assert(is_array($defaultValue));
                     $details = $provider->resolveObjectValue($context->getFlagKey(), $defaultValue, $evalContext);
 
                     break;
