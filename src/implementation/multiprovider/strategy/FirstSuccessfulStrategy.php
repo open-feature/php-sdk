@@ -6,6 +6,7 @@ namespace OpenFeature\implementation\multiprovider\strategy;
 
 use OpenFeature\implementation\multiprovider\FinalResult;
 use OpenFeature\implementation\multiprovider\ProviderResolutionResult;
+use OpenFeature\interfaces\provider\RunMode;
 use Throwable;
 
 /**
@@ -21,7 +22,7 @@ use Throwable;
  */
 class FirstSuccessfulStrategy extends BaseEvaluationStrategy
 {
-    public string $runMode = 'sequential';
+    public string $runMode = RunMode::SEQUENTIAL;
 
     /**
      * All providers should be evaluated by default.
