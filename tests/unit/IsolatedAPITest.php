@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenFeature\Test\unit;
 
 use OpenFeature\OpenFeatureAPI;
+use OpenFeature\Test\APITestHelper;
 use OpenFeature\Test\TestCase;
 use OpenFeature\Test\TestHook;
 use OpenFeature\Test\TestProvider;
@@ -21,40 +22,37 @@ class IsolatedAPITest extends TestCase
      * The API MUST expose a factory function which creates and returns a new,
      * independent instance of the API.
      */
-    public function testFactoryCreatesNewAPIInstance(): void
-    {
-        $api = OpenFeatureAPIFactory::createAPI();
-
-        $this->assertInstanceOf(API::class, $api);
-        $this->assertInstanceOf(OpenFeatureAPI::class, $api);
-    }
-
-    /**
-     * Requirement 1.8.1
-     *
-     * Each instance returned by this factory function maintains its own state.
-     * Instances created by the factory function do not share state with the
-     * "default" global singleton or with each other.
-     */
     public function testFactoryCreatesDistinctInstances(): void
     {
         $api1 = OpenFeatureAPIFactory::createAPI();
         $api2 = OpenFeatureAPIFactory::createAPI();
 
+        $this->assertInstanceOf(API::class, $api1);
+        $this->assertInstanceOf(OpenFeatureAPI::class, $api1);
         $this->assertNotSame($api1, $api2);
     }
 
     /**
      * Requirement 1.8.1
      *
-     * Instances do not share state with the "default" global singleton.
+     * Isolated instances do not share state with the global singleton and
+     * mutating an isolated instance does not affect the singleton's state.
      */
-    public function testIsolatedInstanceIsNotTheSingleton(): void
+    public function testIsolatedInstanceDoesNotInterfereWithSingleton(): void
     {
-        $singleton = OpenFeatureAPI::getInstance();
+        $singleton = APITestHelper::new();
         $isolated = OpenFeatureAPIFactory::createAPI();
 
         $this->assertNotSame($singleton, $isolated);
+
+        // Mutate the isolated instance
+        $isolated->setProvider(new TestProvider());
+        $isolated->addHooks(new TestHook());
+        $isolated->setEvaluationContext(new EvaluationContext('isolated-key'));
+
+        // Singleton state remains unchanged
+        $this->assertInstanceOf(NoOpProvider::class, $singleton->getProvider());
+        $this->assertEmpty($singleton->getHooks());
     }
 
     /**
@@ -96,14 +94,13 @@ class IsolatedAPITest extends TestCase
      */
     public function testProviderIsolation(): void
     {
-        $singleton = OpenFeatureAPI::getInstance();
-        $singleton->setProvider(new NoOpProvider());
+        $api1 = OpenFeatureAPIFactory::createAPI();
+        $api2 = OpenFeatureAPIFactory::createAPI();
 
-        $isolated = OpenFeatureAPIFactory::createAPI();
-        $isolated->setProvider(new TestProvider());
+        $api1->setProvider(new TestProvider());
 
-        $this->assertInstanceOf(NoOpProvider::class, $singleton->getProvider());
-        $this->assertInstanceOf(TestProvider::class, $isolated->getProvider());
+        $this->assertInstanceOf(TestProvider::class, $api1->getProvider());
+        $this->assertInstanceOf(NoOpProvider::class, $api2->getProvider());
     }
 
     /**
@@ -113,15 +110,14 @@ class IsolatedAPITest extends TestCase
      */
     public function testHookIsolation(): void
     {
-        $singleton = OpenFeatureAPI::getInstance();
-        $singleton->clearHooks();
+        $api1 = OpenFeatureAPIFactory::createAPI();
+        $api2 = OpenFeatureAPIFactory::createAPI();
 
-        $isolated = OpenFeatureAPIFactory::createAPI();
         $hook = new TestHook();
-        $isolated->addHooks($hook);
+        $api1->addHooks($hook);
 
-        $this->assertEmpty($singleton->getHooks());
-        $this->assertCount(1, $isolated->getHooks());
+        $this->assertCount(1, $api1->getHooks());
+        $this->assertEmpty($api2->getHooks());
     }
 
     /**
@@ -131,41 +127,38 @@ class IsolatedAPITest extends TestCase
      */
     public function testEvaluationContextIsolation(): void
     {
-        $singleton = OpenFeatureAPI::getInstance();
-        $singletonContext = new EvaluationContext('singleton-key');
-        $singleton->setEvaluationContext($singletonContext);
+        $api1 = OpenFeatureAPIFactory::createAPI();
+        $api2 = OpenFeatureAPIFactory::createAPI();
 
-        $isolated = OpenFeatureAPIFactory::createAPI();
-        $isolatedContext = new EvaluationContext('isolated-key');
-        $isolated->setEvaluationContext($isolatedContext);
+        $api1->setEvaluationContext(new EvaluationContext('key-1'));
+        $api2->setEvaluationContext(new EvaluationContext('key-2'));
 
-        $actualSingletonContext = $singleton->getEvaluationContext();
-        $actualIsolatedContext = $isolated->getEvaluationContext();
+        $ctx1 = $api1->getEvaluationContext();
+        $ctx2 = $api2->getEvaluationContext();
 
-        $this->assertNotNull($actualSingletonContext);
-        $this->assertNotNull($actualIsolatedContext);
-        $this->assertEquals('singleton-key', $actualSingletonContext->getTargetingKey());
-        $this->assertEquals('isolated-key', $actualIsolatedContext->getTargetingKey());
+        $this->assertNotNull($ctx1);
+        $this->assertNotNull($ctx2);
+        $this->assertEquals('key-1', $ctx1->getTargetingKey());
+        $this->assertEquals('key-2', $ctx2->getTargetingKey());
     }
 
     /**
      * Requirement 1.8.2
      *
-     * An isolated API instance is functionally equivalent to the global
-     * singleton. A client obtained from an isolated instance behaves
-     * identically to a client from the global singleton.
+     * A client obtained from an isolated instance uses that instance's provider.
      */
-    public function testClientFromIsolatedInstanceUsesIsolatedProvider(): void
+    public function testClientUsesItsOwnInstanceProvider(): void
     {
-        $isolated = OpenFeatureAPIFactory::createAPI();
-        $provider = new TestProvider();
-        $isolated->setProvider($provider);
+        $api1 = OpenFeatureAPIFactory::createAPI();
+        $api2 = OpenFeatureAPIFactory::createAPI();
 
-        $client = $isolated->getClient('test', '1.0');
-        $result = $client->getBooleanValue('flag-key', false);
+        $api1->setProvider(new TestProvider());
 
-        // TestProvider returns the default value
-        $this->assertFalse($result);
+        $client1 = $api1->getClient('test', '1.0');
+        $client2 = $api2->getClient('test', '1.0');
+
+        $this->assertFalse($client1->getBooleanValue('flag-key', false));
+        $this->assertFalse($client2->getBooleanValue('flag-key', false));
     }
 
     /**
