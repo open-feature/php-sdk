@@ -55,8 +55,12 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
      * It's important that multiple instances of the API not be active, so that state stored therein, such as the registered provider, static global
      * evaluation context, and globally configured hooks allow the API to behave predictably. This can be difficult in some runtimes or languages, but
      * implementors should make their best effort to ensure that only a single instance of the API is used.
+     *
+     * For isolated instances, prefer using the factory function in OpenFeature\isolated.
+     *
+     * @see \OpenFeature\isolated\OpenFeatureAPIFactory::createAPI()
      */
-    private function __construct()
+    public function __construct()
     {
         $this->provider = new NoOpProvider();
     }
