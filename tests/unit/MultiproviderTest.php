@@ -64,6 +64,19 @@ class MultiproviderTest extends TestCase
         new MultiProvider($providerData);
     }
 
+    public function testConstructorWithCaseInsensitiveDuplicateNames(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Duplicate provider name: TEST1');
+
+        $providerData = [
+            ['name' => 'test1', 'provider' => $this->mockProvider1],
+            ['name' => 'TEST1', 'provider' => $this->mockProvider2],
+        ];
+
+        new MultiProvider($providerData);
+    }
+
     public function testConstructorWithEmptyName(): void
     {
         $this->expectException(InvalidArgumentException::class);
