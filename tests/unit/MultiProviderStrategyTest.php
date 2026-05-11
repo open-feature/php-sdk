@@ -19,6 +19,7 @@ use OpenFeature\implementation\provider\ResolutionError;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
 use OpenFeature\interfaces\provider\ResolutionDetails;
+use OpenFeature\interfaces\provider\ResolutionError as ResolutionErrorInterface;
 use OpenFeature\interfaces\provider\ThrowableWithResolutionError;
 
 class MultiProviderStrategyTest extends TestCase
@@ -93,7 +94,7 @@ class MultiProviderStrategyTest extends TestCase
         $strategy = new FirstMatchStrategy();
 
         $error = new class extends Exception implements ThrowableWithResolutionError {
-            public function getResolutionError(): \OpenFeature\interfaces\provider\ResolutionError
+            public function getResolutionError(): ResolutionErrorInterface
             {
                 return new ResolutionError(ErrorCode::FLAG_NOT_FOUND(), 'Flag not found');
             }
@@ -110,7 +111,7 @@ class MultiProviderStrategyTest extends TestCase
         $strategy = new FirstMatchStrategy();
 
         $error = new class extends Exception implements ThrowableWithResolutionError {
-            public function getResolutionError(): \OpenFeature\interfaces\provider\ResolutionError
+            public function getResolutionError(): ResolutionErrorInterface
             {
                 return new ResolutionError(ErrorCode::GENERAL(), 'General error');
             }
@@ -163,7 +164,7 @@ class MultiProviderStrategyTest extends TestCase
         $strategy = new FirstMatchStrategy();
 
         $error = new class extends Exception implements ThrowableWithResolutionError {
-            public function getResolutionError(): \OpenFeature\interfaces\provider\ResolutionError
+            public function getResolutionError(): ResolutionErrorInterface
             {
                 return new ResolutionError(ErrorCode::FLAG_NOT_FOUND(), 'Flag not found');
             }
