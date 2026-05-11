@@ -9,6 +9,8 @@ use OpenFeature\implementation\multiprovider\ProviderResolutionResult;
 use OpenFeature\interfaces\provider\RunMode;
 use Throwable;
 
+use function count;
+
 /**
  * Base class for multi-provider evaluation strategies per OpenFeature specification.
  *
@@ -103,6 +105,6 @@ abstract class BaseEvaluationStrategy
             }
         }
 
-        return $errors !== [] ? $errors : null;
+        return count($errors) > 0 ? $errors : null;
     }
 }
