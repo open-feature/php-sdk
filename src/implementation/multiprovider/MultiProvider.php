@@ -317,16 +317,17 @@ class MultiProvider extends AbstractProvider
                 throw new InvalidArgumentException('Unsupported keys: ' . implode(', ', $unsupportedKeys));
             }
 
-            // Check for empty names and duplicates in one pass
+            // Check for empty names and duplicates in one pass (case-insensitive)
             if (isset($entry['name'])) {
                 $name = trim($entry['name']);
                 if ($name === '') {
                     throw new InvalidArgumentException('Provider name cannot be empty');
                 }
-                if (isset($names[$name])) {
+                $lowerName = strtolower($name);
+                if (isset($names[$lowerName])) {
                     throw new InvalidArgumentException("Duplicate provider name: {$name}");
                 }
-                $names[$name] = true;
+                $names[$lowerName] = true;
             }
         }
     }
@@ -364,9 +365,8 @@ class MultiProvider extends AbstractProvider
      */
     private function generateUniqueName(string $baseName, array &$counts): string
     {
-        $key = strtolower($baseName);
-        $counts[$key] = ($counts[$key] ?? 0) + 1;
+        $counts[$baseName] = ($counts[$baseName] ?? 0) + 1;
 
-        return $counts[$key] === 1 ? $baseName : "{$baseName}_{$counts[$key]}";
+        return $counts[$baseName] === 1 ? $baseName : "{$baseName}_{$counts[$baseName]}";
     }
 }
