@@ -7,12 +7,12 @@ namespace OpenFeature\Test\unit;
 use Mockery;
 use Mockery\MockInterface;
 use OpenFeature\implementation\flags\EvaluationContext;
-use OpenFeature\implementation\multiprovider\strategy\StrategyEvaluationContext;
-use OpenFeature\implementation\multiprovider\strategy\StrategyPerProviderContext;
+use OpenFeature\implementation\multiprovider\strategy\ProviderContext;
+use OpenFeature\implementation\multiprovider\strategy\StrategyContext;
 use OpenFeature\interfaces\provider\Provider;
 use PHPUnit\Framework\TestCase;
 
-class StrategyPerProviderContextTest extends TestCase
+class ProviderContextTest extends TestCase
 {
     /** @var Provider&MockInterface */
     private Provider $mockProvider;
@@ -26,14 +26,14 @@ class StrategyPerProviderContextTest extends TestCase
 
     public function testProviderContextGetters(): void
     {
-        $baseContext = new StrategyEvaluationContext(
+        $baseContext = new StrategyContext(
             'flag-key',
             'string',
             'default-value',
             new EvaluationContext(),
         );
         $providerName = 'TestProviderName';
-        $context = new StrategyPerProviderContext($baseContext, $providerName, $this->mockProvider);
+        $context = new ProviderContext($baseContext, $providerName, $this->mockProvider);
 
         $this->assertEquals('flag-key', $context->getFlagKey());
         $this->assertEquals('string', $context->getFlagType());
@@ -45,14 +45,14 @@ class StrategyPerProviderContextTest extends TestCase
 
     public function testProviderContextWithDifferentProviderName(): void
     {
-        $baseContext = new StrategyEvaluationContext(
+        $baseContext = new StrategyContext(
             'flag-key',
             'boolean',
             true,
             new EvaluationContext(),
         );
         $providerName = 'AnotherProvider';
-        $context = new StrategyPerProviderContext($baseContext, $providerName, $this->mockProvider);
+        $context = new ProviderContext($baseContext, $providerName, $this->mockProvider);
 
         $this->assertEquals($providerName, $context->getProviderName());
     }

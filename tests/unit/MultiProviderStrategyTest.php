@@ -12,8 +12,8 @@ use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\implementation\multiprovider\ProviderResolutionResult;
 use OpenFeature\implementation\multiprovider\strategy\FirstMatchStrategy;
 use OpenFeature\implementation\multiprovider\strategy\FirstSuccessfulStrategy;
-use OpenFeature\implementation\multiprovider\strategy\StrategyEvaluationContext;
-use OpenFeature\implementation\multiprovider\strategy\StrategyPerProviderContext;
+use OpenFeature\implementation\multiprovider\strategy\ProviderContext;
+use OpenFeature\implementation\multiprovider\strategy\StrategyContext;
 use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
 use OpenFeature\implementation\provider\ResolutionError;
 use OpenFeature\interfaces\provider\ErrorCode;
@@ -26,7 +26,7 @@ class MultiProviderStrategyTest extends TestCase
     private Provider $mockProvider1;
     private Provider $mockProvider2;
     private Provider $mockProvider3;
-    private StrategyEvaluationContext $baseContext;
+    private StrategyContext $baseContext;
 
     protected function setUp(): void
     {
@@ -41,7 +41,7 @@ class MultiProviderStrategyTest extends TestCase
         $this->mockProvider3->shouldReceive('getMetadata->getName')->andReturn('Provider3');
 
         // Create base evaluation context for tests
-        $this->baseContext = new StrategyEvaluationContext(
+        $this->baseContext = new StrategyContext(
             'test-flag',
             'boolean',
             false,
@@ -64,34 +64,33 @@ class MultiProviderStrategyTest extends TestCase
     public function testFirstMatchStrategyShouldEvaluateThisProvider(): void
     {
         $strategy = new FirstMatchStrategy();
-        $context = new StrategyPerProviderContext($this->baseContext, 'test1', $this->mockProvider1);
+        $providerContext = new ProviderContext($this->baseContext, 'test1', $this->mockProvider1);
 
-        $this->assertTrue($strategy->shouldEvaluateThisProvider($context));
+        $this->assertTrue($strategy->shouldEvaluateThisProvider($providerContext));
     }
 
     public function testFirstSuccessfulStrategyShouldEvaluateThisProvider(): void
     {
         $strategy = new FirstSuccessfulStrategy();
-        $context = new StrategyPerProviderContext($this->baseContext, 'test1', $this->mockProvider1);
+        $providerContext = new ProviderContext($this->baseContext, 'test1', $this->mockProvider1);
 
-        $this->assertTrue($strategy->shouldEvaluateThisProvider($context));
+        $this->assertTrue($strategy->shouldEvaluateThisProvider($providerContext));
     }
 
     public function testFirstMatchStrategyWithSuccessfulResult(): void
     {
         $strategy = new FirstMatchStrategy();
-        $context = new StrategyPerProviderContext($this->baseContext, 'test1', $this->mockProvider1);
 
         $details = $this->createResolutionDetails(true);
         $result = new ProviderResolutionResult('test1', $this->mockProvider1, $details, null);
+        $providerContext = new ProviderContext($this->baseContext, 'test1', $this->mockProvider1);
 
-        $this->assertFalse($strategy->shouldEvaluateNextProvider($context, $result));
+        $this->assertFalse($strategy->shouldEvaluateNextProvider($providerContext, $result));
     }
 
     public function testFirstMatchStrategyWithFlagNotFoundError(): void
     {
         $strategy = new FirstMatchStrategy();
-        $context = new StrategyPerProviderContext($this->baseContext, 'test1', $this->mockProvider1);
 
         $error = new class extends Exception implements ThrowableWithResolutionError {
             public function getResolutionError(): \OpenFeature\interfaces\provider\ResolutionError
@@ -101,14 +100,14 @@ class MultiProviderStrategyTest extends TestCase
         };
 
         $result = new ProviderResolutionResult('test1', $this->mockProvider1, null, $error);
+        $providerContext = new ProviderContext($this->baseContext, 'test1', $this->mockProvider1);
 
-        $this->assertTrue($strategy->shouldEvaluateNextProvider($context, $result));
+        $this->assertTrue($strategy->shouldEvaluateNextProvider($providerContext, $result));
     }
 
     public function testFirstMatchStrategyWithGeneralError(): void
     {
         $strategy = new FirstMatchStrategy();
-        $context = new StrategyPerProviderContext($this->baseContext, 'test1', $this->mockProvider1);
 
         $error = new class extends Exception implements ThrowableWithResolutionError {
             public function getResolutionError(): \OpenFeature\interfaces\provider\ResolutionError
@@ -118,30 +117,31 @@ class MultiProviderStrategyTest extends TestCase
         };
 
         $result = new ProviderResolutionResult('test1', $this->mockProvider1, null, $error);
+        $providerContext = new ProviderContext($this->baseContext, 'test1', $this->mockProvider1);
 
-        $this->assertFalse($strategy->shouldEvaluateNextProvider($context, $result));
+        $this->assertFalse($strategy->shouldEvaluateNextProvider($providerContext, $result));
     }
 
     public function testFirstSuccessfulStrategyWithSuccessfulResult(): void
     {
         $strategy = new FirstSuccessfulStrategy();
-        $context = new StrategyPerProviderContext($this->baseContext, 'test1', $this->mockProvider1);
 
         $details = $this->createResolutionDetails(true);
         $result = new ProviderResolutionResult('test1', $this->mockProvider1, $details, null);
+        $providerContext = new ProviderContext($this->baseContext, 'test1', $this->mockProvider1);
 
-        $this->assertFalse($strategy->shouldEvaluateNextProvider($context, $result));
+        $this->assertFalse($strategy->shouldEvaluateNextProvider($providerContext, $result));
     }
 
     public function testFirstSuccessfulStrategyWithError(): void
     {
         $strategy = new FirstSuccessfulStrategy();
-        $context = new StrategyPerProviderContext($this->baseContext, 'test1', $this->mockProvider1);
 
         $error = new Exception('Test error');
         $result = new ProviderResolutionResult('test1', $this->mockProvider1, null, $error);
+        $providerContext = new ProviderContext($this->baseContext, 'test1', $this->mockProvider1);
 
-        $this->assertTrue($strategy->shouldEvaluateNextProvider($context, $result));
+        $this->assertTrue($strategy->shouldEvaluateNextProvider($providerContext, $result));
     }
 
     public function testFirstMatchStrategyDetermineFinalResultSuccess(): void
