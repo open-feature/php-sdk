@@ -9,7 +9,7 @@ use Mockery;
 use Mockery\MockInterface;
 use OpenFeature\Test\TestCase;
 use OpenFeature\implementation\flags\EvaluationContext;
-use OpenFeature\implementation\multiprovider\Multiprovider;
+use OpenFeature\implementation\multiprovider\MultiProvider;
 use OpenFeature\implementation\multiprovider\strategy\ComparisonStrategy;
 use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
 use OpenFeature\interfaces\provider\Provider;
@@ -50,7 +50,7 @@ class ComparisonStrategyTest extends TestCase
         $this->providerB->shouldReceive('resolveBooleanValue')->andReturn($this->details(true));
         $this->providerC->shouldReceive('resolveBooleanValue')->andReturn($this->details(true));
 
-        $mp = new Multiprovider(
+        $mp = new MultiProvider(
             [
                 ['name' => 'a', 'provider' => $this->providerA],
                 ['name' => 'b', 'provider' => $this->providerB],
@@ -70,7 +70,7 @@ class ComparisonStrategyTest extends TestCase
         $this->providerB->shouldReceive('resolveBooleanValue')->andReturn($this->details(false));
         $this->providerC->shouldReceive('resolveBooleanValue')->andReturn($this->details(true));
 
-        $mp = new Multiprovider(
+        $mp = new MultiProvider(
             [
                 ['name' => 'a', 'provider' => $this->providerA],
                 ['name' => 'b', 'provider' => $this->providerB],
@@ -89,7 +89,7 @@ class ComparisonStrategyTest extends TestCase
         $this->providerA->shouldReceive('resolveBooleanValue')->andReturn($this->details(true));
         $this->providerB->shouldReceive('resolveBooleanValue')->andReturn($this->details(false));
 
-        $mp = new Multiprovider(
+        $mp = new MultiProvider(
             [
                 ['name' => 'a', 'provider' => $this->providerA],
                 ['name' => 'b', 'provider' => $this->providerB],
@@ -115,7 +115,7 @@ class ComparisonStrategyTest extends TestCase
         $this->providerB->shouldReceive('resolveBooleanValue')->andReturn($this->details(false));
         $this->providerC->shouldReceive('resolveBooleanValue')->andReturn($this->details(true));
 
-        $mp = new Multiprovider(
+        $mp = new MultiProvider(
             [
                 ['name' => 'a', 'provider' => $this->providerA],
                 ['name' => 'b', 'provider' => $this->providerB],
@@ -136,7 +136,7 @@ class ComparisonStrategyTest extends TestCase
         $this->providerB->shouldReceive('resolveBooleanValue')->andThrow(new Exception('err'));
         $this->providerC->shouldReceive('resolveBooleanValue')->andThrow(new Exception('err2'));
 
-        $mp = new Multiprovider(
+        $mp = new MultiProvider(
             [
                 ['name' => 'a', 'provider' => $this->providerA],
                 ['name' => 'b', 'provider' => $this->providerB],
@@ -155,7 +155,7 @@ class ComparisonStrategyTest extends TestCase
         $this->providerA->shouldReceive('resolveBooleanValue')->andThrow(new Exception('a'));
         $this->providerB->shouldReceive('resolveBooleanValue')->andThrow(new Exception('b'));
 
-        $mp = new Multiprovider(
+        $mp = new MultiProvider(
             [
                 ['name' => 'a', 'provider' => $this->providerA],
                 ['name' => 'b', 'provider' => $this->providerB],
@@ -173,7 +173,7 @@ class ComparisonStrategyTest extends TestCase
         $this->providerA->shouldReceive('resolveBooleanValue')->andReturn($this->details(false));
         $this->providerB->shouldReceive('resolveBooleanValue')->andReturn($this->details(true));
 
-        $mp = new Multiprovider(
+        $mp = new MultiProvider(
             [
                 ['name' => 'a', 'provider' => $this->providerA],
                 ['name' => 'b', 'provider' => $this->providerB],
