@@ -28,12 +28,12 @@ class FirstMatchStrategy extends BaseEvaluationStrategy
     /**
      * All providers should be evaluated by default.
      *
-     * @param StrategyPerProviderContext $context Context for the specific provider being evaluated
+     * @param ProviderContext $context Context for the specific provider being evaluated
      *
      * @return bool True to evaluate this provider, false to skip
      */
     public function shouldEvaluateThisProvider(
-        StrategyPerProviderContext $context,
+        ProviderContext $context,
     ): bool {
         return true;
     }
@@ -42,13 +42,13 @@ class FirstMatchStrategy extends BaseEvaluationStrategy
      * Continue to next provider only if current result is FLAG_NOT_FOUND.
      * Stop on first successful result or any other error.
      *
-     * @param StrategyPerProviderContext $context Context for the specific provider just evaluated
+     * @param ProviderContext $context Context for the specific provider just evaluated
      * @param ProviderResolutionResult $result Result from the provider that was just evaluated
      *
      * @return bool True to continue to next provider, false to stop evaluation
      */
     public function shouldEvaluateNextProvider(
-        StrategyPerProviderContext $context,
+        ProviderContext $context,
         ProviderResolutionResult $result,
     ): bool {
         // If evaluation was successful, stop here
@@ -68,11 +68,9 @@ class FirstMatchStrategy extends BaseEvaluationStrategy
                 }
             }
 
-            // For any other error, stop here
             return false;
         }
 
-        // Continue if no result
         return true;
     }
 
@@ -80,13 +78,13 @@ class FirstMatchStrategy extends BaseEvaluationStrategy
      * Returns the first successful result or the first non-FLAG_NOT_FOUND error.
      * If all providers returned FLAG_NOT_FOUND or no results, return error.
      *
-     * @param StrategyEvaluationContext $context Context for the overall evaluation
+     * @param StrategyContext $context Context for the overall evaluation
      * @param ProviderResolutionResult[] $resolutions Array of resolution results from all providers
      *
      * @return FinalResult The final result of the evaluation
      */
     public function determineFinalResult(
-        StrategyEvaluationContext $context,
+        StrategyContext $context,
         array $resolutions,
     ): FinalResult {
         // Find first successful resolution
@@ -131,19 +129,6 @@ class FirstMatchStrategy extends BaseEvaluationStrategy
         }
 
         // All providers returned FLAG_NOT_FOUND or no results
-        $errors = [];
-        foreach ($resolutions as $resolution) {
-            if ($resolution->hasError()) {
-                $err = $resolution->getError();
-                if ($err instanceof Throwable) {
-                    $errors[] = [
-                        'providerName' => $resolution->getProviderName(),
-                        'error' => $err,
-                    ];
-                }
-            }
-        }
-
-        return new FinalResult(null, null, $errors ?: null);
+        return new FinalResult(null, null, $this->aggregateErrors($resolutions));
     }
 }

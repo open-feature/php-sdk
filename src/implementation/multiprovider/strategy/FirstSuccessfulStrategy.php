@@ -7,7 +7,6 @@ namespace OpenFeature\implementation\multiprovider\strategy;
 use OpenFeature\implementation\multiprovider\FinalResult;
 use OpenFeature\implementation\multiprovider\ProviderResolutionResult;
 use OpenFeature\interfaces\provider\RunMode;
-use Throwable;
 
 /**
  * FirstSuccessfulStrategy returns the first successful result from a provider.
@@ -27,12 +26,12 @@ class FirstSuccessfulStrategy extends BaseEvaluationStrategy
     /**
      * All providers should be evaluated by default.
      *
-     * @param StrategyPerProviderContext $context Context for the specific provider being evaluated
+     * @param ProviderContext $context Context for the specific provider being evaluated
      *
      * @return bool True to evaluate this provider, false to skip
      */
     public function shouldEvaluateThisProvider(
-        StrategyPerProviderContext $context,
+        ProviderContext $context,
     ): bool {
         return true;
     }
@@ -41,13 +40,13 @@ class FirstSuccessfulStrategy extends BaseEvaluationStrategy
      * Always continue to next provider unless we found a successful result.
      * Errors do not stop evaluation in this strategy.
      *
-     * @param StrategyPerProviderContext $context Context for the specific provider just evaluated
+     * @param ProviderContext $context Context for the specific provider just evaluated
      * @param ProviderResolutionResult $result Result from the provider that was just evaluated
      *
      * @return bool True to continue to next provider, false to stop evaluation
      */
     public function shouldEvaluateNextProvider(
-        StrategyPerProviderContext $context,
+        ProviderContext $context,
         ProviderResolutionResult $result,
     ): bool {
         // If we found a successful result, stop here (return false)
@@ -59,13 +58,13 @@ class FirstSuccessfulStrategy extends BaseEvaluationStrategy
      * Returns the first successful result.
      * If no provider succeeds, returns all errors aggregated.
      *
-     * @param StrategyEvaluationContext $context Context for the overall evaluation
+     * @param StrategyContext $context Context for the overall evaluation
      * @param ProviderResolutionResult[] $resolutions Array of resolution results from all providers
      *
      * @return FinalResult The final result of the evaluation
      */
     public function determineFinalResult(
-        StrategyEvaluationContext $context,
+        StrategyContext $context,
         array $resolutions,
     ): FinalResult {
         // Find first successful resolution
@@ -80,19 +79,6 @@ class FirstSuccessfulStrategy extends BaseEvaluationStrategy
         }
 
         // No successful results, aggregate all errors
-        $errors = [];
-        foreach ($resolutions as $resolution) {
-            if ($resolution->hasError()) {
-                $err = $resolution->getError();
-                if ($err instanceof Throwable) {
-                    $errors[] = [
-                        'providerName' => $resolution->getProviderName(),
-                        'error' => $err,
-                    ];
-                }
-            }
-        }
-
-        return new FinalResult(null, null, $errors ?: null);
+        return new FinalResult(null, null, $this->aggregateErrors($resolutions));
     }
 }
