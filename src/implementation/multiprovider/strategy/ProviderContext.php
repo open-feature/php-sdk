@@ -8,12 +8,12 @@ use OpenFeature\interfaces\provider\Provider;
 
 /**
  * Context information for evaluating a specific provider in a multi-provider setup.
- * Extends StrategyEvaluationContext with provider-specific information.
+ * Extends StrategyContext with provider-specific information.
  */
-class StrategyPerProviderContext extends StrategyEvaluationContext
+class ProviderContext extends StrategyContext
 {
     public function __construct(
-        StrategyEvaluationContext $baseContext,
+        StrategyContext $baseContext,
         private string $providerName,
         private Provider $provider,
     ) {

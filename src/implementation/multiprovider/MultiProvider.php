@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace OpenFeature\implementation\multiprovider;
 
 use InvalidArgumentException;
+use OpenFeature\implementation\flags\EvaluationContext as ImplEvaluationContext;
 use OpenFeature\implementation\multiprovider\strategy\BaseEvaluationStrategy;
 use OpenFeature\implementation\multiprovider\strategy\FirstMatchStrategy;
-use OpenFeature\implementation\multiprovider\strategy\StrategyEvaluationContext;
-use OpenFeature\implementation\multiprovider\strategy\StrategyPerProviderContext;
+use OpenFeature\implementation\multiprovider\strategy\ProviderContext;
+use OpenFeature\implementation\multiprovider\strategy\StrategyContext;
 use OpenFeature\implementation\provider\AbstractProvider;
 use OpenFeature\implementation\provider\Reason;
 use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
@@ -17,13 +18,11 @@ use OpenFeature\interfaces\flags\EvaluationContext;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
 use OpenFeature\interfaces\provider\ResolutionDetails;
+use OpenFeature\interfaces\provider\RunMode;
 use Throwable;
 
-use function array_count_values;
 use function array_diff;
-use function array_filter;
 use function array_keys;
-use function array_map;
 use function assert;
 use function count;
 use function implode;
@@ -35,9 +34,9 @@ use function is_string;
 use function strtolower;
 use function trim;
 
-class Multiprovider extends AbstractProvider
+class MultiProvider extends AbstractProvider
 {
-    protected static string $NAME = 'Multiprovider';
+    protected static string $NAME = 'MultiProvider';
 
     /**
      * List of supported keys in each provider data entry.
@@ -48,7 +47,7 @@ class Multiprovider extends AbstractProvider
         'name', 'provider',
     ];
 
-    public const NAME = 'Multiprovider';
+    public const NAME = 'MultiProvider';
 
     /**
      * @var array<string, Provider> Providers indexed by their names.
@@ -149,20 +148,19 @@ class Multiprovider extends AbstractProvider
      */
     private function evaluateFlag(string $flagType, string $flagKey, mixed $defaultValue, ?EvaluationContext $context): ResolutionDetails
     {
-        $context = $context ?? new \OpenFeature\implementation\flags\EvaluationContext();
+        $context = $context ?? new ImplEvaluationContext();
 
         // Create base evaluation context
-        $baseContext = new StrategyEvaluationContext($flagKey, $flagType, $defaultValue, $context);
+        $strategyContext = new StrategyContext($flagKey, $flagType, $defaultValue, $context);
 
-        // Collect results from providers based on strategy
-        if ($this->strategy->runMode === 'parallel') {
-            $resolutions = $this->evaluateParallel($baseContext);
+        if ($this->strategy->runMode === RunMode::PARALLEL) {
+            $resolutions = $this->evaluateParallel($strategyContext);
         } else {
-            $resolutions = $this->evaluateSequential($baseContext);
+            $resolutions = $this->evaluateSequential($strategyContext);
         }
 
         // Let strategy determine final result
-        $finalResult = $this->strategy->determineFinalResult($baseContext, $resolutions);
+        $finalResult = $this->strategy->determineFinalResult($strategyContext, $resolutions);
 
         if ($finalResult->isSuccessful()) {
             $details = $finalResult->getDetails();
@@ -180,24 +178,24 @@ class Multiprovider extends AbstractProvider
      *
      * @return array<int, ProviderResolutionResult> Array of resolution results from evaluated providers.
      */
-    private function evaluateSequential(StrategyEvaluationContext $baseContext): array
+    private function evaluateSequential(StrategyContext $baseContext): array
     {
         $resolutions = [];
 
         foreach ($this->providersByName as $providerName => $provider) {
-            $perProviderContext = new StrategyPerProviderContext($baseContext, $providerName, $provider);
+            $providerContext = new ProviderContext($baseContext, $providerName, $provider);
 
             // Check if we should evaluate this provider
-            if (!$this->strategy->shouldEvaluateThisProvider($perProviderContext)) {
+            if (!$this->strategy->shouldEvaluateThisProvider($providerContext)) {
                 continue;
             }
 
             // Evaluate provider
-            $result = $this->evaluateProvider($provider, $providerName, $baseContext);
+            $result = $this->evaluateProvider($providerContext, $baseContext);
             $resolutions[] = $result;
 
             // Check if we should continue to next provider
-            if (!$this->strategy->shouldEvaluateNextProvider($perProviderContext, $result)) {
+            if (!$this->strategy->shouldEvaluateNextProvider($providerContext, $result)) {
                 break;
             }
         }
@@ -210,20 +208,20 @@ class Multiprovider extends AbstractProvider
      *
      * @return array<int, ProviderResolutionResult> Array of resolution results from evaluated providers.
      */
-    private function evaluateParallel(StrategyEvaluationContext $baseContext): array
+    private function evaluateParallel(StrategyContext $strategyContext): array
     {
         $resolutions = [];
 
         foreach ($this->providersByName as $providerName => $provider) {
-            $perProviderContext = new StrategyPerProviderContext($baseContext, $providerName, $provider);
+            $providerContext = new ProviderContext($strategyContext, $providerName, $provider);
 
             // Check if we should evaluate this provider
-            if (!$this->strategy->shouldEvaluateThisProvider($perProviderContext)) {
+            if (!$this->strategy->shouldEvaluateThisProvider($providerContext)) {
                 continue;
             }
 
             // Evaluate provider
-            $result = $this->evaluateProvider($provider, $providerName, $baseContext);
+            $result = $this->evaluateProvider($providerContext, $strategyContext);
             $resolutions[] = $result;
         }
 
@@ -233,43 +231,46 @@ class Multiprovider extends AbstractProvider
     /**
      * Evaluate a single provider and return result with error handling.
      */
-    private function evaluateProvider(Provider $provider, string $providerName, StrategyEvaluationContext $context): ProviderResolutionResult
+    private function evaluateProvider(ProviderContext $providerContext, StrategyContext $strategyContext): ProviderResolutionResult
     {
+        $provider = $providerContext->getProvider();
+        $providerName = $providerContext->getProviderName();
+
         try {
-            $flagType = $context->getFlagType();
-            /** @var bool|string|int|float|array<mixed>|null $defaultValue */
-            $defaultValue = $context->getDefaultValue();
-            $evalContext = $context->getEvaluationContext();
+            $flagKey = $strategyContext->getFlagKey();
+            $flagType = $strategyContext->getFlagType();
+            /** @var bool|string|int|float|array<mixed> $defaultValue */
+            $defaultValue = $strategyContext->getDefaultValue();
+            $evalContext = $strategyContext->getEvaluationContext();
 
-            switch ($flagType) {
-                case 'boolean':
+            $details = match ($flagType) {
+                'boolean' => (function () use ($provider, $flagKey, $defaultValue, $evalContext) {
                     assert(is_bool($defaultValue));
-                    $details = $provider->resolveBooleanValue($context->getFlagKey(), $defaultValue, $evalContext);
 
-                    break;
-                case 'string':
+                    return $provider->resolveBooleanValue($flagKey, $defaultValue, $evalContext);
+                })(),
+                'string' => (function () use ($provider, $flagKey, $defaultValue, $evalContext) {
                     assert(is_string($defaultValue));
-                    $details = $provider->resolveStringValue($context->getFlagKey(), $defaultValue, $evalContext);
 
-                    break;
-                case 'integer':
+                    return $provider->resolveStringValue($flagKey, $defaultValue, $evalContext);
+                })(),
+                'integer' => (function () use ($provider, $flagKey, $defaultValue, $evalContext) {
                     assert(is_int($defaultValue));
-                    $details = $provider->resolveIntegerValue($context->getFlagKey(), $defaultValue, $evalContext);
 
-                    break;
-                case 'float':
+                    return $provider->resolveIntegerValue($flagKey, $defaultValue, $evalContext);
+                })(),
+                'float' => (function () use ($provider, $flagKey, $defaultValue, $evalContext) {
                     assert(is_float($defaultValue));
-                    $details = $provider->resolveFloatValue($context->getFlagKey(), $defaultValue, $evalContext);
 
-                    break;
-                case 'object':
+                    return $provider->resolveFloatValue($flagKey, $defaultValue, $evalContext);
+                })(),
+                'object' => (function () use ($provider, $flagKey, $defaultValue, $evalContext) {
                     assert(is_array($defaultValue));
-                    $details = $provider->resolveObjectValue($context->getFlagKey(), $defaultValue, $evalContext);
 
-                    break;
-                default:
-                    throw new InvalidArgumentException('Unknown flag type: ' . $flagType);
-            }
+                    return $provider->resolveObjectValue($flagKey, $defaultValue, $evalContext);
+                })(),
+                default => throw new InvalidArgumentException('Unknown flag type: ' . $flagType),
+            };
 
             return new ProviderResolutionResult($providerName, $provider, $details, null);
         } catch (Throwable $error) {
@@ -308,23 +309,25 @@ class Multiprovider extends AbstractProvider
      */
     private function validateProviderData(array $providerData): void
     {
+        $names = [];
+
         foreach ($providerData as $entry) {
-            // check that entry contains only supported keys
-            $unSupportedKeys = array_diff(array_keys($entry), self::$supportedProviderData);
-            if (count($unSupportedKeys) !== 0) {
-                throw new InvalidArgumentException('Unsupported keys in provider data entry');
+            // Check for unsupported keys
+            if ($unsupportedKeys = array_diff(array_keys($entry), self::$supportedProviderData)) {
+                throw new InvalidArgumentException('Unsupported keys: ' . implode(', ', $unsupportedKeys));
             }
-            if (isset($entry['name']) && trim($entry['name']) === '') {
-                throw new InvalidArgumentException('Each provider data entry must have a non-empty string "name" key');
+
+            // Check for empty names and duplicates in one pass
+            if (isset($entry['name'])) {
+                $name = trim($entry['name']);
+                if ($name === '') {
+                    throw new InvalidArgumentException('Provider name cannot be empty');
+                }
+                if (isset($names[$name])) {
+                    throw new InvalidArgumentException("Duplicate provider name: {$name}");
+                }
+                $names[$name] = true;
             }
-        }
-
-        $names = array_map(fn ($entry) => $entry['name'] ?? null, $providerData);
-        $nameCounts = array_count_values(array_filter($names)); // filter out nulls, count occurrences of each name
-        $duplicateNames = array_keys(array_filter($nameCounts, fn ($count) => $count > 1)); // filter by count > 1 to get duplicates
-
-        if ($duplicateNames !== []) {
-            throw new InvalidArgumentException('Duplicate provider names found: ' . implode(', ', $duplicateNames));
         }
     }
 
@@ -332,23 +335,21 @@ class Multiprovider extends AbstractProvider
      * Register providers by their names.
      *
      * @param array<int, array{name?: string, provider: Provider}> $providerData Array of provider data entries.
-     *
-     * @throws InvalidArgumentException If duplicate provider names are detected during assignment.
      */
     private function registerProviders(array $providerData): void
     {
-        $counts = []; // track how many times a base name is used
+        $nameCounts = [];
 
         foreach ($providerData as $entry) {
-            if (isset($entry['name']) && $entry['name'] !== '') {
-                $this->providersByName[$entry['name']] = $entry['provider'];
-            } else {
-                $name = $this->uniqueProviderName($entry['provider']->getMetadata()->getName(), $counts);
-                if (isset($this->providersByName[$name])) {
-                    throw new InvalidArgumentException('Duplicate provider name detected during assignment: ' . $name);
-                }
-                $this->providersByName[$name] = $entry['provider'];
+            $name = isset($entry['name']) && $entry['name'] !== ''
+                ? $entry['name']
+                : $this->generateUniqueName($entry['provider']->getMetadata()->getName(), $nameCounts);
+
+            if (isset($this->providersByName[$name])) {
+                throw new InvalidArgumentException('Duplicate provider name detected during assignment: ' . $name);
             }
+
+            $this->providersByName[$name] = $entry['provider'];
         }
     }
 
@@ -356,16 +357,16 @@ class Multiprovider extends AbstractProvider
      * Generate a unique provider name by appending a count suffix if necessary.
      * E.g., if "ProviderA" is used twice, the second instance becomes "ProviderA_2".
      *
-     * @param string $name The base name of the provider.
-     * @param array<string, int> $count Reference to an associative array tracking name counts.
+     * @param string $baseName The base name of the provider.
+     * @param array<string, int> $counts Reference to an associative array tracking name counts.
      *
      * @return string A unique provider name.
      */
-    private function uniqueProviderName(string $name, array &$count): string
+    private function generateUniqueName(string $baseName, array &$counts): string
     {
-        $key = strtolower($name);
-        $count[$key] = ($count[$key] ?? 0) + 1;
+        $key = strtolower($baseName);
+        $counts[$key] = ($counts[$key] ?? 0) + 1;
 
-        return $count[$key] > 1 ? $name . '_' . $count[$key] : $name;
+        return $counts[$key] === 1 ? $baseName : "{$baseName}_{$counts[$key]}";
     }
 }

@@ -50,12 +50,12 @@ class ComparisonStrategy extends BaseEvaluationStrategy
      * All providers should be evaluated by default.
      * This allows for comparison of results across providers.
      *
-     * @param StrategyPerProviderContext $context Context for the specific provider being evaluated
+     * @param ProviderContext $context Context for the specific provider being evaluated
      *
      * @return bool True to evaluate this provider, false to skip
      */
     public function shouldEvaluateThisProvider(
-        StrategyPerProviderContext $context,
+        ProviderContext $context,
     ): bool {
         return true;
     }
@@ -64,13 +64,13 @@ class ComparisonStrategy extends BaseEvaluationStrategy
      * In parallel mode, this is not called.
      * If somehow running sequentially, always continue to evaluate all providers.
      *
-     * @param StrategyPerProviderContext $context Context for the specific provider just evaluated
+     * @param ProviderContext $context Context for the specific provider just evaluated
      * @param ProviderResolutionResult $result Result from the provider that was just evaluated
      *
      * @return bool True to continue to next provider, false to stop evaluation
      */
     public function shouldEvaluateNextProvider(
-        StrategyPerProviderContext $context,
+        ProviderContext $context,
         ProviderResolutionResult $result,
     ): bool {
         return true;
@@ -82,13 +82,13 @@ class ComparisonStrategy extends BaseEvaluationStrategy
      * If they don't match, returns fallback provider result or first result.
      * If no successful results, returns aggregated errors.
      *
-     * @param StrategyEvaluationContext $context Context for the overall evaluation
+     * @param StrategyContext $context Context for the overall evaluation
      * @param ProviderResolutionResult[] $resolutions Array of resolution results from all providers
      *
      * @return FinalResult The final result of the evaluation
      */
     public function determineFinalResult(
-        StrategyEvaluationContext $context,
+        StrategyContext $context,
         array $resolutions,
     ): FinalResult {
         // Separate successful results from errors
@@ -97,13 +97,7 @@ class ComparisonStrategy extends BaseEvaluationStrategy
 
         foreach ($resolutions as $resolution) {
             if ($resolution->hasError()) {
-                $err = $resolution->getError();
-                if ($err instanceof Throwable) {
-                    $errors[] = [
-                        'providerName' => $resolution->getProviderName(),
-                        'error' => $err,
-                    ];
-                }
+                $errors[] = $resolution;
             } else {
                 $successfulResults[] = $resolution;
             }
@@ -111,7 +105,7 @@ class ComparisonStrategy extends BaseEvaluationStrategy
 
         // If no successful results, return errors
         if (count($successfulResults) === 0) {
-            return new FinalResult(null, null, $errors !== [] ? $errors : null);
+            return new FinalResult(null, null, $this->aggregateErrors($errors));
         }
 
         // If only one successful result, return it
