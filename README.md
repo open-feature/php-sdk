@@ -142,6 +142,7 @@ class MyClass
 | ✅      | [Targeting](#targeting)         | Contextually-aware flag evaluation using [evaluation context](https://openfeature.dev/docs/reference/concepts/evaluation-context). |
 | ✅      | [Hooks](#hooks)                 | Add functionality to various stages of the flag evaluation life-cycle.                                                             |
 | ✅      | [Logging](#logging)             | Integrate with popular logging packages.                                                                                           |
+| ✅      | [MultiProvider](#multiprovider) | Combine multiple providers with configurable evaluation strategies for fallback and aggregation.                                   |
 | ❌      | [Named clients](#named-clients) | Utilize multiple providers in a single application.                                                                                |
 | ⚠️      | [Eventing](#eventing)           | React to state changes in the provider or flag management system.                                                                  |
 | ❌      | [Shutdown](#shutdown)           | Gracefully clean up a provider during application shutdown.                                                                        |
@@ -164,6 +165,200 @@ $api->setProvider(new MyProvider());
 
 <!-- In some situations, it may be beneficial to register multiple providers in the same application.
 This is possible using [named clients](#named-clients), which is covered in more detail below. -->
+
+#### MultiProvider
+
+The `MultiProvider` allows you to combine multiple feature flag providers with configurable evaluation strategies. This is useful when you need to:
+
+- Implement fallback providers for high availability
+- Gradually migrate from one provider to another
+- Use different providers for different environments
+- Aggregate flags from multiple sources
+
+**Basic Usage**
+
+```php
+use OpenFeature\implementation\multiprovider\MultiProvider;
+use OpenFeature\implementation\multiprovider\strategy\FirstMatchStrategy;
+
+$multiProvider = new MultiProvider([
+    ['name' => 'Primary', 'provider' => new PrimaryProvider()],
+    ['name' => 'Fallback', 'provider' => new FallbackProvider()],
+], new FirstMatchStrategy());
+
+$api = OpenFeatureAPI::getInstance();
+$api->setProvider($multiProvider);
+```
+
+**Provider Naming**
+
+Providers can be named explicitly or have names auto-generated:
+
+```php
+// Explicit naming (recommended for clarity)
+new MultiProvider([
+    ['name' => 'LaunchDarkly', 'provider' => $ldProvider],
+    ['name' => 'FlagSmith', 'provider' => $fsProvider],
+]);
+
+// Auto-generated naming (provider class name is used)
+new MultiProvider([
+    ['provider' => $ldProvider],  // Named "LaunchDarklyProvider"
+    ['provider' => $fsProvider],  // Named "FlagSmithProvider"
+    ['provider' => $fsProvider],  // Named "FlagSmithProvider_2" (auto-incremented)
+]);
+```
+
+> **Note:** Provider names are **case-insensitive** for duplicate detection. "MyProvider" and "myprovider" are considered duplicates.
+
+**Evaluation Strategies**
+
+MultiProvider supports three evaluation strategies:
+
+##### 1. FirstMatchStrategy (Default)
+
+Evaluates providers sequentially and returns the **first successful result**. Continues to the next provider only if the current one throws a `FLAG_NOT_FOUND` error.
+
+**Use cases:**
+- Primary/fallback provider setup
+- Gradual migration between providers
+- Provider priority ordering
+
+```php
+use OpenFeature\implementation\multiprovider\strategy\FirstMatchStrategy;
+
+$multiProvider = new MultiProvider([
+    ['name' => 'Remote', 'provider' => new RemoteProvider()],   // Try remote first
+    ['name' => 'Cache', 'provider' => new CacheProvider()],     // Fall back to cache
+    ['name' => 'Default', 'provider' => new DefaultProvider()], // Final fallback
+], new FirstMatchStrategy());
+```
+
+**Behavior:**
+- **Remote** has the flag → returns Remote's value ✅
+- **Remote** throws `FLAG_NOT_FOUND` → continues to **Cache**
+- **Remote** throws other error (e.g., network timeout) → stops and returns error ❌
+- All providers throw `FLAG_NOT_FOUND` → returns default value with aggregated errors
+
+##### 2. FirstSuccessfulStrategy
+
+Evaluates providers sequentially and returns the **first successful result**, skipping providers that throw **any error** (not just `FLAG_NOT_FOUND`).
+
+**Use cases:**
+- High availability setups
+- Tolerating provider failures
+- Failover scenarios
+
+```php
+use OpenFeature\implementation\multiprovider\strategy\FirstSuccessfulStrategy;
+
+$multiProvider = new MultiProvider([
+    ['name' => 'Primary', 'provider' => new UnstableProvider()],
+    ['name' => 'Secondary', 'provider' => new StableProvider()],
+    ['name' => 'Tertiary', 'provider' => new LocalProvider()],
+], new FirstSuccessfulStrategy());
+```
+
+**Behavior:**
+- Evaluates providers in order until one succeeds
+- Ignores **all types of errors** from failing providers
+- Returns the first successful result
+- If all providers fail → returns default value with aggregated errors
+
+##### 3. ComparisonStrategy
+
+Evaluates **all providers** and compares their results to determine the "best" value.
+
+**Use cases:**
+- Gradual rollouts (highest percentage wins)
+- Rate limiting (highest limit wins)
+- Configuration values (maximum/minimum selection)
+
+```php
+use OpenFeature\implementation\multiprovider\strategy\ComparisonStrategy;
+
+$multiProvider = new MultiProvider([
+    ['name' => 'ConfigA', 'provider' => new ConfigProvider(['timeout' => 30])],
+    ['name' => 'ConfigB', 'provider' => new ConfigProvider(['timeout' => 60])],
+    ['name' => 'ConfigC', 'provider' => new ConfigProvider(['timeout' => 45])],
+], new ComparisonStrategy());
+
+// Returns 60 (highest value from ConfigB)
+$timeout = $client->getIntegerValue('timeout', 10);
+```
+
+**Behavior:**
+- **Sequential mode (default):** Evaluates providers one by one
+- **Parallel mode:** Can be configured for concurrent evaluation
+- **For numbers:** Returns the highest value
+- **For booleans:** `true` wins over `false`
+- **For strings/arrays:** Returns the first successful result
+- Providers that throw `FLAG_NOT_FOUND` are skipped
+- Providers that throw other errors stop evaluation (sequential mode)
+
+**Strategy Comparison**
+
+| Scenario | FirstMatchStrategy | FirstSuccessfulStrategy | ComparisonStrategy |
+|----------|-------------------|------------------------|-------------------|
+| Provider order matters | ✅ Yes (stops at first match) | ✅ Yes (stops at first success) | ❌ No (evaluates all) |
+| Handles FLAG_NOT_FOUND | Continues to next | Continues to next | Skips provider |
+| Handles other errors | Stops evaluation | Continues to next | Stops evaluation |
+| Evaluates all providers | ❌ No | ❌ No | ✅ Yes |
+| Best for fallback | ✅ | ✅ | ❌ |
+| Best for high availability | ❌ | ✅ | ❌ |
+| Best for aggregation | ❌ | ❌ | ✅ |
+
+**Error Handling**
+
+When all providers fail to resolve a flag, MultiProvider aggregates errors and returns the default value with error details:
+
+```php
+// All providers fail
+$result = $client->getBooleanDetails('non-existent-flag', false);
+// Returns: value=false, reason=ERROR, error="Multi-provider evaluation failed with 3 provider error(s)"
+```
+
+Errors are aggregated based on the strategy:
+- **FirstMatchStrategy:** Collects errors from providers that returned `FLAG_NOT_FOUND`
+- **FirstSuccessfulStrategy:** Collects errors from all failed providers
+- **ComparisonStrategy:** Collects errors from providers that neither succeeded nor returned `FLAG_NOT_FOUND`
+
+**Complete Example**
+
+```php
+use OpenFeature\OpenFeatureAPI;
+use OpenFeature\implementation\multiprovider\MultiProvider;
+use OpenFeature\implementation\multiprovider\strategy\FirstMatchStrategy;
+
+// Set up providers
+$remoteProvider = new LaunchDarklyProvider($config);
+$cacheProvider = new RedisCacheProvider($redis);
+$defaultProvider = new InMemoryProvider([
+    'feature-enabled' => true,
+    'api-timeout' => 30,
+]);
+
+// Configure MultiProvider with priority order
+$multiProvider = new MultiProvider([
+    ['name' => 'LaunchDarkly', 'provider' => $remoteProvider],
+    ['name' => 'Redis', 'provider' => $cacheProvider],
+    ['name' => 'Defaults', 'provider' => $defaultProvider],
+], new FirstMatchStrategy());
+
+// Register with OpenFeature
+$api = OpenFeatureAPI::getInstance();
+$api->setProvider($multiProvider);
+
+// Use as normal
+$client = $api->getClient();
+$enabled = $client->getBooleanValue('feature-enabled', false);
+
+// Evaluation flow:
+// 1. Try LaunchDarkly → if FLAG_NOT_FOUND, continue
+// 2. Try Redis → if FLAG_NOT_FOUND, continue  
+// 3. Try Defaults → returns value
+// 4. If all fail → returns default with aggregated errors
+```
 
 ### Targeting
 
