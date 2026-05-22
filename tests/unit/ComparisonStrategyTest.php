@@ -203,4 +203,55 @@ class ComparisonStrategyTest extends TestCase
         $res = $mp->resolveBooleanValue('flag', false, new EvaluationContext());
         $this->assertFalse($res->getValue());
     }
+
+    public function testSingleProviderReturnsItsValue(): void
+    {
+        $strategy = new ComparisonStrategy($this->providerA);
+        $this->providerA->shouldReceive('resolveBooleanValue')->andReturn($this->details(true));
+
+        $mp = new MultiProvider(
+            [
+                ['name' => 'a', 'provider' => $this->providerA],
+            ],
+            $strategy,
+        );
+
+        $res = $mp->resolveBooleanValue('flag', false, new EvaluationContext());
+        $this->assertTrue($res->getValue());
+    }
+
+    public function testMismatchWithoutCallbackSucceeds(): void
+    {
+        // Test mismatch path when no callback is provided
+        $strategy = new ComparisonStrategy($this->providerB, null);
+        $this->providerA->shouldReceive('resolveBooleanValue')->andReturn($this->details(true));
+        $this->providerB->shouldReceive('resolveBooleanValue')->andReturn($this->details(false));
+
+        $mp = new MultiProvider(
+            [
+                ['name' => 'a', 'provider' => $this->providerA],
+                ['name' => 'b', 'provider' => $this->providerB],
+            ],
+            $strategy,
+        );
+
+        $res = $mp->resolveBooleanValue('flag', false, new EvaluationContext());
+        $this->assertFalse($res->getValue()); // fallback provider's value
+    }
+
+    public function testGettersReturnCorrectValues(): void
+    {
+        $callback = fn () => null;
+        $strategy = new ComparisonStrategy($this->providerA, $callback);
+
+        $this->assertSame($this->providerA, $strategy->getFallbackProvider());
+        $this->assertSame($callback, $strategy->getOnMismatch());
+    }
+
+    public function testGetOnMismatchReturnsNullWhenNotProvided(): void
+    {
+        $strategy = new ComparisonStrategy($this->providerA);
+
+        $this->assertNull($strategy->getOnMismatch());
+    }
 }
