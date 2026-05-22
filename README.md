@@ -168,27 +168,52 @@ This is possible using [named clients](#named-clients), which is covered in more
 
 #### MultiProvider
 
-The `MultiProvider` allows you to combine multiple feature flag providers with configurable evaluation strategies. This is useful when you need to:
+The Multi-Provider allows you to use multiple underlying providers as sources of flag data for the OpenFeature SDK. When a flag is being evaluated, the Multi-Provider will consult each underlying provider it is managing in order to determine the final result. Different evaluation strategies can be defined to control which providers get evaluated and which result is used.
 
-- Implement fallback providers for high availability
-- Gradually migrate from one provider to another
-- Use different providers for different environments
-- Aggregate flags from multiple sources
+The Multi-Provider is a powerful tool for performing migrations between flag providers, or combining multiple providers into a single feature flagging interface. For example:
+
+- **Migration**: When migrating between two providers, you can run both in parallel under a unified flagging interface. As flags are added to the new provider, the Multi-Provider will automatically find and return them, falling back to the old provider if the new provider does not have the flag.
+- **Multiple Data Sources**: The Multi-Provider allows you to seamlessly combine many sources of flagging data, such as environment variables, local files, database values, and SaaS-hosted feature management systems.
+- **High Availability**: Use multiple providers as redundant sources, automatically failing over when one provider is unavailable.
 
 **Basic Usage**
 
+The Multi-Provider is initialized with an array of providers it should evaluate:
+
 ```php
+use OpenFeature\OpenFeatureAPI;
 use OpenFeature\implementation\multiprovider\MultiProvider;
-use OpenFeature\implementation\multiprovider\strategy\FirstMatchStrategy;
 
 $multiProvider = new MultiProvider([
-    ['name' => 'Primary', 'provider' => new PrimaryProvider()],
-    ['name' => 'Fallback', 'provider' => new FallbackProvider()],
-], new FirstMatchStrategy());
+    ['provider' => new ProviderA()],
+    ['provider' => new ProviderB()],
+]);
 
 $api = OpenFeatureAPI::getInstance();
 $api->setProvider($multiProvider);
+
+$client = $api->getClient();
+echo $client->getBooleanValue('my-flag', false);
 ```
+
+By default, the Multi-Provider will evaluate all underlying providers in order and return the **first successful result**. If a provider indicates it does not have a flag (`FLAG_NOT_FOUND` error code), then it will be skipped and the next provider will be evaluated. If any provider throws or returns an error result, the operation will fail and the error will be returned. If no provider returns a successful result, the operation will fail with a `FLAG_NOT_FOUND` error code.
+
+To change this behaviour, a different "strategy" can be provided:
+
+```php
+use OpenFeature\implementation\multiprovider\strategy\FirstSuccessfulStrategy;
+
+$multiProvider = new MultiProvider([
+    ['provider' => new ProviderA()],
+    ['provider' => new ProviderB()],
+], new FirstSuccessfulStrategy());
+```
+
+The Multi-Provider comes with three strategies out of the box:
+
+1. **FirstMatchStrategy** (default): Evaluates all providers in order and returns the first successful result. Providers that indicate `FLAG_NOT_FOUND` error will be skipped and the next provider will be evaluated. Any other error will cause the operation to fail and the error to be returned.
+2. **FirstSuccessfulStrategy**: Evaluates all providers in order and returns the first successful result. Any error will cause that provider to be skipped. If no successful result is returned, the set of errors will be returned.
+3. **ComparisonStrategy**: Evaluates all providers in parallel. If every provider returns a successful result with the same value, then that result is returned. Otherwise, an error is returned immediately if any provider errors. When values do not agree, an optional callback will be executed to notify you of the mismatch, and the configured "fallback provider" value will be used. This can be useful when migrating between providers that are expected to contain identical configuration. You can easily spot mismatches in configuration without affecting flag behaviour.
 
 **Provider Naming**
 
@@ -203,19 +228,17 @@ new MultiProvider([
 
 // Auto-generated naming (provider class name is used)
 new MultiProvider([
-    ['provider' => $ldProvider],  // Named "LaunchDarklyProvider"
-    ['provider' => $fsProvider],  // Named "FlagSmithProvider"
-    ['provider' => $fsProvider],  // Named "FlagSmithProvider_2" (auto-incremented)
+    ['provider' => $ldProvider],  // Named "launchdarkly" (lowercase)
+    ['provider' => $fsProvider],  // Named "flagsmith" (lowercase)
+    ['provider' => $fsProvider],  // Named "flagsmith_2" (auto-incremented, lowercase)
 ]);
 ```
 
-> **Note:** Provider names are **case-insensitive** for duplicate detection. "MyProvider" and "myprovider" are considered duplicates.
+> **Note:** Provider names are **case-insensitive** and stored in lowercase. "MyProvider", "myprovider", and "MYPROVIDER" are all treated as the same provider name. Auto-generated names from provider metadata are also normalized to lowercase.
 
-**Evaluation Strategies**
+**Strategies**
 
-MultiProvider supports three evaluation strategies:
-
-##### 1. FirstMatchStrategy (Default)
+##### FirstMatchStrategy (Default)
 
 Evaluates providers sequentially and returns the **first successful result**. Continues to the next provider only if the current one throws a `FLAG_NOT_FOUND` error.
 
@@ -240,7 +263,7 @@ $multiProvider = new MultiProvider([
 - **Remote** throws other error (e.g., network timeout) → stops and returns error ❌
 - All providers throw `FLAG_NOT_FOUND` → returns default value with aggregated errors
 
-##### 2. FirstSuccessfulStrategy
+##### FirstSuccessfulStrategy
 
 Evaluates providers sequentially and returns the **first successful result**, skipping providers that throw **any error** (not just `FLAG_NOT_FOUND`).
 
@@ -265,63 +288,101 @@ $multiProvider = new MultiProvider([
 - Returns the first successful result
 - If all providers fail → returns default value with aggregated errors
 
-##### 3. ComparisonStrategy
+##### ComparisonStrategy
 
-Evaluates **all providers** and compares their results to determine the "best" value.
+Evaluates **all providers** in parallel. If every provider returns a successful result with the same value, then that result is returned. Otherwise, an error is returned immediately if any provider errors. When values do not agree, the configured "fallback provider" value will be used.
 
-**Use cases:**
-- Gradual rollouts (highest percentage wins)
-- Rate limiting (highest limit wins)
-- Configuration values (maximum/minimum selection)
+This strategy accepts several arguments during initialization:
 
 ```php
 use OpenFeature\implementation\multiprovider\strategy\ComparisonStrategy;
 
+// Set up providers
+$providerA = new ProviderA();
 $multiProvider = new MultiProvider([
-    ['name' => 'ConfigA', 'provider' => new ConfigProvider(['timeout' => 30])],
-    ['name' => 'ConfigB', 'provider' => new ConfigProvider(['timeout' => 60])],
-    ['name' => 'ConfigC', 'provider' => new ConfigProvider(['timeout' => 45])],
-], new ComparisonStrategy());
-
-// Returns 60 (highest value from ConfigB)
-$timeout = $client->getIntegerValue('timeout', 10);
+    ['provider' => $providerA],
+    ['provider' => new ProviderB()],
+], new ComparisonStrategy(
+    $providerA,  // First argument: "fallback provider" whose value to use when providers don't agree
+    function($resolutions) {  // Second argument: callback when values don't match
+        error_log('Mismatch detected: ' . json_encode($resolutions));
+    }
+));
 ```
 
+The first argument is the "fallback provider" whose value to use in the event that providers do not agree. It should be the same object reference as one of the providers in the list. The second argument is a callback function that will be executed when a mismatch is detected. The callback will be passed an array containing the details of each provider's resolution, including the flag key, the value returned, and any errors that were thrown.
+
+**Use cases:**
+- A/B testing during provider migrations
+- Validating new provider implementations against trusted baselines  
+- Detecting configuration drift across multiple sources
+- Ensuring provider consistency before committing to a new provider
+
 **Behavior:**
-- **Sequential mode (default):** Evaluates providers one by one
-- **Parallel mode:** Can be configured for concurrent evaluation
-- **For numbers:** Returns the highest value
-- **For booleans:** `true` wins over `false`
-- **For strings/arrays:** Returns the first successful result
-- Providers that throw `FLAG_NOT_FOUND` are skipped
-- Providers that throw other errors stop evaluation (sequential mode)
+- Evaluates **ALL providers** sequentially
+- **Fail-fast on errors:** If ANY provider returns an error, immediately returns all errors (no partial results)
+- **Compares values:** Uses strict equality (`===`) to check if all providers returned the same value
+- **On agreement:** If all providers succeed and all values match, returns the common value
+- **On mismatch:** If all succeed but values don't match, calls optional `onMismatch` callback, then returns the fallback provider's value
+- **Throws exception** if fallback provider not found in results
+
+**Important Notes:**
+- The fallback provider parameter is **required** (not optional)
+- Fallback provider must be included in the provider list
+- This is **not** a "highest value wins" strategy - it checks for exact equality
+- Fallback provider is only used for value mismatches, NOT for error recovery
+- Useful for ensuring consistency during migrations, not for aggregating different values
 
 **Strategy Comparison**
 
 | Scenario | FirstMatchStrategy | FirstSuccessfulStrategy | ComparisonStrategy |
 |----------|-------------------|------------------------|-------------------|
 | Provider order matters | ✅ Yes (stops at first match) | ✅ Yes (stops at first success) | ❌ No (evaluates all) |
-| Handles FLAG_NOT_FOUND | Continues to next | Continues to next | Skips provider |
-| Handles other errors | Stops evaluation | Continues to next | Stops evaluation |
+| Handles FLAG_NOT_FOUND | Continues to next | Continues to next | Returns all errors |
+| Handles other errors | Stops evaluation | Continues to next | Returns all errors immediately |
 | Evaluates all providers | ❌ No | ❌ No | ✅ Yes |
 | Best for fallback | ✅ | ✅ | ❌ |
 | Best for high availability | ❌ | ✅ | ❌ |
-| Best for aggregation | ❌ | ❌ | ✅ |
+| Best for consistency validation | ❌ | ❌ | ✅ |
+| Requires fallback provider | ❌ Optional | ❌ Optional | ✅ Required |
 
 **Error Handling**
 
-When all providers fail to resolve a flag, MultiProvider aggregates errors and returns the default value with error details:
+Error handling varies by strategy:
+
+**FirstMatchStrategy:**
+- Continues evaluation when providers throw `FLAG_NOT_FOUND`
+- Stops and returns error if provider throws other errors
+- Aggregates `FLAG_NOT_FOUND` errors if all providers fail
+
+**FirstSuccessfulStrategy:**
+- Continues evaluation when providers throw any error
+- Returns first successful result, ignoring all previous errors
+- Aggregates all errors if all providers fail
+
+**ComparisonStrategy:**
+- **Fail-fast:** Returns all errors immediately if ANY provider errors
+- Fallback provider only used for value mismatches (not error recovery)
+- All providers are evaluated (no short-circuiting on mismatches)
+- On value mismatch: Invokes `onMismatch` callback, then returns fallback provider's value (not an error)
+
+**Error Aggregation:**
+
+When all providers fail, MultiProvider aggregates individual provider errors into a single detailed error message:
 
 ```php
-// All providers fail
+// Example: FirstMatchStrategy with all FLAG_NOT_FOUND
 $result = $client->getBooleanDetails('non-existent-flag', false);
-// Returns: value=false, reason=ERROR, error="Multi-provider evaluation failed with 3 provider error(s)"
+// Returns: value=false, reason=ERROR, 
+// error="Multi-provider evaluation failed with 3 provider error(s): [ProviderA]: Flag not found; [ProviderB]: Flag not found; [ProviderC]: Flag not found"
+
+// Example: ComparisonStrategy with provider errors
+$result = $client->getBooleanDetails('some-flag', false);
+// Returns: value=false, reason=ERROR, 
+// error="Multi-provider evaluation failed with 2 provider error(s): [ProviderA]: Connection timeout; [ProviderB]: Invalid configuration"
 ```
 
-Errors are aggregated based on the strategy:
-- **FirstMatchStrategy:** Collects errors from providers that returned `FLAG_NOT_FOUND`
-- **FirstSuccessfulStrategy:** Collects errors from all failed providers
-- **ComparisonStrategy:** Collects errors from providers that neither succeeded nor returned `FLAG_NOT_FOUND`
+This detailed error aggregation helps with debugging by showing exactly which provider failed and why, similar to JavaScript's `AggregateError`.
 
 **Complete Example**
 
@@ -359,6 +420,103 @@ $enabled = $client->getBooleanValue('feature-enabled', false);
 // 3. Try Defaults → returns value
 // 4. If all fail → returns default with aggregated errors
 ```
+
+**Custom Strategies**
+
+It is also possible to implement your own strategy if the above options do not fit your use case. To do so, create a class which extends `BaseEvaluationStrategy`:
+
+```php
+use OpenFeature\implementation\multiprovider\strategy\BaseEvaluationStrategy;
+use OpenFeature\implementation\multiprovider\strategy\ProviderContext;
+use OpenFeature\implementation\multiprovider\strategy\StrategyContext;
+use OpenFeature\implementation\multiprovider\ProviderResolutionResult;
+use OpenFeature\implementation\multiprovider\FinalResult;
+use OpenFeature\interfaces\provider\RunMode;
+
+class CustomStrategy extends BaseEvaluationStrategy
+{
+    // Set to RunMode::EVALUATE_ALL to evaluate all providers in parallel
+    // or leave as default for sequential evaluation
+    public string $runMode = RunMode::SEQUENTIAL;
+
+    /**
+     * Called before each provider is evaluated.
+     * Return false to skip evaluating this provider.
+     */
+    public function shouldEvaluateThisProvider(ProviderContext $context): bool
+    {
+        // Custom logic to determine if this provider should be evaluated
+        return true;
+    }
+
+    /**
+     * Called after a provider is evaluated (sequential mode only).
+     * Return false to stop evaluating remaining providers.
+     */
+    public function shouldEvaluateNextProvider(
+        ProviderContext $context,
+        ProviderResolutionResult $result
+    ): bool {
+        // Custom logic to determine if evaluation should continue
+        return true;
+    }
+
+    /**
+     * Called after all providers have been evaluated.
+     * Determines the final result to return based on all provider results.
+     */
+    public function determineFinalResult(
+        StrategyContext $context,
+        array $resolutions
+    ): FinalResult {
+        // Custom logic to determine which result to return
+        // Can analyze all results and choose one, aggregate them, etc.
+        
+        // Example: Return first successful result
+        foreach ($resolutions as $resolution) {
+            if (!$resolution->hasError()) {
+                return new FinalResult(
+                    $resolution->getDetails(),
+                    $resolution->getProviderName(),
+                    null
+                );
+            }
+        }
+        
+        // All failed - return errors
+        return new FinalResult(null, null, $this->aggregateErrors($resolutions));
+    }
+}
+```
+
+The `$runMode` property determines whether the list of providers will be evaluated sequentially or in parallel (using `RunMode::EVALUATE_ALL`).
+
+The `shouldEvaluateThisProvider()` method is called just before a provider is evaluated by the Multi-Provider. If the function returns false, then the provider will be skipped instead of being evaluated.
+
+The `shouldEvaluateNextProvider()` method is called after a provider is evaluated in sequential mode. If it returns true, the next provider in the sequence will be called, otherwise no more providers will be evaluated. This method is not called when `$runMode` is `RunMode::EVALUATE_ALL`.
+
+The `determineFinalResult()` method is called after all providers have been evaluated, or the `shouldEvaluateNextProvider()` method returned false. It is called with an array of results from all the individual providers' evaluations. It returns the final result, or can throw an error if needed.
+
+#### Known Limitations
+
+**Sub-Provider Hooks Not Executed:**
+
+Currently, when using MultiProvider, hooks registered on individual sub-providers via `provider->getHooks()` are **not executed** during flag evaluation. Only hooks registered at the API, Client, and Invocation levels (plus MultiProvider's own hooks) are executed.
+
+In the JS-SDK reference implementation, each sub-provider's hooks are executed around each provider call via a dedicated `HookExecutor`. The PHP `Provider` interface extends `HooksGetter` (per OpenFeature Requirement 2.10), so the mechanism exists—it just isn't wired up in the current implementation.
+
+**Workaround:** Register hooks at the API or Client level instead of on individual providers:
+
+```php
+// Instead of this (won't execute):
+$providerA->addHooks($myHook);
+
+// Do this (will execute):
+$client = $api->getClient();
+$client->addHooks($myHook);
+```
+
+This limitation will be addressed in a future release where per-provider hook execution will be implemented to match the JS-SDK behavior.
 
 ### Targeting
 

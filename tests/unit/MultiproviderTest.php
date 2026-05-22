@@ -48,7 +48,7 @@ class MultiproviderTest extends TestCase
         ];
 
         $multiprovider = new MultiProvider($providerData);
-        $this->assertInstanceOf(Multiprovider::class, $multiprovider);
+        $this->assertInstanceOf(MultiProvider::class, $multiprovider);
     }
 
     public function testConstructorWithDuplicateNames(): void
@@ -109,7 +109,7 @@ class MultiproviderTest extends TestCase
         ];
 
         $multiprovider = new MultiProvider($providerData);
-        $this->assertInstanceOf(Multiprovider::class, $multiprovider);
+        $this->assertInstanceOf(MultiProvider::class, $multiprovider);
     }
 
     public function testResolveBooleanValue(): void

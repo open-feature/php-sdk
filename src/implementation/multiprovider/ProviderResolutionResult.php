@@ -49,6 +49,8 @@ class ProviderResolutionResult
 
     public function isSuccessful(): bool
     {
-        return $this->details !== null && $this->error === null;
+        return $this->details !== null &&
+        $this->details->getError() === null &&
+        $this->error === null;
     }
 }

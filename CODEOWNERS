@@ -8,5 +8,5 @@
 # review when someone opens a pull request.
 *       @tcarrio
 
-# Multiprovider implementation
+# MultiProvider implementation
 /src/implementation/multiprovider/  @tmakinde

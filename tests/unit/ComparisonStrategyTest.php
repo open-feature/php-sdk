@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenFeature\Test\unit;
 
 use Exception;
+use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
 use OpenFeature\Test\TestCase;
@@ -45,7 +46,7 @@ class ComparisonStrategyTest extends TestCase
 
     public function testAllProvidersAgreeReturnsFirstValue(): void
     {
-        $strategy = new ComparisonStrategy();
+        $strategy = new ComparisonStrategy($this->providerB); // fallback is required
         $this->providerA->shouldReceive('resolveBooleanValue')->andReturn($this->details(true));
         $this->providerB->shouldReceive('resolveBooleanValue')->andReturn($this->details(true));
         $this->providerC->shouldReceive('resolveBooleanValue')->andReturn($this->details(true));
@@ -65,7 +66,7 @@ class ComparisonStrategyTest extends TestCase
 
     public function testMismatchUsesFallbackProvider(): void
     {
-        $strategy = new ComparisonStrategy('b');
+        $strategy = new ComparisonStrategy($this->providerB);
         $this->providerA->shouldReceive('resolveBooleanValue')->andReturn($this->details(true));
         $this->providerB->shouldReceive('resolveBooleanValue')->andReturn($this->details(false));
         $this->providerC->shouldReceive('resolveBooleanValue')->andReturn($this->details(true));
@@ -80,25 +81,8 @@ class ComparisonStrategyTest extends TestCase
         );
 
         $res = $mp->resolveBooleanValue('flag', false, new EvaluationContext());
+        // When values mismatch, returns fallback provider's value (false from providerB)
         $this->assertFalse($res->getValue());
-    }
-
-    public function testMismatchWithoutFallbackReturnsFirstSuccessful(): void
-    {
-        $strategy = new ComparisonStrategy(); // no fallback
-        $this->providerA->shouldReceive('resolveBooleanValue')->andReturn($this->details(true));
-        $this->providerB->shouldReceive('resolveBooleanValue')->andReturn($this->details(false));
-
-        $mp = new MultiProvider(
-            [
-                ['name' => 'a', 'provider' => $this->providerA],
-                ['name' => 'b', 'provider' => $this->providerB],
-            ],
-            $strategy,
-        );
-
-        $res = $mp->resolveBooleanValue('flag', false, new EvaluationContext());
-        $this->assertTrue($res->getValue());
     }
 
     public function testOnMismatchCallbackInvoked(): void
@@ -110,7 +94,7 @@ class ComparisonStrategyTest extends TestCase
             $capturedCount = count($resolutions);
         };
 
-        $strategy = new ComparisonStrategy(null, $callback);
+        $strategy = new ComparisonStrategy($this->providerB, $callback);
         $this->providerA->shouldReceive('resolveBooleanValue')->andReturn($this->details(true));
         $this->providerB->shouldReceive('resolveBooleanValue')->andReturn($this->details(false));
         $this->providerC->shouldReceive('resolveBooleanValue')->andReturn($this->details(true));
@@ -129,12 +113,13 @@ class ComparisonStrategyTest extends TestCase
         $this->assertEquals(3, $capturedCount);
     }
 
-    public function testSingleSuccessfulResult(): void
+    public function testAnyProviderErrorReturnsAllErrors(): void
     {
-        $strategy = new ComparisonStrategy();
+        // Per js-sdk: fail-fast on ANY error - returns all errors immediately
+        $strategy = new ComparisonStrategy($this->providerB);
         $this->providerA->shouldReceive('resolveBooleanValue')->andReturn($this->details(true));
         $this->providerB->shouldReceive('resolveBooleanValue')->andThrow(new Exception('err'));
-        $this->providerC->shouldReceive('resolveBooleanValue')->andThrow(new Exception('err2'));
+        $this->providerC->shouldReceive('resolveBooleanValue')->andReturn($this->details(true));
 
         $mp = new MultiProvider(
             [
@@ -146,12 +131,14 @@ class ComparisonStrategyTest extends TestCase
         );
 
         $res = $mp->resolveBooleanValue('flag', false, new EvaluationContext());
-        $this->assertTrue($res->getValue());
+        // Should return error immediately when any provider fails
+        $this->assertNotNull($res->getError());
+        $this->assertFalse($res->getValue()); // returns default
     }
 
-    public function testNoSuccessfulResultsReturnsError(): void
+    public function testAllProvidersErrorReturnsAggregatedErrors(): void
     {
-        $strategy = new ComparisonStrategy();
+        $strategy = new ComparisonStrategy($this->providerB);
         $this->providerA->shouldReceive('resolveBooleanValue')->andThrow(new Exception('a'));
         $this->providerB->shouldReceive('resolveBooleanValue')->andThrow(new Exception('b'));
 
@@ -164,12 +151,21 @@ class ComparisonStrategyTest extends TestCase
         );
 
         $res = $mp->resolveBooleanValue('flag', false, new EvaluationContext());
+        // Should return aggregated errors
         $this->assertNotNull($res->getError());
+        $this->assertFalse($res->getValue()); // returns default value
     }
 
-    public function testMismatchFallbackNotFoundReturnsFirst(): void
+    public function testFallbackProviderNotInResultsThrowsException(): void
     {
-        $strategy = new ComparisonStrategy('non-existent');
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Fallback provider not found in resolution results');
+
+        $providerD = Mockery::mock(Provider::class);
+        $providerD->shouldReceive('getMetadata->getName')->andReturn('ProviderD');
+
+        // Use providerD as fallback but don't include it in the provider list
+        $strategy = new ComparisonStrategy($providerD);
         $this->providerA->shouldReceive('resolveBooleanValue')->andReturn($this->details(false));
         $this->providerB->shouldReceive('resolveBooleanValue')->andReturn($this->details(true));
 
@@ -181,7 +177,30 @@ class ComparisonStrategyTest extends TestCase
             $strategy,
         );
 
-        $res = $mp->resolveBooleanValue('flag', true, new EvaluationContext());
+        // Should throw when fallback provider not found
+        $mp->resolveBooleanValue('flag', true, new EvaluationContext());
+    }
+
+    public function testOnMismatchCallbackErrorsAreIgnored(): void
+    {
+        $callback = function (array $resolutions): void {
+            throw new Exception('Callback error');
+        };
+
+        $strategy = new ComparisonStrategy($this->providerB, $callback);
+        $this->providerA->shouldReceive('resolveBooleanValue')->andReturn($this->details(true));
+        $this->providerB->shouldReceive('resolveBooleanValue')->andReturn($this->details(false));
+
+        $mp = new MultiProvider(
+            [
+                ['name' => 'a', 'provider' => $this->providerA],
+                ['name' => 'b', 'provider' => $this->providerB],
+            ],
+            $strategy,
+        );
+
+        // Should not throw despite callback error
+        $res = $mp->resolveBooleanValue('flag', false, new EvaluationContext());
         $this->assertFalse($res->getValue());
     }
 }
