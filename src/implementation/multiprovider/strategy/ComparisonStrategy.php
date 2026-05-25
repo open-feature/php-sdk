@@ -108,6 +108,7 @@ class ComparisonStrategy extends BaseEvaluationStrategy
         $fallbackResolution = null;
         $finalResolution = null;
         $value = null;
+        $valueSet = false;
         $mismatch = false;
 
         foreach ($resolutions as $index => $resolution) {
@@ -129,10 +130,11 @@ class ComparisonStrategy extends BaseEvaluationStrategy
             // Check for value mismatch using strict equality
             $details = $resolution->getDetails();
             if ($details !== null) {
-                if ($value !== null && $value !== $details->getValue()) {
+                if ($valueSet && $value !== $details->getValue()) {
                     $mismatch = true;
                 } else {
                     $value = $details->getValue();
+                    $valueSet = true;
                 }
             }
         }
