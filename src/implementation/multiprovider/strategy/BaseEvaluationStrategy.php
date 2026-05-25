@@ -67,6 +67,8 @@ abstract class BaseEvaluationStrategy
      * This is called when a tracking event is triggered.
      * Return true to track with this provider, false to skip tracking.
      *
+     * Note: Not currently called by MultiProvider until track() is added to the PHP Provider interface.
+     *
      * @param ProviderContext $context Context for the specific provider being considered for tracking
      * @param string $trackingEventName Name of the tracking event
      * @param array <string> $trackingEventDetails Details of the tracking event

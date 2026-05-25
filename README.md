@@ -213,7 +213,7 @@ The Multi-Provider comes with three strategies out of the box:
 
 1. **FirstMatchStrategy** (default): Evaluates all providers in order and returns the first successful result. Providers that indicate `FLAG_NOT_FOUND` error will be skipped and the next provider will be evaluated. Any other error will cause the operation to fail and the error to be returned.
 2. **FirstSuccessfulStrategy**: Evaluates all providers in order and returns the first successful result. Any error will cause that provider to be skipped. If no successful result is returned, the set of errors will be returned.
-3. **ComparisonStrategy**: Evaluates all providers in parallel. If every provider returns a successful result with the same value, then that result is returned. Otherwise, an error is returned immediately if any provider errors. When values do not agree, an optional callback will be executed to notify you of the mismatch, and the configured "fallback provider" value will be used. This can be useful when migrating between providers that are expected to contain identical configuration. You can easily spot mismatches in configuration without affecting flag behaviour.
+3. **ComparisonStrategy**: Evaluates all providers at one time. If every provider returns a successful result with the same value, then that result is returned. Otherwise, an error is returned immediately if any provider errors. When values do not agree, an optional callback will be executed to notify you of the mismatch, and the configured "fallback provider" value will be used. This can be useful when migrating between providers that are expected to contain identical configuration. You can easily spot mismatches in configuration without affecting flag behaviour.
 
 **Provider Naming**
 
@@ -290,7 +290,7 @@ $multiProvider = new MultiProvider([
 
 ##### ComparisonStrategy
 
-Evaluates **all providers** in parallel. If every provider returns a successful result with the same value, then that result is returned. Otherwise, an error is returned immediately if any provider errors. When values do not agree, the configured "fallback provider" value will be used.
+Evaluates **all providers** at one time. If every provider returns a successful result with the same value, then that result is returned. Otherwise, an error is returned immediately if any provider errors. When values do not agree, the configured "fallback provider" value will be used.
 
 This strategy accepts several arguments during initialization:
 
@@ -435,7 +435,7 @@ use OpenFeature\interfaces\provider\RunMode;
 
 class CustomStrategy extends BaseEvaluationStrategy
 {
-    // Set to RunMode::EVALUATE_ALL to evaluate all providers in parallel
+    // Set to RunMode::EVALUATE_ALL to evaluate all providers at one time
     // or leave as default for sequential evaluation
     public string $runMode = RunMode::SEQUENTIAL;
 
@@ -489,7 +489,7 @@ class CustomStrategy extends BaseEvaluationStrategy
 }
 ```
 
-The `$runMode` property determines whether the list of providers will be evaluated sequentially or in parallel (using `RunMode::EVALUATE_ALL`).
+The `$runMode` property determines whether the list of providers will be evaluated sequentially or at once (using `RunMode::EVALUATE_ALL`).
 
 The `shouldEvaluateThisProvider()` method is called just before a provider is evaluated by the Multi-Provider. If the function returns false, then the provider will be skipped instead of being evaluated.
 
