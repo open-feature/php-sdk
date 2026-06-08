@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/open-feature/php-sdk/compare/2.1.2...2.2.0) (2026-06-08)
+
+
+### ✨ New Features
+
+* Implement Multiprovider feature ([#159](https://github.com/open-feature/php-sdk/issues/159)) ([145faf2](https://github.com/open-feature/php-sdk/commit/145faf2d6fa3daeaffaa60e165623d631b361d3c))
+
 ## [2.1.2](https://github.com/open-feature/php-sdk/compare/2.1.1...2.1.2) (2026-04-23)
 
 
