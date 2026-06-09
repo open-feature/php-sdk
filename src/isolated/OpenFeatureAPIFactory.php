@@ -29,6 +29,9 @@ use OpenFeature\interfaces\flags\API;
  * singleton API.
  *
  * @see https://openfeature.dev/specification/sections/flag-evaluation#18-isolated-api-instances
+ *
+ * @experimental Section 1.8 of the OpenFeature specification is experimental
+ *               and subject to change.
  */
 final class OpenFeatureAPIFactory
 {
@@ -39,6 +42,9 @@ final class OpenFeatureAPIFactory
      *   $api = OpenFeatureAPIFactory::createAPI();
      *   $api->setProvider(new MyProvider());
      *   $client = $api->getClient();
+     *
+     * @experimental Section 1.8 of the OpenFeature specification is experimental
+     *               and subject to change.
      */
     public static function createAPI(): API
     {
