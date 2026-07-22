@@ -51,4 +51,14 @@ interface ResolutionDetails
      * with a string identifier corresponding to the returned flag value.
      */
     public function getVariant(): ?string;
+
+    /**
+     * -----------------
+     * Requirement 2.2.9
+     * -----------------
+     * The provider SHOULD populate the resolution details structure's flag metadata field.
+     *
+     * @return array<string,bool|string|int>|null
+     */
+    public function getMetadata(): ?array;
 }

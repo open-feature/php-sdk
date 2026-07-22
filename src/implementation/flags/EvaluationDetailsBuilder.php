@@ -55,6 +55,16 @@ class EvaluationDetailsBuilder
         return $this;
     }
 
+    /**
+     * @param array<string,bool|string|int>|null $metadata
+     */
+    public function withMetadata(?array $metadata): EvaluationDetailsBuilder
+    {
+        $this->details->setMetadata($metadata);
+
+        return $this;
+    }
+
     public function build(): EvaluationDetailsInterface
     {
         return $this->details;

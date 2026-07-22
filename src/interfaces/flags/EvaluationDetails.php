@@ -64,4 +64,16 @@ interface EvaluationDetails
      * the configured provider, if the field is set.
      */
     public function getVariant(): ?string;
+
+    /**
+     * ------------------
+     * Requirement 1.4.14
+     * ------------------
+     * If the flag metadata field in the flag resolution structure returned by the configured
+     * provider is set, the evaluation details structure's flag metadata field MUST contain that
+     * value. Otherwise, it MUST contain an empty record.
+     *
+     * @return array<string,bool|string|int>|null
+     */
+    public function getMetadata(): ?array;
 }
