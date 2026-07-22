@@ -56,7 +56,7 @@ class EvaluationDetailsBuilder
     }
 
     /**
-     * @param array<string,bool|string|int>|null $metadata
+     * @param array<string,bool|string|int|float>|null $metadata
      */
     public function withMetadata(?array $metadata): EvaluationDetailsBuilder
     {

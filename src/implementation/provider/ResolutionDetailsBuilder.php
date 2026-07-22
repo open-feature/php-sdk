@@ -49,7 +49,7 @@ class ResolutionDetailsBuilder
     }
 
     /**
-     * @param array<string,bool|string|int>|null $metadata
+     * @param array<string,bool|string|int|float>|null $metadata
      */
     public function withMetadata(?array $metadata): ResolutionDetailsBuilder
     {

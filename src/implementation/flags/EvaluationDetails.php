@@ -19,7 +19,7 @@ class EvaluationDetails implements EvaluationDetailsInterface
     private ?ResolutionError $error = null;
     private ?string $reason = null;
     private ?string $variant = null;
-    /** @var array<string,bool|string|int>|null $metadata */
+    /** @var array<string,bool|string|int|float>|null $metadata */
     private ?array $metadata = null;
 
     public function __construct()
@@ -89,7 +89,7 @@ class EvaluationDetails implements EvaluationDetailsInterface
     }
 
     /**
-     * @param array<string,bool|string|int>|null $metadata
+     * @param array<string,bool|string|int|float>|null $metadata
      */
     public function setMetadata(?array $metadata): void
     {
@@ -104,14 +104,14 @@ class EvaluationDetails implements EvaluationDetailsInterface
     }
 
     /**
-     * @return array<string,bool|string|int>
+     * @return array<string,bool|string|int|float>
      */
     public function getMetadata(): array
     {
         if ($this->metadata === null) {
             return [];
         }
-        /** @var array<string,bool|string|int> $metadata */
+        /** @var array<string,bool|string|int|float> $metadata */
         $metadata = [];
         foreach ($this->metadata as $key => $value) {
             $metadata[$key] = $value;

@@ -58,7 +58,7 @@ interface ResolutionDetails
      * -----------------
      * The provider SHOULD populate the resolution details structure's flag metadata field.
      *
-     * @return array<string,bool|string|int>|null
+     * @return array<string,bool|string|int|float>|null
      */
     public function getMetadata(): ?array;
 }

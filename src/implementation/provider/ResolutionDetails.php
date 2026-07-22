@@ -17,7 +17,7 @@ class ResolutionDetails implements ResolutionDetailsInterface
     private ?ResolutionError $error = null;
     private ?string $reason = null;
     private ?string $variant = null;
-    /** @var array<string,bool|string|int>|null $metadata */
+    /** @var array<string,bool|string|int|float>|null $metadata */
     private ?array $metadata = null;
 
     /**
@@ -67,7 +67,7 @@ class ResolutionDetails implements ResolutionDetailsInterface
     }
 
     /**
-     * @param array<string,bool|string|int>|null $metadata
+     * @param array<string,bool|string|int|float>|null $metadata
      */
     public function setMetadata(?array $metadata): void
     {
@@ -82,14 +82,14 @@ class ResolutionDetails implements ResolutionDetailsInterface
     }
 
     /**
-     * @return array<string,bool|string|int>|null
+     * @return array<string,bool|string|int|float>|null
      */
     public function getMetadata(): ?array
     {
         if ($this->metadata === null) {
             return null;
         }
-        /** @var array<string,bool|string|int> $metadata */
+        /** @var array<string,bool|string|int|float> $metadata */
         $metadata = [];
         foreach ($this->metadata as $key => $value) {
             $metadata[$key] = $value;
