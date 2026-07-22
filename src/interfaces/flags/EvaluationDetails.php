@@ -73,7 +73,7 @@ interface EvaluationDetails
      * provider is set, the evaluation details structure's flag metadata field MUST contain that
      * value. Otherwise, it MUST contain an empty record.
      *
-     * @return array<string,bool|string|int>|null
+     * @return array<string,bool|string|int>
      */
-    public function getMetadata(): ?array;
+    public function getMetadata(): array;
 }

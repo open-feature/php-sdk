@@ -104,12 +104,12 @@ class EvaluationDetails implements EvaluationDetailsInterface
     }
 
     /**
-     * @return array<string,bool|string|int>|null
+     * @return array<string,bool|string|int>
      */
-    public function getMetadata(): ?array
+    public function getMetadata(): array
     {
         if ($this->metadata === null) {
-            return null;
+            return [];
         }
         /** @var array<string,bool|string|int> $metadata */
         $metadata = [];

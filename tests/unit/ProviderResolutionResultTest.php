@@ -85,12 +85,12 @@ class ProviderResolutionResultTest extends TestCase
             'test_int' => 10,
             'test_string' => 'OK',
         ]);
-        $result = new ProviderResolutionResult('TestProvider', $this->provider, null, null);
+        $result = new ProviderResolutionResult('TestProvider', $this->provider, $details, null);
 
-        $this->assertNull($result->getDetails());
+        $this->assertSame($details, $result->getDetails());
         $this->assertNull($result->getError());
         $this->assertFalse($result->hasError());
-        $this->assertFalse($result->isSuccessful());
+        $this->assertTrue($result->isSuccessful());
         $this->assertIsArray($details->getMetadata());
         $this->assertArrayHasKey('test_bool', $details->getMetadata());
         $this->assertArrayHasKey('test_int', $details->getMetadata());
@@ -102,13 +102,26 @@ class ProviderResolutionResultTest extends TestCase
 
     public function testResultWithEmptyMetadata(): void
     {
-        $details = $this->detailsWithMetadata(true, null);
-        $result = new ProviderResolutionResult('TestProvider', $this->provider, null, null);
+        $details = $this->detailsWithMetadata(true, []);
+        $result = new ProviderResolutionResult('TestProvider', $this->provider, $details, null);
 
-        $this->assertNull($result->getDetails());
+        $this->assertSame($details, $result->getDetails());
         $this->assertNull($result->getError());
         $this->assertFalse($result->hasError());
-        $this->assertFalse($result->isSuccessful());
+        $this->assertTrue($result->isSuccessful());
+        $this->assertIsArray($details->getMetadata());
+        $this->assertSame([], $details->getMetadata());
+    }
+
+    public function testResultWithNullMetadata(): void
+    {
+        $details = $this->detailsWithMetadata(true, null);
+        $result = new ProviderResolutionResult('TestProvider', $this->provider, $details, null);
+
+        $this->assertSame($details, $result->getDetails());
+        $this->assertNull($result->getError());
+        $this->assertFalse($result->hasError());
+        $this->assertTrue($result->isSuccessful());
         $this->assertNull($details->getMetadata());
         $this->assertIsNotArray($details->getMetadata());
     }
