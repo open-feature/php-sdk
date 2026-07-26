@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://github.com/open-feature/php-sdk/compare/2.2.0...2.3.0) (2026-06-10)
+
+
+### ✨ New Features
+
+* support isolated API instances ([#171](https://github.com/open-feature/php-sdk/issues/171)) ([48301ee](https://github.com/open-feature/php-sdk/commit/48301ee460271b3f2b0703960d9d7d1251875eb7))
+
 ## [2.2.0](https://github.com/open-feature/php-sdk/compare/2.1.2...2.2.0) (2026-06-08)
 
 
