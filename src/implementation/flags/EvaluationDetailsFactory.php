@@ -34,6 +34,7 @@ class EvaluationDetailsFactory
                     ->withError($details->getError())
                     ->withReason($details->getReason())
                     ->withVariant($details->getVariant())
+                    ->withMetadata($details->getMetadata())
                     ->build();
     }
 }
