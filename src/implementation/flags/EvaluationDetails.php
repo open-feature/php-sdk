@@ -8,6 +8,8 @@ use DateTime;
 use OpenFeature\interfaces\flags\EvaluationDetails as EvaluationDetailsInterface;
 use OpenFeature\interfaces\provider\ResolutionError;
 
+use function is_array;
+
 class EvaluationDetails implements EvaluationDetailsInterface
 {
     private string $flagKey = '';
@@ -17,6 +19,8 @@ class EvaluationDetails implements EvaluationDetailsInterface
     private ?ResolutionError $error = null;
     private ?string $reason = null;
     private ?string $variant = null;
+    /** @var array<string,bool|string|int|float>|null $metadata */
+    private ?array $metadata = null;
 
     public function __construct()
     {
@@ -82,5 +86,37 @@ class EvaluationDetails implements EvaluationDetailsInterface
     public function setVariant(?string $variant): void
     {
         $this->variant = $variant;
+    }
+
+    /**
+     * @param array<string,bool|string|int|float>|null $metadata
+     */
+    public function setMetadata(?array $metadata): void
+    {
+        if (is_array($metadata)) {
+            $this->metadata = [];
+            foreach ($metadata as $key => $value) {
+                $this->metadata[$key] = $value;
+            }
+        } else {
+            $this->metadata = null;
+        }
+    }
+
+    /**
+     * @return array<string,bool|string|int|float>
+     */
+    public function getMetadata(): array
+    {
+        if ($this->metadata === null) {
+            return [];
+        }
+        /** @var array<string,bool|string|int|float> $metadata */
+        $metadata = [];
+        foreach ($this->metadata as $key => $value) {
+            $metadata[$key] = $value;
+        }
+
+        return $metadata;
     }
 }

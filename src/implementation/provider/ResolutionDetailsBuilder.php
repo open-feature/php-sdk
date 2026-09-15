@@ -48,6 +48,16 @@ class ResolutionDetailsBuilder
         return $this;
     }
 
+    /**
+     * @param array<string,bool|string|int|float>|null $metadata
+     */
+    public function withMetadata(?array $metadata): ResolutionDetailsBuilder
+    {
+        $this->details->setMetadata($metadata);
+
+        return $this;
+    }
+
     public function build(): ResolutionDetailsInterface
     {
         return $this->details;
