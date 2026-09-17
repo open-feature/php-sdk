@@ -6,11 +6,14 @@ namespace OpenFeature;
 
 use Closure;
 use LogicException;
+use OpenFeature\implementation\events\EventDetails;
+use OpenFeature\implementation\events\ProviderEventDetails as ProviderEventDetailsImplementation;
 use OpenFeature\implementation\flags\EvaluationContext as EvaluationContextImplementation;
 use OpenFeature\implementation\flags\NoOpClient;
 use OpenFeature\implementation\provider\NoOpProvider;
 use OpenFeature\interfaces\common\LoggerAwareTrait;
 use OpenFeature\interfaces\common\Metadata;
+use OpenFeature\interfaces\events\EventDetails as EventDetailsInterface;
 use OpenFeature\interfaces\events\ProviderEvent;
 use OpenFeature\interfaces\events\ProviderEventDetails;
 use OpenFeature\interfaces\events\ProviderStatus;
@@ -27,6 +30,7 @@ use OpenFeature\interfaces\provider\ThrowableWithResolutionError;
 use Psr\Log\LoggerAwareInterface;
 use RuntimeException;
 use Throwable;
+use WeakReference;
 
 use function array_merge;
 use function is_null;
@@ -46,6 +50,15 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
 
     /** @var Closure(ProviderEvent, ProviderEventDetails): void|null */
     private ?Closure $providerEventHandler = null;
+
+    /** @var array<string, array<int, callable>> */
+    private array $eventHandlers = [];
+
+    /** @var array<int, WeakReference<OpenFeatureClient>> */
+    private array $clients = [];
+
+    /** @var array<string, EventDetailsInterface> */
+    private array $lastEventDetails = [];
 
     /**
      * -----------------
@@ -92,6 +105,12 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
         return new OpenFeatureClient($this, $name, $version);
     }
 
+    /** @internal Registers a client for provider event delivery. */
+    public function registerClient(OpenFeatureClient $client): void
+    {
+        $this->clients[] = WeakReference::create($client);
+    }
+
     /**
      * -----------------
      * Requirement 1.1.2
@@ -115,6 +134,7 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
 
         $this->provider = $provider;
         $this->providerStatus = ProviderStatus::NOT_READY();
+        $this->lastEventDetails = [];
         $this->providerEventHandler = null;
         $this->subscribeToProvider($provider);
 
@@ -129,7 +149,7 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
     private function initializeProvider(Provider $provider): void
     {
         if (!$provider instanceof ProviderLifecycle) {
-            $this->providerStatus = ProviderStatus::READY();
+            $this->processProviderEvent(ProviderEvent::READY(), new ProviderEventDetailsImplementation());
 
             return;
         }
@@ -139,7 +159,15 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
         try {
             $provider->initialize($context, null);
         } catch (Throwable $error) {
-            if (
+            if (!$provider instanceof ProviderEventAware) {
+                $errorCode = $error instanceof ThrowableWithResolutionError
+                    ? $error->getResolutionError()->getResolutionErrorCode()
+                    : ErrorCode::GENERAL();
+                $this->processProviderEvent(
+                    ProviderEvent::ERROR(),
+                    new ProviderEventDetailsImplementation($error->getMessage(), [], [], $errorCode),
+                );
+            } elseif (
                 !$this->providerStatus->equals(ProviderStatus::ERROR())
                 && !$this->providerStatus->equals(ProviderStatus::FATAL())
             ) {
@@ -150,7 +178,7 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
         }
 
         if (!$provider instanceof ProviderEventAware) {
-            $this->providerStatus = ProviderStatus::READY();
+            $this->processProviderEvent(ProviderEvent::READY(), new ProviderEventDetailsImplementation());
 
             return;
         }
@@ -200,22 +228,82 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
     {
         if ($event->equals(ProviderEvent::READY())) {
             $this->providerStatus = ProviderStatus::READY();
-
-            return;
-        }
-
-        if ($event->equals(ProviderEvent::STALE())) {
+        } elseif ($event->equals(ProviderEvent::STALE())) {
             $this->providerStatus = ProviderStatus::STALE();
-
-            return;
-        }
-
-        if ($event->equals(ProviderEvent::ERROR())) {
+        } elseif ($event->equals(ProviderEvent::ERROR())) {
             $errorCode = $details->getErrorCode();
             $this->providerStatus = $errorCode !== null && $errorCode->equals(ErrorCode::PROVIDER_FATAL())
                 ? ProviderStatus::FATAL()
                 : ProviderStatus::ERROR();
         }
+
+        $eventDetails = new EventDetails($this->provider->getMetadata()->getName(), $details);
+        $this->lastEventDetails[$event->getValue()] = $eventDetails;
+        $this->runHandlers($this->eventHandlers[$event->getValue()] ?? [], $eventDetails);
+
+        foreach ($this->clients as $index => $clientReference) {
+            $client = $clientReference->get();
+            if (!$client instanceof OpenFeatureClient) {
+                unset($this->clients[$index]);
+
+                continue;
+            }
+
+            $client->handleProviderEvent($event, $eventDetails);
+        }
+    }
+
+    /** @param array<int, callable> $handlers */
+    private function runHandlers(array $handlers, EventDetailsInterface $details): void
+    {
+        foreach ($handlers as $handler) {
+            try {
+                $handler($details);
+            } catch (Throwable $error) {
+                try {
+                    $this->getLogger()->error('OpenFeature provider event handler failed.', ['exception' => $error]);
+                } catch (Throwable) {
+                    // Event handlers remain isolated even if the configured logger fails.
+                }
+            }
+        }
+    }
+
+    /** @param callable(EventDetailsInterface): void $handler */
+    public function addHandler(ProviderEvent $event, callable $handler): void
+    {
+        $this->eventHandlers[$event->getValue()][] = $handler;
+
+        if ($this->statusMatchesEvent($event)) {
+            $details = $this->lastEventDetails[$event->getValue()]
+                ?? new EventDetails($this->provider->getMetadata()->getName());
+            $this->runHandlers([$handler], $details);
+        }
+    }
+
+    /** @param callable(EventDetailsInterface): void $handler */
+    public function removeHandler(ProviderEvent $event, callable $handler): void
+    {
+        foreach ($this->eventHandlers[$event->getValue()] ?? [] as $index => $registeredHandler) {
+            if ($registeredHandler === $handler) {
+                unset($this->eventHandlers[$event->getValue()][$index]);
+            }
+        }
+    }
+
+    private function statusMatchesEvent(ProviderEvent $event): bool
+    {
+        return ($event->equals(ProviderEvent::READY()) && $this->providerStatus->equals(ProviderStatus::READY()))
+            || ($event->equals(ProviderEvent::STALE()) && $this->providerStatus->equals(ProviderStatus::STALE()))
+            || ($event->equals(ProviderEvent::ERROR())
+                && ($this->providerStatus->equals(ProviderStatus::ERROR())
+                    || $this->providerStatus->equals(ProviderStatus::FATAL())));
+    }
+
+    /** @internal Used to supply the latest state details to newly registered client handlers. */
+    public function getLastEventDetails(ProviderEvent $event): ?EventDetailsInterface
+    {
+        return $this->lastEventDetails[$event->getValue()] ?? null;
     }
 
     /** @param Closure(ProviderEvent, ProviderEventDetails): void|null $handler */
@@ -259,6 +347,9 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
         $this->providerEventHandler = null;
         $this->evaluationContext = null;
         $this->hooks = [];
+        $this->eventHandlers = [];
+        $this->lastEventDetails = [];
+        $this->clients = [];
         $this->logger = null;
 
         $this->shutdownProvider($provider);

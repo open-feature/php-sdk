@@ -9,6 +9,7 @@ use OpenFeature\implementation\common\Metadata;
 use OpenFeature\implementation\common\ValueTypeValidator;
 use OpenFeature\implementation\errors\FlagValueTypeError;
 use OpenFeature\implementation\errors\InvalidResolutionValueError;
+use OpenFeature\implementation\events\EventDetails;
 use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\implementation\flags\EvaluationDetailsBuilder;
 use OpenFeature\implementation\flags\EvaluationDetailsFactory;
@@ -21,6 +22,9 @@ use OpenFeature\implementation\provider\Reason;
 use OpenFeature\implementation\provider\ResolutionError;
 use OpenFeature\interfaces\common\LoggerAwareTrait;
 use OpenFeature\interfaces\common\Metadata as MetadataInterface;
+use OpenFeature\interfaces\events\EventDetails as EventDetailsInterface;
+use OpenFeature\interfaces\events\ProviderEvent;
+use OpenFeature\interfaces\events\ProviderStatus;
 use OpenFeature\interfaces\flags\API;
 use OpenFeature\interfaces\flags\Client;
 use OpenFeature\interfaces\flags\EvaluationContext as EvaluationContextInterface;
@@ -49,6 +53,9 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
     private string $version;
     private ?EvaluationContextInterface $evaluationContext = null;
 
+    /** @var array<string, array<int, callable>> */
+    private array $eventHandlers = [];
+
     /**
      * Client for evaluating the flag. There may be multiples of these floating around.
      *
@@ -62,6 +69,10 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
         $this->name = $name;
         $this->version = $version;
         $this->hooks = [];
+
+        if ($api instanceof OpenFeatureAPI) {
+            $api->registerClient($this);
+        }
     }
 
     public function getVersion(): string
@@ -85,6 +96,71 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
     public function setEvaluationContext(EvaluationContextInterface $context): void
     {
         $this->evaluationContext = $context;
+    }
+
+    public function getProviderStatus(): ProviderStatus
+    {
+        return $this->api->getProviderStatus();
+    }
+
+    /** @param callable(EventDetailsInterface): void $handler */
+    public function addHandler(ProviderEvent $event, callable $handler): void
+    {
+        $this->eventHandlers[$event->getValue()][] = $handler;
+
+        if (!$this->statusMatchesEvent($event)) {
+            return;
+        }
+
+        $details = $this->api instanceof OpenFeatureAPI
+            ? $this->api->getLastEventDetails($event)
+            : null;
+        $this->runEventHandlers(
+            [$handler],
+            $details ?? new EventDetails($this->api->getProviderMetadata()->getName()),
+        );
+    }
+
+    /** @param callable(EventDetailsInterface): void $handler */
+    public function removeHandler(ProviderEvent $event, callable $handler): void
+    {
+        foreach ($this->eventHandlers[$event->getValue()] ?? [] as $index => $registeredHandler) {
+            if ($registeredHandler === $handler) {
+                unset($this->eventHandlers[$event->getValue()][$index]);
+            }
+        }
+    }
+
+    private function statusMatchesEvent(ProviderEvent $event): bool
+    {
+        $status = $this->getProviderStatus();
+
+        return ($event->equals(ProviderEvent::READY()) && $status->equals(ProviderStatus::READY()))
+            || ($event->equals(ProviderEvent::STALE()) && $status->equals(ProviderStatus::STALE()))
+            || ($event->equals(ProviderEvent::ERROR())
+                && ($status->equals(ProviderStatus::ERROR()) || $status->equals(ProviderStatus::FATAL())));
+    }
+
+    /** @internal Called by the API when the currently bound provider emits an event. */
+    public function handleProviderEvent(ProviderEvent $event, EventDetailsInterface $details): void
+    {
+        $this->runEventHandlers($this->eventHandlers[$event->getValue()] ?? [], $details);
+    }
+
+    /** @param array<int, callable> $handlers */
+    private function runEventHandlers(array $handlers, EventDetailsInterface $details): void
+    {
+        foreach ($handlers as $handler) {
+            try {
+                $handler($details);
+            } catch (Throwable $error) {
+                try {
+                    $this->getLogger()->error('OpenFeature provider event handler failed.', ['exception' => $error]);
+                } catch (Throwable) {
+                    // Event handlers remain isolated even if the configured logger fails.
+                }
+            }
+        }
     }
 
     /**
