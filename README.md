@@ -176,6 +176,8 @@ Providers can opt into initialization and cleanup by implementing `ProviderLifec
 
 The base `Provider` interface is unchanged. Existing provider implementations therefore remain compatible and are treated as immediately ready.
 
+The base `API` and `Client` interfaces are also unchanged. The SDK implementations expose the new capabilities through the optional `ProviderLifecycleAPI` and `EventAwareClient` interfaces, so existing custom implementations remain compatible.
+
 Lifecycle providers that emit their own initialization events should implement `ProviderEventAware` and can use `ProviderEventEmitterTrait`:
 
 ```php
@@ -247,8 +249,6 @@ $api->setProvider($multiProvider);
 $client = $api->getClient();
 echo $client->getBooleanValue('my-flag', false);
 ```
-
-When registered, `MultiProvider` initializes every distinct child that implements `ProviderLifecycle`. On failure, it emits `ERROR` and performs best-effort cleanup of children whose initialization was attempted. On shutdown, it shuts down every distinct lifecycle-capable child, continuing even if one child fails.
 
 By default, the Multi-Provider will evaluate all underlying providers in order and return the **first successful result**. If a provider indicates it does not have a flag (`FLAG_NOT_FOUND` error code), then it will be skipped and the next provider will be evaluated. If any provider throws or returns an error result, the operation will fail and the error will be returned. If no provider returns a successful result, the operation will fail with a `FLAG_NOT_FOUND` error code.
 
@@ -572,9 +572,9 @@ $client->addHooks($myHook);
 
 This limitation will be addressed in a future release where per-provider hook execution will be implemented to match the JS-SDK behavior.
 
-**Sub-Provider Events Not Aggregated:**
+**Sub-Provider Lifecycle and Events Not Aggregated:**
 
-`MultiProvider` emits its own `READY` or `ERROR` event for initialization, but it does not currently aggregate or forward spontaneous events emitted later by its child providers. Consumers should observe events from the registered `MultiProvider`; child-provider status aggregation remains a future enhancement.
+`MultiProvider` does not currently implement the optional lifecycle or event-emitter contracts. It does not initialize or shut down lifecycle-capable child providers, aggregate their statuses, or forward their events. Complete child lifecycle and event aggregation remains a separate enhancement.
 
 ### Targeting
 
@@ -672,6 +672,8 @@ if ($clientStatus->equals(ProviderStatus::READY())) {
 ```
 
 Possible statuses are `NOT_READY`, `READY`, `STALE`, `ERROR`, and `FATAL`.
+
+When the provider is `NOT_READY` or `FATAL`, evaluation skips the provider and returns the supplied default value. Detailed evaluation results include `PROVIDER_NOT_READY` or `PROVIDER_FATAL`, respectively.
 
 Handlers can be registered on either the API or a client for `READY`, `ERROR`, `STALE`, and `CONFIGURATION_CHANGED` events:
 
