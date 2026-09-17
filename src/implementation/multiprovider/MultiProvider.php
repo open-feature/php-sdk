@@ -6,6 +6,8 @@ namespace OpenFeature\implementation\multiprovider;
 
 use DateTime;
 use InvalidArgumentException;
+use OpenFeature\implementation\events\ProviderEventDetails;
+use OpenFeature\implementation\events\ProviderEventEmitterTrait;
 use OpenFeature\implementation\flags\EvaluationContext as ImplEvaluationContext;
 use OpenFeature\implementation\multiprovider\strategy\BaseEvaluationStrategy;
 use OpenFeature\implementation\multiprovider\strategy\FirstMatchStrategy;
@@ -15,11 +17,15 @@ use OpenFeature\implementation\provider\AbstractProvider;
 use OpenFeature\implementation\provider\Reason;
 use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
 use OpenFeature\implementation\provider\ResolutionError;
+use OpenFeature\interfaces\events\ProviderEvent;
 use OpenFeature\interfaces\flags\EvaluationContext;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
+use OpenFeature\interfaces\provider\ProviderEventAware;
+use OpenFeature\interfaces\provider\ProviderLifecycle;
 use OpenFeature\interfaces\provider\ResolutionDetails;
 use OpenFeature\interfaces\provider\RunMode;
+use OpenFeature\interfaces\provider\ThrowableWithResolutionError;
 use Throwable;
 
 use function array_diff;
@@ -32,11 +38,14 @@ use function is_bool;
 use function is_float;
 use function is_int;
 use function is_string;
+use function spl_object_id;
 use function strtolower;
 use function trim;
 
-class MultiProvider extends AbstractProvider
+class MultiProvider extends AbstractProvider implements ProviderEventAware
 {
+    use ProviderEventEmitterTrait;
+
     protected static string $NAME = 'MultiProvider';
 
     /**
@@ -60,6 +69,8 @@ class MultiProvider extends AbstractProvider
      */
     protected BaseEvaluationStrategy $strategy;
 
+    private bool $initialized = false;
+
     /**
      * MultiProvider constructor.
      *
@@ -72,6 +83,87 @@ class MultiProvider extends AbstractProvider
         $this->registerProviders($providerData);
 
         $this->strategy = $strategy ?? new FirstMatchStrategy();
+    }
+
+    public function initialize(EvaluationContext $context, ?string $domain = null): void
+    {
+        if ($this->initialized) {
+            return;
+        }
+
+        /** @var ProviderLifecycle[] $initializedProviders */
+        $initializedProviders = [];
+
+        try {
+            foreach ($this->getLifecycleProviders() as $provider) {
+                $initializedProviders[] = $provider;
+                $provider->initialize($context, $domain);
+            }
+        } catch (Throwable $error) {
+            foreach ($initializedProviders as $initializedProvider) {
+                try {
+                    $initializedProvider->shutdown();
+                } catch (Throwable) {
+                    // Preserve the initialization failure after best-effort cleanup.
+                }
+            }
+
+            $errorCode = $error instanceof ThrowableWithResolutionError
+                ? $error->getResolutionError()->getResolutionErrorCode()
+                : ErrorCode::GENERAL();
+            $this->emitProviderEvent(
+                ProviderEvent::ERROR(),
+                new ProviderEventDetails($error->getMessage(), [], [], $errorCode),
+            );
+
+            throw $error;
+        }
+
+        $this->initialized = true;
+        $this->emitProviderEvent(ProviderEvent::READY(), new ProviderEventDetails());
+    }
+
+    public function shutdown(): void
+    {
+        if (!$this->initialized) {
+            return;
+        }
+
+        $this->initialized = false;
+        $firstError = null;
+
+        foreach ($this->getLifecycleProviders() as $provider) {
+            try {
+                $provider->shutdown();
+            } catch (Throwable $error) {
+                $firstError = $firstError ?? $error;
+            }
+        }
+
+        if ($firstError !== null) {
+            throw $firstError;
+        }
+    }
+
+    /** @return ProviderLifecycle[] */
+    private function getLifecycleProviders(): array
+    {
+        /** @var ProviderLifecycle[] $providers */
+        $providers = [];
+        /** @var array<int, true> $providerIds */
+        $providerIds = [];
+
+        foreach ($this->providersByName as $provider) {
+            $providerId = spl_object_id($provider);
+            if (!$provider instanceof ProviderLifecycle || isset($providerIds[$providerId])) {
+                continue;
+            }
+
+            $providerIds[$providerId] = true;
+            $providers[] = $provider;
+        }
+
+        return $providers;
     }
 
    /**
