@@ -4,16 +4,28 @@ declare(strict_types=1);
 
 namespace OpenFeature;
 
+use Closure;
+use LogicException;
+use OpenFeature\implementation\flags\EvaluationContext as EvaluationContextImplementation;
 use OpenFeature\implementation\flags\NoOpClient;
 use OpenFeature\implementation\provider\NoOpProvider;
 use OpenFeature\interfaces\common\LoggerAwareTrait;
 use OpenFeature\interfaces\common\Metadata;
+use OpenFeature\interfaces\events\ProviderEvent;
+use OpenFeature\interfaces\events\ProviderEventDetails;
+use OpenFeature\interfaces\events\ProviderStatus;
 use OpenFeature\interfaces\flags\API;
 use OpenFeature\interfaces\flags\Client;
 use OpenFeature\interfaces\flags\EvaluationContext;
 use OpenFeature\interfaces\hooks\Hook;
+use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
+use OpenFeature\interfaces\provider\ProviderEventAware;
+use OpenFeature\interfaces\provider\ProviderEventEmitter;
+use OpenFeature\interfaces\provider\ProviderLifecycle;
+use OpenFeature\interfaces\provider\ThrowableWithResolutionError;
 use Psr\Log\LoggerAwareInterface;
+use RuntimeException;
 use Throwable;
 
 use function array_merge;
@@ -30,6 +42,10 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
     /** @var Hook[] $hooks */
     private array $hooks = [];
     private ?EvaluationContext $evaluationContext = null;
+    private ProviderStatus $providerStatus;
+
+    /** @var Closure(ProviderEvent, ProviderEventDetails): void|null */
+    private ?Closure $providerEventHandler = null;
 
     /**
      * -----------------
@@ -63,6 +79,7 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
     public function __construct()
     {
         $this->provider = new NoOpProvider();
+        $this->providerStatus = ProviderStatus::READY();
     }
 
     public function getProvider(): Provider
@@ -84,7 +101,167 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
      */
     public function setProvider(Provider $provider): void
     {
+        $this->setProviderAndWait($provider);
+    }
+
+    public function setProviderAndWait(Provider $provider): void
+    {
+        if ($provider === $this->provider) {
+            return;
+        }
+
+        $previousProvider = $this->provider;
+        $previousHandler = $this->providerEventHandler;
+
         $this->provider = $provider;
+        $this->providerStatus = ProviderStatus::NOT_READY();
+        $this->providerEventHandler = null;
+        $this->subscribeToProvider($provider);
+
+        try {
+            $this->initializeProvider($provider);
+        } finally {
+            $this->unsubscribeFromProvider($previousProvider, $previousHandler);
+            $this->shutdownProvider($previousProvider);
+        }
+    }
+
+    private function initializeProvider(Provider $provider): void
+    {
+        if (!$provider instanceof ProviderLifecycle) {
+            $this->providerStatus = ProviderStatus::READY();
+
+            return;
+        }
+
+        $context = $this->evaluationContext ?? new EvaluationContextImplementation();
+
+        try {
+            $provider->initialize($context, null);
+        } catch (Throwable $error) {
+            if (
+                !$this->providerStatus->equals(ProviderStatus::ERROR())
+                && !$this->providerStatus->equals(ProviderStatus::FATAL())
+            ) {
+                $this->providerStatus = $this->statusFromThrowable($error);
+            }
+
+            throw $error;
+        }
+
+        if (!$provider instanceof ProviderEventAware) {
+            $this->providerStatus = ProviderStatus::READY();
+
+            return;
+        }
+
+        if (
+            $this->providerStatus->equals(ProviderStatus::ERROR())
+            || $this->providerStatus->equals(ProviderStatus::FATAL())
+        ) {
+            throw new RuntimeException('Provider initialization failed.');
+        }
+
+        if (!$this->providerStatus->equals(ProviderStatus::READY())) {
+            throw new LogicException('An event-aware provider must emit PROVIDER_READY or PROVIDER_ERROR during initialization.');
+        }
+    }
+
+    private function statusFromThrowable(Throwable $error): ProviderStatus
+    {
+        if (
+            $error instanceof ThrowableWithResolutionError
+            && $error->getResolutionError()->getResolutionErrorCode()->equals(ErrorCode::PROVIDER_FATAL())
+        ) {
+            return ProviderStatus::FATAL();
+        }
+
+        return ProviderStatus::ERROR();
+    }
+
+    private function subscribeToProvider(Provider $provider): void
+    {
+        if (!$provider instanceof ProviderEventEmitter) {
+            return;
+        }
+
+        $handler = function (ProviderEvent $event, ProviderEventDetails $details) use ($provider): void {
+            if ($provider !== $this->provider) {
+                return;
+            }
+
+            $this->processProviderEvent($event, $details);
+        };
+        $this->providerEventHandler = $handler;
+        $provider->addProviderEventHandler($handler);
+    }
+
+    private function processProviderEvent(ProviderEvent $event, ProviderEventDetails $details): void
+    {
+        if ($event->equals(ProviderEvent::READY())) {
+            $this->providerStatus = ProviderStatus::READY();
+
+            return;
+        }
+
+        if ($event->equals(ProviderEvent::STALE())) {
+            $this->providerStatus = ProviderStatus::STALE();
+
+            return;
+        }
+
+        if ($event->equals(ProviderEvent::ERROR())) {
+            $errorCode = $details->getErrorCode();
+            $this->providerStatus = $errorCode !== null && $errorCode->equals(ErrorCode::PROVIDER_FATAL())
+                ? ProviderStatus::FATAL()
+                : ProviderStatus::ERROR();
+        }
+    }
+
+    /** @param Closure(ProviderEvent, ProviderEventDetails): void|null $handler */
+    private function unsubscribeFromProvider(Provider $provider, ?Closure $handler): void
+    {
+        if ($provider instanceof ProviderEventEmitter && $handler !== null) {
+            $provider->removeProviderEventHandler($handler);
+        }
+    }
+
+    private function shutdownProvider(Provider $provider): void
+    {
+        if (!$provider instanceof ProviderLifecycle) {
+            return;
+        }
+
+        try {
+            $provider->shutdown();
+        } catch (Throwable $error) {
+            try {
+                $this->getLogger()->error('OpenFeature provider shutdown failed.', ['exception' => $error]);
+            } catch (Throwable) {
+                // Provider replacement and API shutdown must remain safe if logging fails.
+            }
+        }
+    }
+
+    public function getProviderStatus(): ProviderStatus
+    {
+        return $this->providerStatus;
+    }
+
+    public function shutdown(): void
+    {
+        $provider = $this->provider;
+        $handler = $this->providerEventHandler;
+
+        $this->unsubscribeFromProvider($provider, $handler);
+        $this->provider = new NoOpProvider();
+        $this->providerStatus = ProviderStatus::READY();
+        $this->providerEventHandler = null;
+        $this->evaluationContext = null;
+        $this->hooks = [];
+        $this->logger = null;
+
+        $this->shutdownProvider($provider);
     }
 
     /**

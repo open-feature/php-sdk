@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace OpenFeature\Test;
 
 use OpenFeature\OpenFeatureAPI;
-use OpenFeature\implementation\flags\EvaluationContext;
-use OpenFeature\implementation\provider\NoOpProvider;
 use OpenFeature\interfaces\flags\API;
 
 class APITestHelper
@@ -20,9 +18,7 @@ class APITestHelper
     {
         $api = self::createAPI();
 
-        $api->setProvider(new NoOpProvider());
-        $api->clearHooks();
-        $api->setEvaluationContext(new EvaluationContext());
+        $api->shutdown();
     }
 
     public static function new(): API

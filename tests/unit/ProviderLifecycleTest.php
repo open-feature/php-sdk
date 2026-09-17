@@ -1,0 +1,203 @@
+<?php
+
+declare(strict_types=1);
+
+namespace OpenFeature\Test\unit;
+
+use LogicException;
+use OpenFeature\OpenFeatureAPI;
+use OpenFeature\Test\LegacyLifecycleTestProvider;
+use OpenFeature\Test\LifecycleTestProvider;
+use OpenFeature\Test\TestProvider;
+use OpenFeature\implementation\events\ProviderEventDetails;
+use OpenFeature\implementation\flags\EvaluationContext;
+use OpenFeature\implementation\provider\NoOpProvider;
+use OpenFeature\interfaces\events\ProviderEvent;
+use OpenFeature\interfaces\events\ProviderStatus;
+use OpenFeature\interfaces\provider\ErrorCode;
+use PHPUnit\Framework\TestCase;
+use RuntimeException;
+
+class ProviderLifecycleTest extends TestCase
+{
+    public function testExistingProviderRemainsCompatibleAndBecomesReady(): void
+    {
+        $api = new OpenFeatureAPI();
+        $provider = new TestProvider();
+
+        $api->setProvider($provider);
+
+        $this->assertSame($provider, $api->getProvider());
+        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::READY()));
+    }
+
+    public function testInitializationReceivesContextAndDefaultDomainAndRunsOnce(): void
+    {
+        $api = new OpenFeatureAPI();
+        $context = new EvaluationContext('targeting-key');
+        $provider = new LifecycleTestProvider();
+        $api->setEvaluationContext($context);
+
+        $api->setProviderAndWait($provider);
+        $api->setProviderAndWait($provider);
+
+        $this->assertSame(1, $provider->initializeCalls);
+        $this->assertSame($context, $provider->initialContext);
+        $this->assertNull($provider->initialDomain);
+        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::READY()));
+    }
+
+    public function testLegacyLifecycleProviderGetsSyntheticStatusTransitions(): void
+    {
+        $api = new OpenFeatureAPI();
+        $provider = new LegacyLifecycleTestProvider();
+
+        $api->setProviderAndWait($provider);
+
+        $this->assertSame(1, $provider->initializeCalls);
+        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::READY()));
+    }
+
+    public function testInitializationFailureIsPropagatedAfterStatusIsUpdated(): void
+    {
+        $api = new OpenFeatureAPI();
+        $provider = new LegacyLifecycleTestProvider();
+        $provider->failInitialization = true;
+
+        try {
+            $api->setProviderAndWait($provider);
+            $this->fail('Expected provider initialization to fail.');
+        } catch (RuntimeException $error) {
+            $this->assertSame('legacy initialization failed', $error->getMessage());
+        }
+
+        $this->assertSame($provider, $api->getProvider());
+        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::ERROR()));
+    }
+
+    public function testEventAwareProviderMustEmitAnInitializationEvent(): void
+    {
+        $api = new OpenFeatureAPI();
+        $provider = new LifecycleTestProvider();
+        $provider->emitInitializationEvent = false;
+
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('must emit PROVIDER_READY or PROVIDER_ERROR');
+
+        $api->setProviderAndWait($provider);
+    }
+
+    public function testEventAwareProviderCanRecoverAfterInitializationFailure(): void
+    {
+        $api = new OpenFeatureAPI();
+        $provider = new LifecycleTestProvider();
+        $provider->failInitialization = true;
+
+        try {
+            $api->setProviderAndWait($provider);
+            $this->fail('Expected provider initialization to fail.');
+        } catch (RuntimeException $error) {
+            $this->assertSame('initialization failed', $error->getMessage());
+        }
+
+        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::ERROR()));
+
+        $provider->emit(ProviderEvent::READY());
+
+        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::READY()));
+    }
+
+    public function testProviderReplacementShutsDownOldProvider(): void
+    {
+        $api = new OpenFeatureAPI();
+        $oldProvider = new LifecycleTestProvider();
+        $newProvider = new LifecycleTestProvider();
+        $api->setProviderAndWait($oldProvider);
+
+        $api->setProviderAndWait($newProvider);
+
+        $this->assertSame(1, $oldProvider->shutdownCalls);
+        $this->assertSame(0, $newProvider->shutdownCalls);
+        $this->assertSame($newProvider, $api->getProvider());
+    }
+
+    public function testShutdownIsIdempotentAndResetsApiState(): void
+    {
+        $api = new OpenFeatureAPI();
+        $provider = new LifecycleTestProvider();
+        $api->setEvaluationContext(new EvaluationContext('targeting-key'));
+        $api->setProviderAndWait($provider);
+
+        $api->shutdown();
+        $api->shutdown();
+
+        $this->assertSame(1, $provider->shutdownCalls);
+        $this->assertInstanceOf(NoOpProvider::class, $api->getProvider());
+        $this->assertNull($api->getEvaluationContext());
+        $this->assertSame([], $api->getHooks());
+        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::READY()));
+    }
+
+    public function testShutdownRemainsSafeWhenProviderShutdownFails(): void
+    {
+        $api = new OpenFeatureAPI();
+        $provider = new LifecycleTestProvider();
+        $provider->failShutdown = true;
+        $api->setProviderAndWait($provider);
+
+        $api->shutdown();
+        $api->shutdown();
+
+        $this->assertSame(1, $provider->shutdownCalls);
+        $this->assertInstanceOf(NoOpProvider::class, $api->getProvider());
+        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::READY()));
+    }
+
+    public function testProviderEventsDriveStatusAndAllowRecovery(): void
+    {
+        $api = new OpenFeatureAPI();
+        $provider = new LifecycleTestProvider();
+        $api->setProviderAndWait($provider);
+
+        $provider->emit(ProviderEvent::STALE());
+        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::STALE()));
+
+        $provider->emit(
+            ProviderEvent::ERROR(),
+            new ProviderEventDetails('failed', [], [], ErrorCode::GENERAL()),
+        );
+        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::ERROR()));
+
+        $provider->emit(ProviderEvent::READY());
+        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::READY()));
+
+        $provider->emit(ProviderEvent::CONFIGURATION_CHANGED());
+        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::READY()));
+    }
+
+    public function testFatalProviderErrorSetsFatalStatus(): void
+    {
+        $api = new OpenFeatureAPI();
+        $provider = new LifecycleTestProvider();
+        $api->setProviderAndWait($provider);
+
+        $provider->emit(
+            ProviderEvent::ERROR(),
+            new ProviderEventDetails('fatal', [], [], ErrorCode::PROVIDER_FATAL()),
+        );
+
+        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::FATAL()));
+    }
+
+    public function testReplacedProviderCanNoLongerChangeStatus(): void
+    {
+        $api = new OpenFeatureAPI();
+        $oldProvider = new LifecycleTestProvider();
+        $api->setProviderAndWait($oldProvider);
+        $api->setProvider(new TestProvider());
+
+        $oldProvider->emit(ProviderEvent::STALE());
+
+        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::READY()));
+    }
+}
