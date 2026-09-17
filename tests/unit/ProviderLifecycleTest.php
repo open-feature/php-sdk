@@ -87,6 +87,33 @@ class ProviderLifecycleTest extends TestCase
         $api->setProviderAndWait($provider);
     }
 
+    public function testEventAwareProviderMustEmitErrorBeforeThrowingDuringInitialization(): void
+    {
+        $api = new OpenFeatureAPI();
+        $provider = new LifecycleTestProvider();
+        $provider->failInitialization = true;
+        $provider->emitInitializationEvent = false;
+        $errorHandlerCalls = 0;
+        $api->addHandler(ProviderEvent::ERROR(), static function () use (&$errorHandlerCalls): void {
+            ++$errorHandlerCalls;
+        });
+
+        try {
+            $api->setProviderAndWait($provider);
+            $this->fail('Expected registration to reject an event-aware provider that did not emit PROVIDER_ERROR.');
+        } catch (LogicException $error) {
+            $this->assertSame(
+                'An event-aware provider must emit PROVIDER_ERROR before initialization terminates abnormally.',
+                $error->getMessage(),
+            );
+            $this->assertInstanceOf(RuntimeException::class, $error->getPrevious());
+            $this->assertSame('initialization failed', $error->getPrevious()->getMessage());
+        }
+
+        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::NOT_READY()));
+        $this->assertSame(0, $errorHandlerCalls);
+    }
+
     public function testEventAwareProviderCanRecoverAfterInitializationFailure(): void
     {
         $api = new OpenFeatureAPI();

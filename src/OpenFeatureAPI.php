@@ -171,7 +171,11 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
                 !$this->providerStatus->equals(ProviderStatus::ERROR())
                 && !$this->providerStatus->equals(ProviderStatus::FATAL())
             ) {
-                $this->providerStatus = $this->statusFromThrowable($error);
+                throw new LogicException(
+                    'An event-aware provider must emit PROVIDER_ERROR before initialization terminates abnormally.',
+                    0,
+                    $error,
+                );
             }
 
             throw $error;
@@ -193,18 +197,6 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
         if (!$this->providerStatus->equals(ProviderStatus::READY())) {
             throw new LogicException('An event-aware provider must emit PROVIDER_READY or PROVIDER_ERROR during initialization.');
         }
-    }
-
-    private function statusFromThrowable(Throwable $error): ProviderStatus
-    {
-        if (
-            $error instanceof ThrowableWithResolutionError
-            && $error->getResolutionError()->getResolutionErrorCode()->equals(ErrorCode::PROVIDER_FATAL())
-        ) {
-            return ProviderStatus::FATAL();
-        }
-
-        return ProviderStatus::ERROR();
     }
 
     private function subscribeToProvider(Provider $provider): void
