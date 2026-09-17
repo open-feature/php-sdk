@@ -144,8 +144,8 @@ class MyClass
 | ✅      | [Logging](#logging)             | Integrate with popular logging packages.                                                                                           |
 | ✅      | [MultiProvider](#multiprovider) | Combine multiple providers with configurable evaluation strategies for fallback and aggregation.                                   |
 | ❌      | [Named clients](#named-clients) | Utilize multiple providers in a single application.                                                                                |
-| ⚠️      | [Eventing](#eventing)           | React to state changes in the provider or flag management system.                                                                  |
-| ❌      | [Shutdown](#shutdown)           | Gracefully clean up a provider during application shutdown.                                                                        |
+| ✅      | [Eventing](#eventing)           | React to state changes in the provider or flag management system.                                                                  |
+| ✅      | [Shutdown](#shutdown)           | Gracefully clean up a provider during application shutdown.                                                                        |
 | ✅      | [Extending](#extending)         | Extend OpenFeature with custom providers and hooks.                                                                                |
 
 <sub>Implemented: ✅ | In-progress: ⚠️ | Not implemented yet: ❌</sub>
@@ -162,6 +162,58 @@ Once you've added a provider as a dependency, it can be registered with OpenFeat
 $api = OpenFeatureAPI::getInstance();
 $api->setProvider(new MyProvider());
 ```
+
+Provider registration is synchronous. `setProvider()` waits for initialization to finish before returning. The equivalent `setProviderAndWait()` method is available when calling code should make that behavior explicit:
+
+```php
+$api = OpenFeatureAPI::getInstance();
+$api->setProviderAndWait(new MyProvider());
+```
+
+#### Provider lifecycle
+
+Providers can opt into initialization and cleanup by implementing `ProviderLifecycle`. The SDK supplies the current API evaluation context during initialization and calls `shutdown()` when the provider is replaced or the API is shut down.
+
+The base `Provider` interface is unchanged. Existing provider implementations therefore remain compatible and are treated as immediately ready.
+
+Lifecycle providers that emit their own initialization events should implement `ProviderEventAware` and can use `ProviderEventEmitterTrait`:
+
+```php
+use OpenFeature\implementation\events\ProviderEventDetails;
+use OpenFeature\implementation\events\ProviderEventEmitterTrait;
+use OpenFeature\interfaces\events\ProviderEvent;
+use OpenFeature\interfaces\flags\EvaluationContext;
+use OpenFeature\interfaces\provider\ProviderEventAware;
+
+class MyProvider extends MyExistingProvider implements ProviderEventAware
+{
+    use ProviderEventEmitterTrait;
+
+    public function initialize(EvaluationContext $context, ?string $domain = null): void
+    {
+        // Establish connections and load the initial flag configuration.
+        $this->emitProviderEvent(
+            ProviderEvent::READY(),
+            new ProviderEventDetails(),
+        );
+    }
+
+    public function shutdown(): void
+    {
+        // Release connections and other provider resources.
+    }
+}
+```
+
+A `ProviderEventAware` provider owns its `READY` and `ERROR` initialization events and must emit one of them while initializing. If initialization fails, it should emit `ERROR` with appropriate details and throw the initialization error. This ownership model prevents the SDK from generating a duplicate event.
+
+For backward compatibility:
+
+- Providers without `ProviderLifecycle` are treated as ready and receive a synthetic `READY` event.
+- Providers implementing `ProviderLifecycle` but not `ProviderEventAware` receive synthetic `READY` or `ERROR` initialization events from the SDK.
+- The built-in no-op provider is always ready and does not require lifecycle callbacks.
+
+The SDK does not currently expose domain-bound providers, so the domain passed to `initialize()` is `null`.
 
 <!-- In some situations, it may be beneficial to register multiple providers in the same application.
 This is possible using [named clients](#named-clients), which is covered in more detail below. -->
@@ -195,6 +247,8 @@ $api->setProvider($multiProvider);
 $client = $api->getClient();
 echo $client->getBooleanValue('my-flag', false);
 ```
+
+When registered, `MultiProvider` initializes every distinct child that implements `ProviderLifecycle`. On failure, it emits `ERROR` and performs best-effort cleanup of children whose initialization was attempted. On shutdown, it shuts down every distinct lifecycle-capable child, continuing even if one child fails.
 
 By default, the Multi-Provider will evaluate all underlying providers in order and return the **first successful result**. If a provider indicates it does not have a flag (`FLAG_NOT_FOUND` error code), then it will be skipped and the next provider will be evaluated. If any provider throws or returns an error result, the operation will fail and the error will be returned. If no provider returns a successful result, the operation will fail with a `FLAG_NOT_FOUND` error code.
 
@@ -518,6 +572,10 @@ $client->addHooks($myHook);
 
 This limitation will be addressed in a future release where per-provider hook execution will be implemented to match the JS-SDK behavior.
 
+**Sub-Provider Events Not Aggregated:**
+
+`MultiProvider` emits its own `READY` or `ERROR` event for initialization, but it does not currently aggregate or forward spontaneous events emitted later by its child providers. Consumers should observe events from the registered `MultiProvider`; child-provider status aggregation remains a future enhancement.
+
 ### Targeting
 
 Sometimes, the value of a flag must consider some dynamic criteria about the application or user, such as the user's location, IP, email address, or the server's location.
@@ -600,11 +658,62 @@ Named clients are not yet available in the PHP SDK. Progress on this feature can
 
 ### Eventing
 
-Events are not yet available in the PHP SDK. Progress on this feature can be tracked [here](https://github.com/open-feature/php-sdk/issues/93).
+The API and clients expose the current provider status:
+
+```php
+use OpenFeature\interfaces\events\ProviderStatus;
+
+$apiStatus = $api->getProviderStatus();
+$clientStatus = $client->getProviderStatus();
+
+if ($clientStatus->equals(ProviderStatus::READY())) {
+    // The currently bound provider is ready.
+}
+```
+
+Possible statuses are `NOT_READY`, `READY`, `STALE`, `ERROR`, and `FATAL`.
+
+Handlers can be registered on either the API or a client for `READY`, `ERROR`, `STALE`, and `CONFIGURATION_CHANGED` events:
+
+```php
+use OpenFeature\interfaces\events\EventDetails;
+use OpenFeature\interfaces\events\ProviderEvent;
+
+$handler = static function (EventDetails $details): void {
+    printf(
+        "Provider %s changed status: %s\n",
+        $details->getProviderName(),
+        $details->getMessage() ?? 'no details',
+    );
+};
+
+$api->addHandler(ProviderEvent::ERROR(), $handler);
+$client->addHandler(ProviderEvent::ERROR(), $handler);
+
+// Remove the exact callable that was registered.
+$api->removeHandler(ProviderEvent::ERROR(), $handler);
+$client->removeHandler(ProviderEvent::ERROR(), $handler);
+```
+
+Event details can include the provider name, message, changed flag keys, event metadata, and an error code. Status is updated before handlers execute. A failing handler is isolated so other applicable handlers still run.
+
+API and client handlers remain registered when the provider is replaced. Adding a handler for the provider's current `READY`, `STALE`, or `ERROR` state invokes it immediately with the latest matching details. A provider in `ERROR` or `STALE` can recover by emitting `READY`.
 
 ### Shutdown
 
-A shutdown method is not yet available in the PHP SDK. Progress on this feature can be tracked [here](https://github.com/open-feature/php-sdk/issues/93).
+Call `shutdown()` when the application no longer needs the OpenFeature API:
+
+```php
+$api = OpenFeatureAPI::getInstance();
+
+try {
+    // Evaluate flags.
+} finally {
+    $api->shutdown();
+}
+```
+
+Shutdown is safe and idempotent. It shuts down the current lifecycle-capable provider, resets the provider to the ready no-op provider, and clears the API evaluation context, hooks, event handlers, client registrations, and logger. Replacing a provider also shuts down the previous lifecycle-capable provider after the new provider's initialization attempt.
 
 ## Extending
 
