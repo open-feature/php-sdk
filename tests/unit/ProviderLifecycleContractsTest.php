@@ -8,6 +8,7 @@ use OpenFeature\OpenFeatureAPI;
 use OpenFeature\implementation\events\EventDetails;
 use OpenFeature\implementation\events\ProviderEventDetails;
 use OpenFeature\implementation\events\ProviderEventEmitterTrait;
+use OpenFeature\implementation\multiprovider\MultiProvider;
 use OpenFeature\interfaces\events\ProviderEvent;
 use OpenFeature\interfaces\events\ProviderStatus;
 use OpenFeature\interfaces\flags\API;
@@ -16,6 +17,7 @@ use OpenFeature\interfaces\flags\EventAwareClient;
 use OpenFeature\interfaces\flags\ProviderLifecycleAPI;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\ProviderEventEmitter;
+use OpenFeature\interfaces\provider\ProviderLifecycle;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
@@ -51,6 +53,14 @@ class ProviderLifecycleContractsTest extends TestCase
         $this->assertSame('ERROR', ProviderStatus::ERROR()->getValue());
         $this->assertSame('FATAL', ProviderStatus::FATAL()->getValue());
         $this->assertSame('PROVIDER_FATAL', ErrorCode::PROVIDER_FATAL()->getValue());
+    }
+
+    public function testMultiProviderDoesNotClaimPartialLifecycleOrEventSupport(): void
+    {
+        $multiProvider = new MultiProvider();
+
+        $this->assertNotInstanceOf(ProviderLifecycle::class, $multiProvider);
+        $this->assertNotInstanceOf(ProviderEventEmitter::class, $multiProvider);
     }
 
     public function testEventDetailsIncludeProviderAndProviderSuppliedData(): void
