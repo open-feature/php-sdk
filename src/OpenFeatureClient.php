@@ -423,6 +423,15 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
                                 ->withProviderMetadata($hookContext->getProviderMetadata())
                                 ->build();
 
+            $providerStatus = $api->getProviderStatus();
+            if ($providerStatus->equals(ProviderStatus::NOT_READY())) {
+                throw new ResolutionError(ErrorCode::PROVIDER_NOT_READY(), 'Provider is not ready.');
+            }
+
+            if ($providerStatus->equals(ProviderStatus::FATAL())) {
+                throw new ResolutionError(ErrorCode::PROVIDER_FATAL(), 'Provider has entered a fatal state.');
+            }
+
             $resolutionDetails = $this->createProviderEvaluation(
                 $flagValueType,
                 $flagKey,
