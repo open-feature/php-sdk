@@ -4,18 +4,41 @@ declare(strict_types=1);
 
 namespace OpenFeature\Test\unit;
 
+use OpenFeature\OpenFeatureAPI;
 use OpenFeature\implementation\events\EventDetails;
 use OpenFeature\implementation\events\ProviderEventDetails;
 use OpenFeature\implementation\events\ProviderEventEmitterTrait;
 use OpenFeature\interfaces\events\ProviderEvent;
 use OpenFeature\interfaces\events\ProviderStatus;
+use OpenFeature\interfaces\flags\API;
+use OpenFeature\interfaces\flags\Client;
+use OpenFeature\interfaces\flags\EventAwareClient;
+use OpenFeature\interfaces\flags\ProviderLifecycleAPI;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\ProviderEventEmitter;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
+use function method_exists;
+
 class ProviderLifecycleContractsTest extends TestCase
 {
+    public function testLifecycleAndEventCapabilitiesDoNotChangeBaseApiAndClientContracts(): void
+    {
+        $this->assertFalse(method_exists(API::class, 'setProviderAndWait'));
+        $this->assertFalse(method_exists(API::class, 'shutdown'));
+        $this->assertFalse(method_exists(API::class, 'getProviderStatus'));
+        $this->assertFalse(method_exists(API::class, 'addHandler'));
+        $this->assertFalse(method_exists(API::class, 'removeHandler'));
+        $this->assertFalse(method_exists(Client::class, 'getProviderStatus'));
+        $this->assertFalse(method_exists(Client::class, 'addHandler'));
+        $this->assertFalse(method_exists(Client::class, 'removeHandler'));
+
+        $api = OpenFeatureAPI::getInstance();
+        $this->assertInstanceOf(ProviderLifecycleAPI::class, $api);
+        $this->assertInstanceOf(EventAwareClient::class, $api->getClient());
+    }
+
     public function testProviderEventsAndStatusesExposeSpecificationValues(): void
     {
         $this->assertSame('PROVIDER_READY', ProviderEvent::READY()->getValue());

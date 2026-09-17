@@ -17,9 +17,9 @@ use OpenFeature\interfaces\events\EventDetails as EventDetailsInterface;
 use OpenFeature\interfaces\events\ProviderEvent;
 use OpenFeature\interfaces\events\ProviderEventDetails;
 use OpenFeature\interfaces\events\ProviderStatus;
-use OpenFeature\interfaces\flags\API;
-use OpenFeature\interfaces\flags\Client;
 use OpenFeature\interfaces\flags\EvaluationContext;
+use OpenFeature\interfaces\flags\EventAwareClient;
+use OpenFeature\interfaces\flags\ProviderLifecycleAPI;
 use OpenFeature\interfaces\hooks\Hook;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
@@ -35,7 +35,7 @@ use WeakReference;
 use function array_merge;
 use function is_null;
 
-final class OpenFeatureAPI implements API, LoggerAwareInterface
+final class OpenFeatureAPI implements LoggerAwareInterface, ProviderLifecycleAPI
 {
     use LoggerAwareTrait;
 
@@ -67,7 +67,7 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
      * The API, and any state it maintains SHOULD exist as a global singleton, even
      * in cases wherein multiple versions of the API are present at runtime.
      */
-    public static function getInstance(): API
+    public static function getInstance(): ProviderLifecycleAPI
     {
         if (is_null(self::$instance)) {
             self::$instance = new self();
@@ -366,7 +366,7 @@ final class OpenFeatureAPI implements API, LoggerAwareInterface
      * The API MUST provide a function for creating a client which accepts the following options:
      *   name (optional): A logical string identifier for the client.
      */
-    public function getClient(?string $name = null, ?string $version = null): Client
+    public function getClient(?string $name = null, ?string $version = null): EventAwareClient
     {
         $name = $name ?? 'OpenFeature';
         $version = $version ?? 'OpenFeature';

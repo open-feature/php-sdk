@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace OpenFeature\Test;
 
 use OpenFeature\OpenFeatureAPI;
-use OpenFeature\interfaces\flags\API;
+use OpenFeature\interfaces\flags\ProviderLifecycleAPI;
 
 class APITestHelper
 {
-    public static function createAPI(): API
+    public static function createAPI(): ProviderLifecycleAPI
     {
         return OpenFeatureAPI::getInstance();
     }
@@ -21,7 +21,7 @@ class APITestHelper
         $api->shutdown();
     }
 
-    public static function new(): API
+    public static function new(): ProviderLifecycleAPI
     {
         $api = self::createAPI();
 

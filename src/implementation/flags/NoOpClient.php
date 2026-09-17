@@ -10,13 +10,13 @@ use OpenFeature\implementation\events\EventDetails;
 use OpenFeature\interfaces\events\EventDetails as EventDetailsInterface;
 use OpenFeature\interfaces\events\ProviderEvent;
 use OpenFeature\interfaces\events\ProviderStatus;
-use OpenFeature\interfaces\flags\Client;
 use OpenFeature\interfaces\flags\EvaluationContext as EvaluationContextInterface;
 use OpenFeature\interfaces\flags\EvaluationDetails;
 use OpenFeature\interfaces\flags\EvaluationOptions;
+use OpenFeature\interfaces\flags\EventAwareClient;
 use Throwable;
 
-class NoOpClient implements Client
+class NoOpClient implements EventAwareClient
 {
     private const CLIENT_NAME = 'no-op-client';
 
