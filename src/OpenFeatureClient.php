@@ -465,16 +465,23 @@ class OpenFeatureClient implements EventAwareClient, LoggerAwareInterface
 
             $hookExecutor->afterHooks($flagValueType, $hookContext, $resolutionDetails, $mergedRemainingHooks, $hookHints);
         } catch (Throwable $err) {
-            $this->getLogger()->error(
-                "An error occurred during feature flag evaluation of flag '{flagKey}': {errorMessage}",
-                [
-                    'flagKey' => $flagKey,
-                    'errorMessage' => $err->getMessage(),
-                    'exception' => $err,
-                ],
-            );
-
             $error = $err instanceof ThrowableWithResolutionError ? $err->getResolutionError() : new ResolutionError(ErrorCode::GENERAL(), $err->getMessage());
+            $errorCode = $error->getResolutionErrorCode();
+            $logMessage = "An error occurred during feature flag evaluation of flag '{flagKey}': {errorMessage}";
+            $logContext = [
+                'flagKey' => $flagKey,
+                'errorMessage' => $err->getMessage(),
+                'exception' => $err,
+            ];
+
+            if (
+                $errorCode->equals(ErrorCode::PROVIDER_NOT_READY())
+                || $errorCode->equals(ErrorCode::PROVIDER_FATAL())
+            ) {
+                $this->getLogger()->debug($logMessage, $logContext);
+            } else {
+                $this->getLogger()->error($logMessage, $logContext);
+            }
 
             $details = (new EvaluationDetailsBuilder())
                             ->withFlagKey($flagKey)

@@ -1589,6 +1589,11 @@ class OpenFeatureClientTest extends TestCase
         $provider->shouldNotReceive('resolveBooleanValue');
 
         $api = APITestHelper::new();
+        /** @var LoggerInterface&MockInterface $logger */
+        $logger = $this->mockery(LoggerInterface::class);
+        $logger->shouldReceive('debug')->once();
+        $logger->shouldNotReceive('error');
+        $api->setLogger($logger);
 
         try {
             $api->setProviderAndWait($provider);
@@ -1612,6 +1617,11 @@ class OpenFeatureClientTest extends TestCase
         $provider->shouldNotReceive('resolveBooleanValue');
 
         $api = APITestHelper::new();
+        /** @var LoggerInterface&MockInterface $logger */
+        $logger = $this->mockery(LoggerInterface::class);
+        $logger->shouldReceive('debug')->once();
+        $logger->shouldNotReceive('error');
+        $api->setLogger($logger);
         $api->setProviderAndWait($provider);
         $provider->emit(
             ProviderEvent::ERROR(),
