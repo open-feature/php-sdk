@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenFeature\Test;
 
 use OpenFeature\OpenFeatureAPI;
+use OpenFeature\implementation\provider\NoOpProvider;
 use OpenFeature\interfaces\flags\ProviderLifecycleAPI;
 
 class APITestHelper
@@ -26,6 +27,7 @@ class APITestHelper
         $api = self::createAPI();
 
         self::resetAPI();
+        $api->setProvider(new NoOpProvider());
 
         return $api;
     }

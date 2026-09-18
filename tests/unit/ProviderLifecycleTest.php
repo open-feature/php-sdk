@@ -201,7 +201,36 @@ class ProviderLifecycleTest extends TestCase
         $this->assertInstanceOf(NoOpProvider::class, $api->getProvider());
         $this->assertNull($api->getEvaluationContext());
         $this->assertSame([], $api->getHooks());
-        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::READY()));
+        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::NOT_READY()));
+    }
+
+    public function testStatusBecomesNotReadyAfterProviderShutdownTerminates(): void
+    {
+        $api = new OpenFeatureAPI();
+        $client = $api->getClient();
+        $provider = new class ($api) extends LifecycleTestProvider {
+            private OpenFeatureAPI $api;
+            public ?ProviderStatus $statusDuringShutdown = null;
+
+            public function __construct(OpenFeatureAPI $api)
+            {
+                $this->api = $api;
+            }
+
+            public function shutdown(): void
+            {
+                $this->statusDuringShutdown = $this->api->getProviderStatus();
+                parent::shutdown();
+            }
+        };
+        $api->setProviderAndWait($provider);
+
+        $api->shutdown();
+
+        $this->assertNotNull($provider->statusDuringShutdown);
+        $this->assertTrue($provider->statusDuringShutdown->equals(ProviderStatus::READY()));
+        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::NOT_READY()));
+        $this->assertTrue($client->getProviderStatus()->equals(ProviderStatus::NOT_READY()));
     }
 
     public function testShutdownRemainsSafeWhenProviderShutdownFails(): void
@@ -216,7 +245,7 @@ class ProviderLifecycleTest extends TestCase
 
         $this->assertSame(1, $provider->shutdownCalls);
         $this->assertInstanceOf(NoOpProvider::class, $api->getProvider());
-        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::READY()));
+        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::NOT_READY()));
     }
 
     public function testProviderEventsDriveStatusAndAllowRecovery(): void

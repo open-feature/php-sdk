@@ -358,7 +358,6 @@ final class OpenFeatureAPI implements LoggerAwareInterface, ProviderLifecycleAPI
 
         $this->unsubscribeFromProvider($provider, $handler);
         $this->provider = new NoOpProvider();
-        $this->providerStatus = ProviderStatus::READY();
         $this->providerEventHandler = null;
         $this->evaluationContext = null;
         $this->hooks = [];
@@ -368,6 +367,7 @@ final class OpenFeatureAPI implements LoggerAwareInterface, ProviderLifecycleAPI
         $this->logger = null;
 
         $this->shutdownProvider($provider);
+        $this->providerStatus = ProviderStatus::NOT_READY();
     }
 
     /**
