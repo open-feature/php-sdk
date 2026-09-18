@@ -23,6 +23,31 @@ use function array_keys;
 
 class ProviderEventsTest extends TestCase
 {
+    public function testClientHandlerAddedDuringDispatchRunsOnce(): void
+    {
+        $api = new OpenFeatureAPI();
+        $client = $api->getClient();
+        $provider = new LifecycleTestProvider();
+        $api->setProviderAndWait($provider);
+        $clientHandlerCalls = 0;
+
+        $api->addHandler(
+            ProviderEvent::STALE(),
+            static function () use ($client, &$clientHandlerCalls): void {
+                $client->addHandler(
+                    ProviderEvent::STALE(),
+                    static function () use (&$clientHandlerCalls): void {
+                        ++$clientHandlerCalls;
+                    },
+                );
+            },
+        );
+
+        $provider->emit(ProviderEvent::STALE());
+
+        $this->assertSame(1, $clientHandlerCalls);
+    }
+
     public function testStatusIsUpdatedBeforeApiAndClientHandlersRun(): void
     {
         $api = new OpenFeatureAPI();

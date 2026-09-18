@@ -144,10 +144,24 @@ class OpenFeatureClient implements EventAwareClient, LoggerAwareInterface
                 && ($status->equals(ProviderStatus::ERROR()) || $status->equals(ProviderStatus::FATAL())));
     }
 
-    /** @internal Called by the API when the currently bound provider emits an event. */
-    public function handleProviderEvent(ProviderEvent $event, EventDetailsInterface $details): void
+    /**
+     * @internal Used by the API to snapshot handlers before an event dispatch begins.
+     *
+     * @return array<int, callable>
+     */
+    public function getProviderEventHandlers(ProviderEvent $event): array
     {
-        $this->runEventHandlers($this->eventHandlers[$event->getValue()] ?? [], $details);
+        return $this->eventHandlers[$event->getValue()] ?? [];
+    }
+
+    /**
+     * @internal Called by the API when the currently bound provider emits an event.
+     *
+     * @param array<int, callable> $handlers
+     */
+    public function handleProviderEvent(EventDetailsInterface $details, array $handlers): void
+    {
+        $this->runEventHandlers($handlers, $details);
     }
 
     /** @param array<int, callable> $handlers */

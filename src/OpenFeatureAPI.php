@@ -246,7 +246,9 @@ final class OpenFeatureAPI implements LoggerAwareInterface, ProviderLifecycleAPI
 
         $eventDetails = new EventDetails($this->provider->getMetadata()->getName(), $details);
         $this->lastEventDetails[$event->getValue()] = $eventDetails;
-        $this->runHandlers($this->eventHandlers[$event->getValue()] ?? [], $eventDetails);
+
+        /** @var array<int, array{OpenFeatureClient, array<int, callable>}> $clientHandlers */
+        $clientHandlers = [];
 
         foreach ($this->clients as $index => $clientReference) {
             $client = $clientReference->get();
@@ -256,7 +258,13 @@ final class OpenFeatureAPI implements LoggerAwareInterface, ProviderLifecycleAPI
                 continue;
             }
 
-            $client->handleProviderEvent($event, $eventDetails);
+            $clientHandlers[] = [$client, $client->getProviderEventHandlers($event)];
+        }
+
+        $this->runHandlers($this->eventHandlers[$event->getValue()] ?? [], $eventDetails);
+
+        foreach ($clientHandlers as [$client, $handlers]) {
+            $client->handleProviderEvent($eventDetails, $handlers);
         }
     }
 
