@@ -22,6 +22,8 @@ use OpenFeature\interfaces\provider\ErrorCode;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 
+use function str_contains;
+
 class ProviderLifecycleTest extends TestCase
 {
     public function testExistingProviderRemainsCompatibleAndBecomesReady(): void
@@ -60,6 +62,35 @@ class ProviderLifecycleTest extends TestCase
 
         $this->assertSame(1, $provider->initializeCalls);
         $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::READY()));
+    }
+
+    public function testLegacyLifecycleProviderRegistrationLogsDeprecationWarning(): void
+    {
+        $api = new OpenFeatureAPI();
+        $provider = new LegacyLifecycleTestProvider();
+        /** @var LoggerInterface&MockInterface $logger */
+        $logger = $this->mockery(LoggerInterface::class);
+        $logger->shouldReceive('warning')
+            ->once()
+            ->with(
+                Mockery::on(static fn (string $message): bool => str_contains($message, 'deprecated legacy lifecycle compatibility path')),
+                ['providerName' => 'TestProvider'],
+            );
+        $api->setLogger($logger);
+
+        $api->setProviderAndWait($provider);
+    }
+
+    public function testEventAwareProviderRegistrationDoesNotLogDeprecationWarning(): void
+    {
+        $api = new OpenFeatureAPI();
+        $provider = new LifecycleTestProvider();
+        /** @var LoggerInterface&MockInterface $logger */
+        $logger = $this->mockery(LoggerInterface::class);
+        $logger->shouldNotReceive('warning');
+        $api->setLogger($logger);
+
+        $api->setProviderAndWait($provider);
     }
 
     public function testInitializationFailureIsPropagatedAfterStatusIsUpdated(): void

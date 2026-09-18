@@ -212,7 +212,7 @@ A `ProviderEventAware` provider owns its `READY` and `ERROR` initialization even
 For backward compatibility:
 
 - Providers without `ProviderLifecycle` are treated as ready and receive a synthetic `READY` event.
-- Providers implementing `ProviderLifecycle` but not `ProviderEventAware` receive synthetic `READY` or `ERROR` initialization events from the SDK.
+- Providers implementing `ProviderLifecycle` but not `ProviderEventAware` use a deprecated compatibility path, receive synthetic `READY` or `ERROR` initialization events from the SDK, and produce a deprecation warning when registered.
 - The built-in no-op provider is always ready and does not require lifecycle callbacks.
 
 The SDK does not currently expose domain-bound providers, so the domain passed to `initialize()` is `null`.

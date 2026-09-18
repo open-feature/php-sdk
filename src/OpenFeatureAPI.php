@@ -162,6 +162,18 @@ final class OpenFeatureAPI implements LoggerAwareInterface, ProviderLifecycleAPI
             return;
         }
 
+        if (!$provider instanceof ProviderEventAware) {
+            try {
+                $this->getLogger()->warning(
+                    'OpenFeature provider uses the deprecated legacy lifecycle compatibility path. '
+                    . 'Implement ProviderEventAware to emit provider lifecycle events.',
+                    ['providerName' => $provider->getMetadata()->getName()],
+                );
+            } catch (Throwable) {
+                // Provider registration must remain safe if the configured logger fails.
+            }
+        }
+
         $context = $this->evaluationContext ?? new EvaluationContextImplementation();
 
         try {
