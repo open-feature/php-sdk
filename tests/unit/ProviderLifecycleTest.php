@@ -132,6 +132,27 @@ class ProviderLifecycleTest extends TestCase
         }
     }
 
+    public function testFailedInitializationCanBeRetriedWithSameProvider(): void
+    {
+        $api = new OpenFeatureAPI();
+        $provider = new LifecycleTestProvider();
+        $provider->failInitialization = true;
+
+        try {
+            $api->setProviderAndWait($provider);
+            $this->fail('Expected provider initialization to fail.');
+        } catch (RuntimeException) {
+            // The same provider is retried below.
+        }
+
+        $provider->failInitialization = false;
+        $api->setProviderAndWait($provider);
+
+        $this->assertSame(2, $provider->initializeCalls);
+        $this->assertSame(0, $provider->shutdownCalls);
+        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::READY()));
+    }
+
     public function testEventAwareProviderCanRecoverAfterInitializationFailure(): void
     {
         $api = new OpenFeatureAPI();

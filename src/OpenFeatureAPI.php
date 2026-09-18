@@ -126,6 +126,14 @@ final class OpenFeatureAPI implements LoggerAwareInterface, ProviderLifecycleAPI
     public function setProviderAndWait(Provider $provider): void
     {
         if ($provider === $this->provider) {
+            if ($this->providerStatus->equals(ProviderStatus::READY())) {
+                return;
+            }
+
+            $this->providerStatus = ProviderStatus::NOT_READY();
+            $this->lastEventDetails = [];
+            $this->initializeProvider($provider);
+
             return;
         }
 
