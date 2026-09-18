@@ -16,7 +16,7 @@ class ResolutionError extends Exception implements ResolutionErrorInterface, Thr
 
     public function __construct(ErrorCode $code, ?string $message = null)
     {
-        parent::__construct();
+        parent::__construct($message ?? '');
         $this->resolutionErrorCode = $code;
         $this->resolutionErrorMessage = $message;
     }
