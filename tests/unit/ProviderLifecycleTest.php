@@ -12,6 +12,7 @@ use OpenFeature\Test\TestProvider;
 use OpenFeature\implementation\events\ProviderEventDetails;
 use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\implementation\provider\NoOpProvider;
+use OpenFeature\implementation\provider\ResolutionError;
 use OpenFeature\interfaces\events\ProviderEvent;
 use OpenFeature\interfaces\events\ProviderStatus;
 use OpenFeature\interfaces\provider\ErrorCode;
@@ -112,6 +113,23 @@ class ProviderLifecycleTest extends TestCase
 
         $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::NOT_READY()));
         $this->assertSame(0, $errorHandlerCalls);
+    }
+
+    public function testInitializationFailurePreservesProviderErrorDetails(): void
+    {
+        $api = new OpenFeatureAPI();
+        $provider = new LifecycleTestProvider();
+        $provider->failInitialization = true;
+        $provider->fatalInitializationError = true;
+        $provider->returnAfterInitializationError = true;
+
+        try {
+            $api->setProviderAndWait($provider);
+            $this->fail('Expected provider initialization to fail.');
+        } catch (ResolutionError $error) {
+            $this->assertSame('initialization failed', $error->getMessage());
+            $this->assertTrue($error->getResolutionErrorCode()->equals(ErrorCode::PROVIDER_FATAL()));
+        }
     }
 
     public function testEventAwareProviderCanRecoverAfterInitializationFailure(): void

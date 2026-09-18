@@ -25,6 +25,7 @@ class LifecycleTestProvider extends TestProvider implements ProviderEventAware
     public bool $failShutdown = false;
     public bool $emitInitializationEvent = true;
     public bool $fatalInitializationError = false;
+    public bool $returnAfterInitializationError = false;
 
     public function initialize(EvaluationContext $context, ?string $domain = null): void
     {
@@ -43,6 +44,10 @@ class LifecycleTestProvider extends TestProvider implements ProviderEventAware
                         $this->fatalInitializationError ? ErrorCode::PROVIDER_FATAL() : ErrorCode::GENERAL(),
                     ),
                 );
+            }
+
+            if ($this->returnAfterInitializationError) {
+                return;
             }
 
             throw new RuntimeException('initialization failed');

@@ -11,6 +11,7 @@ use OpenFeature\implementation\events\ProviderEventDetails as ProviderEventDetai
 use OpenFeature\implementation\flags\EvaluationContext as EvaluationContextImplementation;
 use OpenFeature\implementation\flags\NoOpClient;
 use OpenFeature\implementation\provider\NoOpProvider;
+use OpenFeature\implementation\provider\ResolutionError;
 use OpenFeature\interfaces\common\LoggerAwareTrait;
 use OpenFeature\interfaces\common\Metadata;
 use OpenFeature\interfaces\events\EventDetails as EventDetailsInterface;
@@ -28,7 +29,6 @@ use OpenFeature\interfaces\provider\ProviderEventEmitter;
 use OpenFeature\interfaces\provider\ProviderLifecycle;
 use OpenFeature\interfaces\provider\ThrowableWithResolutionError;
 use Psr\Log\LoggerAwareInterface;
-use RuntimeException;
 use Throwable;
 use WeakReference;
 
@@ -191,7 +191,14 @@ final class OpenFeatureAPI implements LoggerAwareInterface, ProviderLifecycleAPI
             $this->providerStatus->equals(ProviderStatus::ERROR())
             || $this->providerStatus->equals(ProviderStatus::FATAL())
         ) {
-            throw new RuntimeException('Provider initialization failed.');
+            $eventDetails = $this->lastEventDetails[ProviderEvent::ERROR()->getValue()] ?? null;
+            $errorCode = $eventDetails === null ? null : $eventDetails->getErrorCode();
+            $errorMessage = $eventDetails === null ? null : $eventDetails->getMessage();
+
+            throw new ResolutionError(
+                $errorCode ?? ErrorCode::GENERAL(),
+                $errorMessage ?? 'Provider initialization failed.',
+            );
         }
 
         if (!$this->providerStatus->equals(ProviderStatus::READY())) {
