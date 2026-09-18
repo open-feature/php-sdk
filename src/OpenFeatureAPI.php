@@ -336,8 +336,18 @@ final class OpenFeatureAPI implements LoggerAwareInterface, ProviderLifecycleAPI
     /** @param Closure(ProviderEvent, ProviderEventDetails): void|null $handler */
     private function unsubscribeFromProvider(Provider $provider, ?Closure $handler): void
     {
-        if ($provider instanceof ProviderEventEmitter && $handler !== null) {
+        if (!$provider instanceof ProviderEventEmitter || $handler === null) {
+            return;
+        }
+
+        try {
             $provider->removeProviderEventHandler($handler);
+        } catch (Throwable $error) {
+            try {
+                $this->getLogger()->error('OpenFeature provider event handler removal failed.', ['exception' => $error]);
+            } catch (Throwable) {
+                // Provider replacement and API shutdown must continue if logging fails.
+            }
         }
     }
 

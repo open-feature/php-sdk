@@ -221,6 +221,25 @@ class ProviderLifecycleTest extends TestCase
         $this->assertSame($newProvider, $api->getProvider());
     }
 
+    public function testProviderReplacementContinuesWhenHandlerRemovalFails(): void
+    {
+        $api = new OpenFeatureAPI();
+        $oldProvider = new class extends LifecycleTestProvider {
+            public function removeProviderEventHandler(callable $handler): void
+            {
+                throw new RuntimeException('handler removal failed');
+            }
+        };
+        $newProvider = new LifecycleTestProvider();
+        $api->setProviderAndWait($oldProvider);
+
+        $api->setProviderAndWait($newProvider);
+
+        $this->assertSame(1, $oldProvider->shutdownCalls);
+        $this->assertSame($newProvider, $api->getProvider());
+        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::READY()));
+    }
+
     public function testShutdownIsIdempotentAndResetsApiState(): void
     {
         $api = new OpenFeatureAPI();
@@ -275,6 +294,24 @@ class ProviderLifecycleTest extends TestCase
         $api->setProviderAndWait($provider);
 
         $api->shutdown();
+        $api->shutdown();
+
+        $this->assertSame(1, $provider->shutdownCalls);
+        $this->assertInstanceOf(NoOpProvider::class, $api->getProvider());
+        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::NOT_READY()));
+    }
+
+    public function testShutdownContinuesWhenHandlerRemovalFails(): void
+    {
+        $api = new OpenFeatureAPI();
+        $provider = new class extends LifecycleTestProvider {
+            public function removeProviderEventHandler(callable $handler): void
+            {
+                throw new RuntimeException('handler removal failed');
+            }
+        };
+        $api->setProviderAndWait($provider);
+
         $api->shutdown();
 
         $this->assertSame(1, $provider->shutdownCalls);
