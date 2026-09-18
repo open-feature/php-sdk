@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace OpenFeature\Test\unit;
 
 use LogicException;
+use Mockery;
+use Mockery\MockInterface;
 use OpenFeature\OpenFeatureAPI;
 use OpenFeature\Test\LegacyLifecycleTestProvider;
 use OpenFeature\Test\LifecycleTestProvider;
+use OpenFeature\Test\TestCase;
 use OpenFeature\Test\TestProvider;
 use OpenFeature\implementation\events\ProviderEventDetails;
 use OpenFeature\implementation\flags\EvaluationContext;
@@ -16,7 +19,7 @@ use OpenFeature\implementation\provider\ResolutionError;
 use OpenFeature\interfaces\events\ProviderEvent;
 use OpenFeature\interfaces\events\ProviderStatus;
 use OpenFeature\interfaces\provider\ErrorCode;
-use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 
 class ProviderLifecycleTest extends TestCase
@@ -246,6 +249,33 @@ class ProviderLifecycleTest extends TestCase
         $this->assertSame(1, $provider->shutdownCalls);
         $this->assertInstanceOf(NoOpProvider::class, $api->getProvider());
         $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::NOT_READY()));
+    }
+
+    public function testShutdownFailureUsesConfiguredLoggerBeforeReset(): void
+    {
+        $api = new OpenFeatureAPI();
+        $provider = new LifecycleTestProvider();
+        $provider->failShutdown = true;
+        /** @var LoggerInterface&MockInterface $logger */
+        $logger = $this->mockery(LoggerInterface::class);
+        $logger->shouldReceive('error')
+            ->once()
+            ->with(
+                'OpenFeature provider shutdown failed.',
+                Mockery::on(function (array $context): bool {
+                    $this->assertArrayHasKey('exception', $context);
+                    $this->assertInstanceOf(RuntimeException::class, $context['exception']);
+                    $this->assertSame('shutdown failed', $context['exception']->getMessage());
+
+                    return true;
+                }),
+            );
+        $api->setLogger($logger);
+        $api->setProviderAndWait($provider);
+
+        $api->shutdown();
+
+        $this->assertSame(1, $provider->shutdownCalls);
     }
 
     public function testProviderEventsDriveStatusAndAllowRecovery(): void

@@ -364,10 +364,10 @@ final class OpenFeatureAPI implements LoggerAwareInterface, ProviderLifecycleAPI
         $this->eventHandlers = [];
         $this->lastEventDetails = [];
         $this->clients = [];
-        $this->logger = null;
 
         $this->shutdownProvider($provider);
         $this->providerStatus = ProviderStatus::NOT_READY();
+        $this->logger = null;
     }
 
     /**
