@@ -240,6 +240,36 @@ class ProviderLifecycleTest extends TestCase
         $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::READY()));
     }
 
+    public function testProviderReplacementRollsBackWhenHandlerSubscriptionFails(): void
+    {
+        $api = new OpenFeatureAPI();
+        $oldProvider = new LifecycleTestProvider();
+        $newProvider = new class extends LifecycleTestProvider {
+            public function addProviderEventHandler(callable $handler): void
+            {
+                throw new RuntimeException('handler subscription failed');
+            }
+        };
+        $api->setProviderAndWait($oldProvider);
+
+        try {
+            $api->setProviderAndWait($newProvider);
+            $this->fail('Expected provider event handler subscription to fail.');
+        } catch (RuntimeException $error) {
+            $this->assertSame('handler subscription failed', $error->getMessage());
+        }
+
+        $this->assertSame($oldProvider, $api->getProvider());
+        $this->assertSame(0, $oldProvider->shutdownCalls);
+        $this->assertSame(0, $newProvider->initializeCalls);
+        $this->assertSame(1, $newProvider->shutdownCalls);
+        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::READY()));
+
+        $oldProvider->emit(ProviderEvent::STALE());
+
+        $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::STALE()));
+    }
+
     public function testShutdownIsIdempotentAndResetsApiState(): void
     {
         $api = new OpenFeatureAPI();

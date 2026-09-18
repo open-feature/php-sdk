@@ -138,13 +138,28 @@ final class OpenFeatureAPI implements LoggerAwareInterface, ProviderLifecycleAPI
         }
 
         $previousProvider = $this->provider;
+        $previousStatus = $this->providerStatus;
+        $previousEventDetails = $this->lastEventDetails;
         $previousHandler = $this->providerEventHandler;
 
         $this->provider = $provider;
         $this->providerStatus = ProviderStatus::NOT_READY();
         $this->lastEventDetails = [];
         $this->providerEventHandler = null;
-        $this->subscribeToProvider($provider);
+
+        try {
+            $this->subscribeToProvider($provider);
+        } catch (Throwable $error) {
+            $failedHandler = $this->providerEventHandler;
+            $this->provider = $previousProvider;
+            $this->providerStatus = $previousStatus;
+            $this->lastEventDetails = $previousEventDetails;
+            $this->providerEventHandler = $previousHandler;
+            $this->unsubscribeFromProvider($provider, $failedHandler);
+            $this->shutdownProvider($provider);
+
+            throw $error;
+        }
 
         try {
             $this->initializeProvider($provider);
