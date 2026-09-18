@@ -362,6 +362,29 @@ class ProviderEventsTest extends TestCase
         $this->assertTrue($api->getProviderStatus()->equals(ProviderStatus::READY()));
     }
 
+    public function testExistingClientCanRegisterHandlersAfterApiShutdown(): void
+    {
+        $api = new OpenFeatureAPI();
+        $client = $api->getClient();
+        $removedHandlerCalls = new ProviderEventCounter();
+        $newHandlerCalls = new ProviderEventCounter();
+        $client->addHandler(ProviderEvent::STALE(), static function () use ($removedHandlerCalls): void {
+            $removedHandlerCalls->increment();
+        });
+
+        $api->shutdown();
+
+        $client->addHandler(ProviderEvent::STALE(), static function () use ($newHandlerCalls): void {
+            $newHandlerCalls->increment();
+        });
+        $provider = new LifecycleTestProvider();
+        $api->setProviderAndWait($provider);
+        $provider->emit(ProviderEvent::STALE());
+
+        $this->assertSame(0, $removedHandlerCalls->getValue());
+        $this->assertSame(1, $newHandlerCalls->getValue());
+    }
+
     public function testNoOpClientIsReadyAndImmediatelyRunsReadyHandlers(): void
     {
         $client = new NoOpClient();

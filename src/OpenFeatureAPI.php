@@ -400,7 +400,17 @@ final class OpenFeatureAPI implements LoggerAwareInterface, ProviderLifecycleAPI
         $this->hooks = [];
         $this->eventHandlers = [];
         $this->lastEventDetails = [];
-        $this->clients = [];
+
+        foreach ($this->clients as $index => $clientReference) {
+            $client = $clientReference->get();
+            if (!$client instanceof OpenFeatureClient) {
+                unset($this->clients[$index]);
+
+                continue;
+            }
+
+            $client->clearProviderEventHandlers();
+        }
 
         $this->shutdownProvider($provider);
         $this->providerStatus = ProviderStatus::NOT_READY();

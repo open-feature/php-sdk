@@ -134,6 +134,12 @@ class OpenFeatureClient implements EventAwareClient, LoggerAwareInterface
         }
     }
 
+    /** @internal Called by the API when all registered event handlers must be removed. */
+    public function clearProviderEventHandlers(): void
+    {
+        $this->eventHandlers = [];
+    }
+
     private function statusMatchesEvent(ProviderEvent $event): bool
     {
         $status = $this->getProviderStatus();
