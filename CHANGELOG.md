@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.4.0](https://github.com/open-feature/php-sdk/compare/2.3.0...2.4.0) (2026-09-19)
+
+
+### ✨ New Features
+
+* expose OpenFeature flag metadata  ([#180](https://github.com/open-feature/php-sdk/issues/180)) ([180e0cf](https://github.com/open-feature/php-sdk/commit/180e0cf40b4f37abefd75afe055c577d1e65beff))
+
+
+### 🧹 Chore
+
+* **deps:** update actions/cache action to v6 ([#183](https://github.com/open-feature/php-sdk/issues/183)) ([78d6414](https://github.com/open-feature/php-sdk/commit/78d64144a22dab13b9dc2a04c7f9dc6863126451))
+* **deps:** update actions/checkout action to v6.1.0 ([#189](https://github.com/open-feature/php-sdk/issues/189)) ([5bb7c1d](https://github.com/open-feature/php-sdk/commit/5bb7c1da621a453fcd4553a23ac1604998e973be))
+* **deps:** update amannn/action-semantic-pull-request action to v6.1.1 ([#190](https://github.com/open-feature/php-sdk/issues/190)) ([94a6483](https://github.com/open-feature/php-sdk/commit/94a6483a063ff4e5b4908eba6a103fc2291b38e8))
+* **deps:** update codecov/codecov-action action to v5.5.5 ([#191](https://github.com/open-feature/php-sdk/issues/191)) ([6cb1388](https://github.com/open-feature/php-sdk/commit/6cb138850881671a84c2850b68067c64346b2fcb))
+* **deps:** update dependency php to v8.5.10 ([#105](https://github.com/open-feature/php-sdk/issues/105)) ([f6548dd](https://github.com/open-feature/php-sdk/commit/f6548ddc40355d16056e070b6beb9c6566dfa8b4))
+* extend from org renovate config ([#184](https://github.com/open-feature/php-sdk/issues/184)) ([30465e5](https://github.com/open-feature/php-sdk/commit/30465e53c2d868b70156e619940c4b92fff97dcf))
+
 ## [2.3.0](https://github.com/open-feature/php-sdk/compare/2.2.0...2.3.0) (2026-06-10)
 
 
