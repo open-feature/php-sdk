@@ -1,5 +1,6 @@
 {
   "bootstrap-sha": "f7d468380d71496bfbc44ba5dc8c9adc6e006055",
+  "signoff": "OpenFeature Bot <109696520+openfeaturebot@users.noreply.github.com>",
   "packages": {
     ".": {
       "release-type": "php",
