@@ -9,6 +9,7 @@ use OpenFeature\implementation\common\Metadata;
 use OpenFeature\implementation\common\ValueTypeValidator;
 use OpenFeature\implementation\errors\FlagValueTypeError;
 use OpenFeature\implementation\errors\InvalidResolutionValueError;
+use OpenFeature\implementation\events\EventDetails;
 use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\implementation\flags\EvaluationDetailsBuilder;
 use OpenFeature\implementation\flags\EvaluationDetailsFactory;
@@ -21,11 +22,15 @@ use OpenFeature\implementation\provider\Reason;
 use OpenFeature\implementation\provider\ResolutionError;
 use OpenFeature\interfaces\common\LoggerAwareTrait;
 use OpenFeature\interfaces\common\Metadata as MetadataInterface;
+use OpenFeature\interfaces\events\EventDetails as EventDetailsInterface;
+use OpenFeature\interfaces\events\ProviderEvent;
+use OpenFeature\interfaces\events\ProviderStatus;
+use OpenFeature\interfaces\events\ProviderStatusAccessor;
 use OpenFeature\interfaces\flags\API;
-use OpenFeature\interfaces\flags\Client;
 use OpenFeature\interfaces\flags\EvaluationContext as EvaluationContextInterface;
 use OpenFeature\interfaces\flags\EvaluationDetails as EvaluationDetailsInterface;
 use OpenFeature\interfaces\flags\EvaluationOptions as EvaluationOptionsInterface;
+use OpenFeature\interfaces\flags\EventAwareClient;
 use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\hooks\Hook;
 use OpenFeature\interfaces\hooks\HooksAwareTrait;
@@ -39,7 +44,7 @@ use Throwable;
 use function array_merge;
 use function array_reverse;
 
-class OpenFeatureClient implements Client, LoggerAwareInterface
+class OpenFeatureClient implements EventAwareClient, LoggerAwareInterface
 {
     use HooksAwareTrait;
     use LoggerAwareTrait;
@@ -48,6 +53,9 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
     private string $name;
     private string $version;
     private ?EvaluationContextInterface $evaluationContext = null;
+
+    /** @var array<string, array<int, callable>> */
+    private array $eventHandlers = [];
 
     /**
      * Client for evaluating the flag. There may be multiples of these floating around.
@@ -62,6 +70,10 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
         $this->name = $name;
         $this->version = $version;
         $this->hooks = [];
+
+        if ($api instanceof OpenFeatureAPI) {
+            $api->registerClient($this);
+        }
     }
 
     public function getVersion(): string
@@ -85,6 +97,93 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
     public function setEvaluationContext(EvaluationContextInterface $context): void
     {
         $this->evaluationContext = $context;
+    }
+
+    public function getProviderStatus(): ProviderStatus
+    {
+        return $this->api instanceof ProviderStatusAccessor
+            ? $this->api->getProviderStatus()
+            : ProviderStatus::READY();
+    }
+
+    /** @param callable(EventDetailsInterface): void $handler */
+    public function addHandler(ProviderEvent $event, callable $handler): void
+    {
+        $this->eventHandlers[$event->getValue()][] = $handler;
+
+        if (!$this->statusMatchesEvent($event)) {
+            return;
+        }
+
+        $details = $this->api instanceof OpenFeatureAPI
+            ? $this->api->getLastEventDetails($event)
+            : null;
+        $this->runEventHandlers(
+            [$handler],
+            $details ?? new EventDetails($this->api->getProviderMetadata()->getName()),
+        );
+    }
+
+    /** @param callable(EventDetailsInterface): void $handler */
+    public function removeHandler(ProviderEvent $event, callable $handler): void
+    {
+        foreach ($this->eventHandlers[$event->getValue()] ?? [] as $index => $registeredHandler) {
+            if ($registeredHandler === $handler) {
+                unset($this->eventHandlers[$event->getValue()][$index]);
+            }
+        }
+    }
+
+    /** @internal Called by the API when all registered event handlers must be removed. */
+    public function clearProviderEventHandlers(): void
+    {
+        $this->eventHandlers = [];
+    }
+
+    private function statusMatchesEvent(ProviderEvent $event): bool
+    {
+        $status = $this->getProviderStatus();
+
+        return ($event->equals(ProviderEvent::READY()) && $status->equals(ProviderStatus::READY()))
+            || ($event->equals(ProviderEvent::STALE()) && $status->equals(ProviderStatus::STALE()))
+            || ($event->equals(ProviderEvent::ERROR())
+                && ($status->equals(ProviderStatus::ERROR()) || $status->equals(ProviderStatus::FATAL())));
+    }
+
+    /**
+     * @internal Used by the API to snapshot handlers before an event dispatch begins.
+     *
+     * @return array<int, callable>
+     */
+    public function getProviderEventHandlers(ProviderEvent $event): array
+    {
+        return $this->eventHandlers[$event->getValue()] ?? [];
+    }
+
+    /**
+     * @internal Called by the API when the currently bound provider emits an event.
+     *
+     * @param array<int, callable> $handlers
+     */
+    public function handleProviderEvent(EventDetailsInterface $details, array $handlers): void
+    {
+        $this->runEventHandlers($handlers, $details);
+    }
+
+    /** @param array<int, callable> $handlers */
+    private function runEventHandlers(array $handlers, EventDetailsInterface $details): void
+    {
+        foreach ($handlers as $handler) {
+            try {
+                $handler($details);
+            } catch (Throwable $error) {
+                try {
+                    $this->getLogger()->error('OpenFeature provider event handler failed.', ['exception' => $error]);
+                } catch (Throwable) {
+                    // Event handlers remain isolated even if the configured logger fails.
+                }
+            }
+        }
     }
 
     /**
@@ -347,6 +446,15 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
                                 ->withProviderMetadata($hookContext->getProviderMetadata())
                                 ->build();
 
+            $providerStatus = $this->getProviderStatus();
+            if ($providerStatus->equals(ProviderStatus::NOT_READY())) {
+                throw new ResolutionError(ErrorCode::PROVIDER_NOT_READY(), 'Provider is not ready.');
+            }
+
+            if ($providerStatus->equals(ProviderStatus::FATAL())) {
+                throw new ResolutionError(ErrorCode::PROVIDER_FATAL(), 'Provider has entered a fatal state.');
+            }
+
             $resolutionDetails = $this->createProviderEvaluation(
                 $flagValueType,
                 $flagKey,
@@ -363,16 +471,23 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
 
             $hookExecutor->afterHooks($flagValueType, $hookContext, $resolutionDetails, $mergedRemainingHooks, $hookHints);
         } catch (Throwable $err) {
-            $this->getLogger()->error(
-                "An error occurred during feature flag evaluation of flag '{flagKey}': {errorMessage}",
-                [
-                    'flagKey' => $flagKey,
-                    'errorMessage' => $err->getMessage(),
-                    'exception' => $err,
-                ],
-            );
-
             $error = $err instanceof ThrowableWithResolutionError ? $err->getResolutionError() : new ResolutionError(ErrorCode::GENERAL(), $err->getMessage());
+            $errorCode = $error->getResolutionErrorCode();
+            $logMessage = "An error occurred during feature flag evaluation of flag '{flagKey}': {errorMessage}";
+            $logContext = [
+                'flagKey' => $flagKey,
+                'errorMessage' => $err->getMessage(),
+                'exception' => $err,
+            ];
+
+            if (
+                $errorCode->equals(ErrorCode::PROVIDER_NOT_READY())
+                || $errorCode->equals(ErrorCode::PROVIDER_FATAL())
+            ) {
+                $this->getLogger()->debug($logMessage, $logContext);
+            } else {
+                $this->getLogger()->error($logMessage, $logContext);
+            }
 
             $details = (new EvaluationDetailsBuilder())
                             ->withFlagKey($flagKey)
