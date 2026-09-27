@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace OpenFeature\isolated;
 
 use OpenFeature\OpenFeatureAPI;
-use OpenFeature\interfaces\flags\API;
+use OpenFeature\interfaces\flags\ProviderLifecycleAPI;
 
 /**
  * Factory for creating isolated OpenFeature API instances.
@@ -46,7 +46,7 @@ final class OpenFeatureAPIFactory
      * @experimental Section 1.8 of the OpenFeature specification is experimental
      *               and subject to change.
      */
-    public static function createAPI(): API
+    public static function createAPI(): ProviderLifecycleAPI
     {
         return new OpenFeatureAPI();
     }

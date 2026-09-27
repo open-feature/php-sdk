@@ -5,21 +5,25 @@ declare(strict_types=1);
 namespace OpenFeature\Test\unit;
 
 use Exception;
+use LogicException;
 use Mockery;
 use Mockery\MockInterface;
 use OpenFeature\OpenFeatureClient;
 use OpenFeature\Test\APITestHelper;
+use OpenFeature\Test\LifecycleTestProvider;
 use OpenFeature\Test\TestCase;
 use OpenFeature\Test\TestHook;
 use OpenFeature\Test\TestProvider;
 use OpenFeature\implementation\common\Metadata;
 use OpenFeature\implementation\errors\FlagValueTypeError;
+use OpenFeature\implementation\events\ProviderEventDetails;
 use OpenFeature\implementation\flags\Attributes;
 use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\implementation\flags\EvaluationOptions;
 use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
 use OpenFeature\implementation\provider\ResolutionDetailsFactory;
 use OpenFeature\implementation\provider\ResolutionError;
+use OpenFeature\interfaces\events\ProviderEvent;
 use OpenFeature\interfaces\flags\EvaluationDetails as EvaluationDetailsInterface;
 use OpenFeature\interfaces\hooks\Hook;
 use OpenFeature\interfaces\hooks\HookContext;
@@ -1575,6 +1579,61 @@ class OpenFeatureClientTest extends TestCase
         $this->assertEquals($flagKey, $actualDetails->getFlagKey());
         $this->assertNotNull($resolutionError);
         $this->assertStringContainsString($expectedError->getMessage(), (string) $resolutionError->getResolutionErrorMessage());
+    }
+
+    public function testClientSkipsProviderEvaluationWhileProviderIsNotReady(): void
+    {
+        /** @var LifecycleTestProvider&MockInterface $provider */
+        $provider = $this->mockery(LifecycleTestProvider::class)->makePartial();
+        $provider->emitInitializationEvent = false;
+        $provider->shouldNotReceive('resolveBooleanValue');
+
+        $api = APITestHelper::new();
+        /** @var LoggerInterface&MockInterface $logger */
+        $logger = $this->mockery(LoggerInterface::class);
+        $logger->shouldReceive('debug')->once();
+        $logger->shouldNotReceive('error');
+        $api->setLogger($logger);
+
+        try {
+            $api->setProviderAndWait($provider);
+            $this->fail('Expected registration to reject a provider that did not emit an initialization event.');
+        } catch (LogicException) {
+            // The provider remains NOT_READY, allowing evaluation behavior to be verified below.
+        }
+
+        $details = $api->getClient(null, null)->getBooleanDetails('flag-key', false);
+        $error = $details->getError();
+
+        $this->assertFalse($details->getValue());
+        $this->assertNotNull($error);
+        $this->assertTrue($error->getResolutionErrorCode()->equals(ErrorCode::PROVIDER_NOT_READY()));
+    }
+
+    public function testClientSkipsProviderEvaluationWhileProviderIsFatal(): void
+    {
+        /** @var LifecycleTestProvider&MockInterface $provider */
+        $provider = $this->mockery(LifecycleTestProvider::class)->makePartial();
+        $provider->shouldNotReceive('resolveBooleanValue');
+
+        $api = APITestHelper::new();
+        /** @var LoggerInterface&MockInterface $logger */
+        $logger = $this->mockery(LoggerInterface::class);
+        $logger->shouldReceive('debug')->once();
+        $logger->shouldNotReceive('error');
+        $api->setLogger($logger);
+        $api->setProviderAndWait($provider);
+        $provider->emit(
+            ProviderEvent::ERROR(),
+            new ProviderEventDetails('fatal error', [], [], ErrorCode::PROVIDER_FATAL()),
+        );
+
+        $details = $api->getClient(null, null)->getBooleanDetails('flag-key', false);
+        $error = $details->getError();
+
+        $this->assertFalse($details->getValue());
+        $this->assertNotNull($error);
+        $this->assertTrue($error->getResolutionErrorCode()->equals(ErrorCode::PROVIDER_FATAL()));
     }
 
     /**

@@ -12,6 +12,7 @@ use MyCLabs\Enum\Enum;
  * @see https://github.com/open-feature/spec/blob/main/specification/types.md#error-code
  *
  * @method static ErrorCode PROVIDER_NOT_READY()
+ * @method static ErrorCode PROVIDER_FATAL()
  * @method static ErrorCode FLAG_NOT_FOUND()
  * @method static ErrorCode PARSE_ERROR()
  * @method static ErrorCode TYPE_MISMATCH()
@@ -26,6 +27,7 @@ use MyCLabs\Enum\Enum;
 final class ErrorCode extends Enum
 {
     private const PROVIDER_NOT_READY = 'PROVIDER_NOT_READY';
+    private const PROVIDER_FATAL = 'PROVIDER_FATAL';
     private const FLAG_NOT_FOUND = 'FLAG_NOT_FOUND';
     private const PARSE_ERROR = 'PARSE_ERROR';
     private const TYPE_MISMATCH = 'TYPE_MISMATCH';
