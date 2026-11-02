@@ -735,6 +735,9 @@ class ExampleProviderExtension extends AbstractProvider
 To develop a hook, you need to create a new project and include the OpenFeature SDK as a dependency.
 This can be a new repository or included in [the existing contrib repository](https://github.com/open-feature/php-sdk-contrib) available under the OpenFeature organization.
 Implement your own hook by conforming to the `Hook` interface.
+The `finally` stage receives the completed evaluation details on both success and error paths.
+Existing hook implementations must add the `EvaluationDetails $details` argument before `HookHints $hints`.
+
 To satisfy the interface, all methods (`before`/`after`/`finally`/`error`) need to be defined.
 You can also extend one of the typed abstract base classes (`BooleanHook`, `StringHook`, `IntegerHook`, `FloatHook`, `ObjectHook`) which automatically implement `supportsFlagValueType()` for the corresponding flag type.
 
@@ -744,6 +747,7 @@ declare(strict_types=1);
 namespace OpenFeature\Example\Hooks;
 
 use OpenFeature\interfaces\flags\EvaluationContext;
+use OpenFeature\interfaces\flags\EvaluationDetails;
 use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\hooks\Hook;
 use OpenFeature\interfaces\hooks\HookContext;
@@ -766,7 +770,7 @@ class ExampleStringHookImplementation implements Hook
     {
     }
 
-    public function finally(HookContext $context, HookHints $hints): void
+    public function finally(HookContext $context, EvaluationDetails $details, HookHints $hints): void
     {
     }
 
@@ -788,6 +792,7 @@ namespace OpenFeature\Example\Hooks;
 
 use OpenFeature\implementation\hooks\StringHook;
 use OpenFeature\interfaces\flags\EvaluationContext;
+use OpenFeature\interfaces\flags\EvaluationDetails;
 use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\hooks\HookContext;
 use OpenFeature\interfaces\hooks\HookHints;
@@ -809,7 +814,7 @@ class ExampleStringHookExtension extends StringHook
     {
     }
 
-    public function finally(HookContext $context, HookHints $hints): void
+    public function finally(HookContext $context, EvaluationDetails $details, HookHints $hints): void
     {
     }
 }

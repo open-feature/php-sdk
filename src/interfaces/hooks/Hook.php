@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenFeature\interfaces\hooks;
 
 use OpenFeature\interfaces\flags\EvaluationContext;
+use OpenFeature\interfaces\flags\EvaluationDetails;
 use OpenFeature\interfaces\provider\ResolutionDetails;
 use Throwable;
 
@@ -47,9 +48,10 @@ interface Hook
      * Run after flag evaluation, including any error processing. This will always run. Errors will be swallowed.
      *
      * @param HookContext $context Information about the particular flag evaluation
+     * @param EvaluationDetails $details The completed evaluation result, including error information when present.
      * @param HookHints $hints An immutable mapping of data for users to communicate to the hooks.
      */
-    public function finally(HookContext $context, HookHints $hints): void;
+    public function finally(HookContext $context, EvaluationDetails $details, HookHints $hints): void;
 
     /**
      * Determines whether the hook should be run for the flag value type returned.
