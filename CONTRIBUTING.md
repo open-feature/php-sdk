@@ -4,11 +4,11 @@
 
 ### System Requirements
 
-PHP 8.2 or newer is required. The `composer.json` constraint remains `^8` until a future release, but PHP 8.0 and 8.1 are end-of-life and unsupported.
+PHP 8.2+ is required.
 
 ### Compilation target(s)
 
-We target compatibility with PHP version 8.2 and newer.
+We target compatibility with PHP version 8.2.
 
 ### Installation and Dependencies
 
