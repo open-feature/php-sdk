@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.4.1](https://github.com/open-feature/php-sdk/compare/2.4.0...2.4.1) (2026-11-06)
+
+
+### 🧹 Chore
+
+* **deps:** update dependency php to v8.5.12 ([#197](https://github.com/open-feature/php-sdk/issues/197)) ([895cf98](https://github.com/open-feature/php-sdk/commit/895cf98ad82ffe9f1ddf0b548b852c687a8ed0b0))
+* use sdk-php-maintainers team in CODEOWNERS ([#199](https://github.com/open-feature/php-sdk/issues/199)) ([ca0a8d2](https://github.com/open-feature/php-sdk/commit/ca0a8d2670fcdd60faf50005335cb22a72e7f0f3))
+
 ## [2.4.0](https://github.com/open-feature/php-sdk/compare/2.3.0...2.4.0) (2026-10-11)
 
 
