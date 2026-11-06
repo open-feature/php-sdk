@@ -30,7 +30,7 @@
   </a>
 
   <a>
-    <img alt="PHP 8.0+" src="https://img.shields.io/badge/php->=8.0-blue.svg" />
+    <img alt="PHP 8.2+" src="https://img.shields.io/badge/php->=8.2-blue.svg" />
   </a>
 
   <a href="https://packagist.org/packages/open-feature/sdk">
@@ -51,8 +51,7 @@
 
 ### Requirements
 
-This library targets PHP version 8.0 and newer. As long as you have any compatible version of PHP on your system you should be able to utilize the OpenFeature SDK.
-
+This library targets PHP version 8.2 and newer. As long as you have any compatible version of PHP on your system you should be able to utilize the OpenFeature SDK.
 This package also has a `.tool-versions` file for use with PHP version managers like `asdf`.
 
 ### Install
