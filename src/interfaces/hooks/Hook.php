@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenFeature\interfaces\hooks;
 
 use OpenFeature\interfaces\flags\EvaluationContext;
+use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\provider\ResolutionDetails;
 use Throwable;
 
@@ -54,7 +55,7 @@ interface Hook
     /**
      * Determines whether the hook should be run for the flag value type returned.
      *
-     * @param string $flagValueType The type of flag value
+     * @param FlagValueType $flagValueType The type of flag value
      */
-    public function supportsFlagValueType(string $flagValueType): bool;
+    public function supportsFlagValueType(FlagValueType $flagValueType): bool;
 }

@@ -13,20 +13,17 @@ use OpenFeature\Test\TestCase;
 use OpenFeature\Test\TestHook;
 use OpenFeature\Test\TestProvider;
 use OpenFeature\implementation\common\Metadata;
-use OpenFeature\implementation\errors\FlagValueTypeError;
 use OpenFeature\implementation\flags\Attributes;
 use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\implementation\flags\EvaluationOptions;
 use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
 use OpenFeature\implementation\provider\ResolutionDetailsFactory;
 use OpenFeature\implementation\provider\ResolutionError;
-use OpenFeature\interfaces\flags\EvaluationDetails as EvaluationDetailsInterface;
 use OpenFeature\interfaces\hooks\Hook;
 use OpenFeature\interfaces\hooks\HookContext;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
 use Psr\Log\LoggerInterface;
-use ReflectionClass;
 use Throwable;
 
 class OpenFeatureClientTest extends TestCase
@@ -490,7 +487,7 @@ class OpenFeatureClientTest extends TestCase
         $api = APITestHelper::new();
         $client = new OpenFeatureClient($api, 'test-name', 'test-version');
 
-        $expectedErrorCode = ErrorCode::FLAG_NOT_FOUND();
+        $expectedErrorCode = ErrorCode::FLAG_NOT_FOUND;
 
         $mockProvider = $this->getDefaultMockProvider();
         $mockProvider->shouldReceive('resolveBooleanValue')->andReturns((new ResolutionDetailsBuilder())->withValue(true)->withError(new ResolutionError($expectedErrorCode))->build());
@@ -517,7 +514,7 @@ class OpenFeatureClientTest extends TestCase
         $api = APITestHelper::new();
         $client = new OpenFeatureClient($api, 'test-name', 'test-version');
 
-        $expectedErrorCode = ErrorCode::FLAG_NOT_FOUND();
+        $expectedErrorCode = ErrorCode::FLAG_NOT_FOUND;
         $expectedReason = 'Failed to reach target server';
 
         $mockProvider = $this->getDefaultMockProvider();
@@ -588,7 +585,7 @@ class OpenFeatureClientTest extends TestCase
         $this->assertEquals('flagKey', $details->getFlagKey());
 
         $this->assertInstanceOf(ResolutionError::class, $details->getError());
-        $this->assertEquals(ErrorCode::GENERAL(), $details->getError()->getResolutionErrorCode());
+        $this->assertEquals(ErrorCode::GENERAL, $details->getError()->getResolutionErrorCode());
         $this->assertEquals('NETWORK_ERROR', $details->getError()->getResolutionErrorMessage());
     }
 
@@ -1544,36 +1541,6 @@ class OpenFeatureClientTest extends TestCase
         $actualVersion = $client->getVersion();
 
         $this->assertEquals($expectedVersion, $actualVersion);
-    }
-
-    /**
-     * If a flag value is requested with a type that is not supported by the provider or any hooks, the client MUST return an error a message indicating that the requested type is not supported.
-     */
-    public function testClientReturnInternalFlagErrorWhenInvalidFlagIsPassed(): void
-    {
-        $api = APITestHelper::new();
-        $invalidFlagType = 'unsupportedType';
-        $flagKey = 'test-flag';
-        $defaultValue = 'default-value';
-
-        $client = new OpenFeatureClient($api, 'test-name', 'test-version');
-
-        $expectedError = new FlagValueTypeError($invalidFlagType);
-
-        $clientReflection = new ReflectionClass($client);
-
-        $method = $clientReflection->getMethod('evaluateFlag');
-
-        /** @var EvaluationDetailsInterface $actualDetails */
-        $actualDetails = $method->invokeArgs($client, [$invalidFlagType, $flagKey, $defaultValue]);
-
-        /** @var ResolutionError $resolutionError */
-        $resolutionError = $actualDetails->getError();
-
-        $this->assertInstanceOf(EvaluationDetailsInterface::class, $actualDetails);
-        $this->assertEquals($flagKey, $actualDetails->getFlagKey());
-        $this->assertNotNull($resolutionError);
-        $this->assertStringContainsString($expectedError->getMessage(), (string) $resolutionError->getResolutionErrorMessage());
     }
 
     /**

@@ -8,7 +8,7 @@ use OpenFeature\interfaces\flags\FlagValueType;
 
 abstract class StringHook extends AbstractHook
 {
-    public function supportsFlagValueType(string $flagValueType): bool
+    public function supportsFlagValueType(FlagValueType $flagValueType): bool
     {
         return $flagValueType === FlagValueType::STRING;
     }

@@ -224,7 +224,7 @@ class MultiproviderTest extends TestCase
         $result = $multiprovider->resolveBooleanValue('test-flag', false);
 
         $this->assertNotNull($result->getError());
-        $this->assertEquals(ErrorCode::GENERAL(), $result->getError()->getResolutionErrorCode());
+        $this->assertEquals(ErrorCode::GENERAL, $result->getError()->getResolutionErrorCode());
     }
 
     public function testEmptyProviderList(): void
@@ -233,7 +233,7 @@ class MultiproviderTest extends TestCase
         $result = $multiprovider->resolveBooleanValue('test-flag', false);
 
         $this->assertNotNull($result->getError());
-        $this->assertEquals(ErrorCode::GENERAL(), $result->getError()->getResolutionErrorCode());
+        $this->assertEquals(ErrorCode::GENERAL, $result->getError()->getResolutionErrorCode());
     }
 
     /**

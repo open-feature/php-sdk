@@ -7,12 +7,8 @@ namespace OpenFeature\interfaces\provider;
 /**
  * Run mode for multi-provider evaluation strategies.
  */
-final class RunMode
+enum RunMode: string
 {
-    public const SEQUENTIAL = 'sequential';
-    public const EVALUATE_ALL = 'evaluate_all';
-
-    private function __construct()
-    {
-    }
+    case SEQUENTIAL = 'sequential';
+    case EVALUATE_ALL = 'evaluate_all';
 }

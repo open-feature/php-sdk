@@ -21,7 +21,7 @@ use OpenFeature\interfaces\provider\RunMode;
  */
 class FirstSuccessfulStrategy extends BaseEvaluationStrategy
 {
-    public string $runMode = RunMode::SEQUENTIAL;
+    public RunMode $runMode = RunMode::SEQUENTIAL;
 
     /**
      * All providers should be evaluated by default.

@@ -5,16 +5,13 @@ declare(strict_types=1);
 namespace OpenFeature\interfaces\flags;
 
 /**
- * A pseudo-enumerator to support PHP 7.x
- *
- * TODO: Bump to PHP 8.x + support after EOL with
- * native enum implementation
+ * The type of an evaluation context attribute value
  */
-class AttributeType
+enum AttributeType: string
 {
-    public const STRING = 'STRING';
-    public const INTEGER = 'INTEGER';
-    public const FLOAT = 'FLOAT';
-    public const STRUCTURE = 'STRUCTURE';
-    public const BOOLEAN = 'BOOLEAN';
+    case STRING = 'STRING';
+    case INTEGER = 'INTEGER';
+    case FLOAT = 'FLOAT';
+    case STRUCTURE = 'STRUCTURE';
+    case BOOLEAN = 'BOOLEAN';
 }

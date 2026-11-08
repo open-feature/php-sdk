@@ -7,7 +7,6 @@ namespace OpenFeature;
 use DateTime;
 use OpenFeature\implementation\common\Metadata;
 use OpenFeature\implementation\common\ValueTypeValidator;
-use OpenFeature\implementation\errors\FlagValueTypeError;
 use OpenFeature\implementation\errors\InvalidResolutionValueError;
 use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\implementation\flags\EvaluationDetailsBuilder;
@@ -17,7 +16,6 @@ use OpenFeature\implementation\hooks\HookContextBuilder;
 use OpenFeature\implementation\hooks\HookContextFactory;
 use OpenFeature\implementation\hooks\HookExecutor;
 use OpenFeature\implementation\hooks\HookHints;
-use OpenFeature\implementation\provider\Reason;
 use OpenFeature\implementation\provider\ResolutionError;
 use OpenFeature\interfaces\common\LoggerAwareTrait;
 use OpenFeature\interfaces\common\Metadata as MetadataInterface;
@@ -31,6 +29,7 @@ use OpenFeature\interfaces\hooks\Hook;
 use OpenFeature\interfaces\hooks\HooksAwareTrait;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
+use OpenFeature\interfaces\provider\Reason;
 use OpenFeature\interfaces\provider\ResolutionDetails;
 use OpenFeature\interfaces\provider\ThrowableWithResolutionError;
 use Psr\Log\LoggerAwareInterface;
@@ -289,7 +288,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
      * @param bool|string|int|float|DateTime|mixed[]|null $defaultValue
      */
     private function evaluateFlag(
-        string $flagValueType,
+        FlagValueType $flagValueType,
         string $flagKey,
         bool | string | int | float | DateTime | array | null $defaultValue,
         ?EvaluationContextInterface $invocationContext = null,
@@ -340,7 +339,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
             $mergedContext = EvaluationContext::merge($mergedContext, $contextFromBeforeHook);
             $hookContext = (new HookContextBuilder())
                                 ->withFlagKey($hookContext->getFlagKey())
-                                ->withType($hookContext->getType())
+                                ->withType($flagValueType)
                                 ->withDefaultValue($hookContext->getDefaultValue())
                                 ->withEvaluationContext($mergedContext)
                                 ->withClientMetadata($hookContext->getClientMetadata())
@@ -372,7 +371,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
                 ],
             );
 
-            $error = $err instanceof ThrowableWithResolutionError ? $err->getResolutionError() : new ResolutionError(ErrorCode::GENERAL(), $err->getMessage());
+            $error = $err instanceof ThrowableWithResolutionError ? $err->getResolutionError() : new ResolutionError(ErrorCode::GENERAL, $err->getMessage());
 
             $details = (new EvaluationDetailsBuilder())
                             ->withFlagKey($flagKey)
@@ -390,7 +389,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
     }
 
     private function createProviderEvaluation(
-        string $type,
+        FlagValueType $type,
         string $key,
         mixed $defaultValue,
         Provider $provider,
@@ -422,8 +421,6 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
                 $defaultValue = $defaultValue;
 
                 return $provider->resolveObjectValue($key, $defaultValue, $context);
-            default:
-                throw new FlagValueTypeError($type);
         }
     }
 }

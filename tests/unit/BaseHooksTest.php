@@ -21,7 +21,7 @@ use Throwable;
 class BaseHooksTest extends TestCase
 {
     #[DataProvider('dataBooleanHook')]
-    public function testBooleanHook(string $flagValueType, bool $supportsFlagValueType): void
+    public function testBooleanHook(FlagValueType $flagValueType, bool $supportsFlagValueType): void
     {
         $testBooleanHook = new class extends BooleanHook {
             public function before(HookContext $context, HookHints $hints): ?EvaluationContext
@@ -63,7 +63,7 @@ class BaseHooksTest extends TestCase
     }
 
     #[DataProvider('dataFloatHook')]
-    public function testFloatHook(string $flagValueType, bool $supportsFlagValueType): void
+    public function testFloatHook(FlagValueType $flagValueType, bool $supportsFlagValueType): void
     {
         $testFloatHook = new class extends FloatHook {
             public function before(HookContext $context, HookHints $hints): ?EvaluationContext
@@ -105,7 +105,7 @@ class BaseHooksTest extends TestCase
     }
 
     #[DataProvider('dataIntegerHook')]
-    public function testIntegerHook(string $flagValueType, bool $supportsFlagValueType): void
+    public function testIntegerHook(FlagValueType $flagValueType, bool $supportsFlagValueType): void
     {
         $testIntegerHook = new class extends IntegerHook {
             public function before(HookContext $context, HookHints $hints): ?EvaluationContext
@@ -147,7 +147,7 @@ class BaseHooksTest extends TestCase
     }
 
     #[DataProvider('dataObjectHook')]
-    public function testObjectHook(string $flagValueType, bool $supportsFlagValueType): void
+    public function testObjectHook(FlagValueType $flagValueType, bool $supportsFlagValueType): void
     {
         $testObjectHook = new class extends ObjectHook {
             public function before(HookContext $context, HookHints $hints): ?EvaluationContext
@@ -189,7 +189,7 @@ class BaseHooksTest extends TestCase
     }
 
     #[DataProvider('dataStringHook')]
-    public function testStringHook(string $flagValueType, bool $supportsFlagValueType): void
+    public function testStringHook(FlagValueType $flagValueType, bool $supportsFlagValueType): void
     {
         $testStringHook = new class extends StringHook {
             public function before(HookContext $context, HookHints $hints): ?EvaluationContext

@@ -29,7 +29,7 @@ class FeatureContext implements BehatContext
 {
     private OpenFeatureClient $client;
 
-    private string $flagType;
+    private FlagValueType $flagType;
     private string $inputFlagKey;
     private mixed $inputFlagDefaultValue;
     private ?EvaluationContext $inputContext = null;
@@ -331,12 +331,12 @@ class FeatureContext implements BehatContext
             $value4 = $this->stringAsBool($value4);
         }
 
-        $this->inputContext = (new MutableEvaluationContext(null, new Attributes([
+        $this->inputContext = new MutableEvaluationContext(null, new Attributes([
             $key1 => $value1,
             $key2 => $value2,
             $key3 => $value3,
             $key4 => $value4,
-        ])));
+        ]));
     }
 
     /**
@@ -401,7 +401,7 @@ class FeatureContext implements BehatContext
         $error = $details->getError();
 
         Assert::assertNotNull($error);
-        Assert::assertEquals($errorCode, (string) $error->getResolutionErrorCode());
+        Assert::assertEquals($errorCode, $error->getResolutionErrorCode()->value);
     }
 
     /**
@@ -435,7 +435,7 @@ class FeatureContext implements BehatContext
         $error = $details->getError();
 
         Assert::assertNotNull($error);
-        Assert::assertEquals($error->getResolutionErrorCode(), ErrorCode::TYPE_MISMATCH());
+        Assert::assertEquals($error->getResolutionErrorCode(), ErrorCode::TYPE_MISMATCH);
     }
 
     /**
@@ -515,7 +515,7 @@ class FeatureContext implements BehatContext
         }
     }
 
-    private function getFlagTypeOf(mixed $value): ?string
+    private function getFlagTypeOf(mixed $value): ?FlagValueType
     {
         if (is_string($value)) {
             return FlagValueType::STRING;

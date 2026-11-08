@@ -233,7 +233,7 @@ class ProviderTest extends TestCase
      */
     public function testMustPopulateErrorFieldInAbnormalExecution(): void
     {
-        $expectedErrorCode = ErrorCode::GENERAL();
+        $expectedErrorCode = ErrorCode::GENERAL;
 
         /** @var Mockery\MockInterface|Provider $mockProvider */
         $mockProvider = $this->mockery(TestProvider::class)->makePartial();

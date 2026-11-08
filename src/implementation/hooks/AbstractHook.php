@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenFeature\implementation\hooks;
 
 use OpenFeature\interfaces\flags\EvaluationContext;
+use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\hooks\Hook;
 use OpenFeature\interfaces\hooks\HookContext;
 use OpenFeature\interfaces\hooks\HookHints;
@@ -21,5 +22,5 @@ abstract class AbstractHook implements Hook
 
     abstract public function finally(HookContext $context, HookHints $hints): void;
 
-    abstract public function supportsFlagValueType(string $flagValueType): bool;
+    abstract public function supportsFlagValueType(FlagValueType $flagValueType): bool;
 }

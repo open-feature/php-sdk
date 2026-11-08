@@ -9,6 +9,7 @@ use OpenFeature\implementation\common\Metadata;
 use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\interfaces\common\Metadata as MetadataInterface;
 use OpenFeature\interfaces\flags\EvaluationContext as EvaluationContextInterface;
+use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\hooks\HookContext;
 
 use function is_array;
@@ -16,7 +17,7 @@ use function is_array;
 abstract class AbstractHookContext
 {
     protected string $flagKey = '';
-    protected string $type = '';
+    protected ?FlagValueType $type = null;
     /** @var bool|string|int|float|DateTime|mixed[]|null $defaultValue */
     protected bool | string | int | float | DateTime | array | null $defaultValue = null;
     protected EvaluationContextInterface $evaluationContext;

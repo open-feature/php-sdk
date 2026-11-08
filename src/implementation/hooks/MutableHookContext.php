@@ -7,6 +7,7 @@ namespace OpenFeature\implementation\hooks;
 use DateTime;
 use OpenFeature\interfaces\common\Metadata;
 use OpenFeature\interfaces\flags\EvaluationContext;
+use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\hooks\HookContext as HookContextInterface;
 use OpenFeature\interfaces\hooks\MutableHookContext as MutableHookContextInterface;
 
@@ -17,7 +18,7 @@ class MutableHookContext extends ImmutableHookContext implements HookContextInte
         $this->flagKey = $flagKey;
     }
 
-    public function setType(string $type): void
+    public function setType(FlagValueType $type): void
     {
         $this->type = $type;
     }
