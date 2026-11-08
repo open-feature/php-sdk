@@ -12,6 +12,9 @@
         {
             "name": "Tom Carrio",
             "email": "tom@carrio.dev"
+        },
+        {
+            "name": "OpenFeature Contributors"
         }
     ],
     "require": {
@@ -20,28 +23,23 @@
         "psr/log": "^2.0 || ^3.0"
     },
     "require-dev": {
-        "behat/behat": "^3.11",
-        "captainhook/captainhook": "^5.10",
+        "captainhook/captainhook": "^5.29",
         "captainhook/plugin-composer": "^5.3",
-        "dg/bypass-finals": "^1.9",
-        "ergebnis/composer-normalize": "^2.25",
-        "hamcrest/hamcrest-php": "^2.0",
-        "mdwheele/zalgo": "^0.3.1",
-        "mockery/mockery": "^1.5",
+        "dg/bypass-finals": "^1.11",
+        "ergebnis/composer-normalize": "^2.56",
+        "mockery/mockery": "^1.6",
         "php-parallel-lint/php-console-highlighter": "^1.0",
-        "php-parallel-lint/php-parallel-lint": "^1.3",
-        "phpstan/extension-installer": "^1.1",
-        "phpstan/phpstan": "~1.12.0",
-        "phpstan/phpstan-mockery": "^1.0",
-        "phpstan/phpstan-phpunit": "^1.1",
-        "psalm/plugin-mockery": "^1.0.0",
-        "psalm/plugin-phpunit": "^0.19.0",
-        "ramsey/coding-standard": "^2.0.3",
-        "ramsey/composer-repl": "^1.4",
-        "ramsey/conventional-commits": "^1.3",
+        "php-parallel-lint/php-parallel-lint": "^1.4",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "^2.3",
+        "phpstan/phpstan-mockery": "^2.0",
+        "phpstan/phpstan-phpunit": "^2.1",
+        "phpunit/phpunit": "^11.5",
+        "ramsey/coding-standard": "^2.4",
+        "ramsey/composer-repl": "^1.5",
+        "ramsey/conventional-commits": "^1.7",
         "roave/security-advisories": "dev-latest",
-        "spatie/phpunit-snapshot-assertions": "^4.2",
-        "vimeo/psalm": "~5.26.0"
+        "vimeo/psalm": "^7.1"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
@@ -57,10 +55,10 @@
     },
     "config": {
         "allow-plugins": {
-            "phpstan/extension-installer": true,
+            "captainhook/plugin-composer": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "ergebnis/composer-normalize": true,
-            "captainhook/plugin-composer": true,
+            "phpstan/extension-installer": true,
             "ramsey/composer-repl": true
         },
         "sort-packages": true

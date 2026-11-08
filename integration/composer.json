@@ -15,7 +15,7 @@
         }
     ],
     "require": {
-        "php": "^8",
+        "php": "^8.2",
         "open-feature/sdk": "^2.0.0",
         "open-feature/flagd-provider": "^1.0.0",
         "guzzlehttp/guzzle": "^7.5",
@@ -23,7 +23,7 @@
     },
     "require-dev": {
         "behat/behat": "^3.11",
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^11.5"
     },
     "repositories": [
         {

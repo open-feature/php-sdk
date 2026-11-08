@@ -287,7 +287,7 @@ class OpenFeatureClientTest extends TestCase
         $expectedValue = ['key' => 'value'];
 
         $mockProvider = $this->getDefaultMockProvider();
-        $mockProvider->shouldReceive('resolveStructureValue')->andReturns(ResolutionDetailsFactory::fromSuccess($invalidValue));
+        $mockProvider->shouldReceive('resolveObjectValue')->andReturns(ResolutionDetailsFactory::fromSuccess($invalidValue));
 
         $api->setProvider($mockProvider);
 
@@ -400,7 +400,7 @@ class OpenFeatureClientTest extends TestCase
         $expectedValue = ['key' => 'value'];
 
         $mockProvider = $this->getDefaultMockProvider();
-        $mockProvider->shouldReceive('resolveStructureValue')->andReturns(ResolutionDetailsFactory::fromSuccess($expectedValue));
+        $mockProvider->shouldReceive('resolveObjectValue')->andReturns(ResolutionDetailsFactory::fromSuccess($expectedValue));
 
         $api->setProvider($mockProvider);
 
@@ -1563,7 +1563,6 @@ class OpenFeatureClientTest extends TestCase
         $clientReflection = new ReflectionClass($client);
 
         $method = $clientReflection->getMethod('evaluateFlag');
-        $method->setAccessible(true);
 
         /** @var EvaluationDetailsInterface $actualDetails */
         $actualDetails = $method->invokeArgs($client, [$invalidFlagType, $flagKey, $defaultValue]);

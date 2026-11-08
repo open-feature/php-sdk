@@ -52,7 +52,6 @@
 ### Requirements
 
 This library targets PHP version 8.2 and newer. As long as you have any compatible version of PHP on your system you should be able to utilize the OpenFeature SDK.
-This package also has a `.tool-versions` file for use with PHP version managers like `asdf`.
 
 ### Install
 

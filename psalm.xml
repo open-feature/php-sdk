@@ -4,7 +4,9 @@
        xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
        errorLevel="1"
        cacheDirectory="./build/cache/psalm"
-       errorBaseline="./psalm-baseline.xml">
+       errorBaseline="./psalm-baseline.xml"
+       findUnusedCode="false"
+       ensureOverrideAttribute="false">
 
     <projectFiles>
         <directory name="./src"/>
@@ -13,5 +15,12 @@
             <directory name="./vendor"/>
         </ignoreFiles>
     </projectFiles>
+
+    <issueHandlers>
+        <!-- Public SDK classes are extensible by consumers; making them final would be a BC break. -->
+        <ClassMustBeFinal errorLevel="suppress"/>
+        <!-- Typed class constants require PHP 8.3; the minimum supported version is 8.2. -->
+        <MissingClassConstType errorLevel="suppress"/>
+    </issueHandlers>
 
 </psalm>

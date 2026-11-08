@@ -6,12 +6,11 @@ namespace OpenFeature\Test\unit;
 
 use OpenFeature\Test\TestCase;
 use OpenFeature\implementation\common\StringHelper;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class StringHelperTest extends TestCase
 {
-    /**
-     * @dataProvider capitalizeData
-     */
+    #[DataProvider('capitalizeData')]
     public function testCapitalize(string $input, string $expectedValue): void
     {
         $actualValue = StringHelper::capitalize($input);
@@ -22,7 +21,7 @@ class StringHelperTest extends TestCase
     /**
      * @return Array<Array<string>>
      */
-    public function capitalizeData(): array
+    public static function capitalizeData(): array
     {
         return [
             ['', ''],
@@ -35,9 +34,7 @@ class StringHelperTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider decapitalizeData
-     */
+    #[DataProvider('decapitalizeData')]
     public function testDecapitalize(string $input, string $expectedValue): void
     {
         $actualValue = StringHelper::decapitalize($input);
@@ -48,7 +45,7 @@ class StringHelperTest extends TestCase
     /**
      * @return Array<Array<string>>
      */
-    public function decapitalizeData(): array
+    public static function decapitalizeData(): array
     {
         return [
             ['', ''],
