@@ -32,7 +32,7 @@ use function count;
  */
 class ComparisonStrategy extends BaseEvaluationStrategy
 {
-    public string $runMode = RunMode::EVALUATE_ALL;
+    public RunMode $runMode = RunMode::EVALUATE_ALL;
 
     /**
      * @param Provider $fallbackProvider Provider to use when results don't match (required)

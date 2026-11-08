@@ -9,9 +9,6 @@ parameters:
         - */tests/*/fixtures/*
     ignoreErrors:
         -
-            message: '#Constant .+ is unused#'
-            path: src/interfaces/provider/ErrorCode.php
-        -
             identifier: method.alreadyNarrowedType
             path: tests/*
         -

@@ -7,12 +7,13 @@ namespace OpenFeature\interfaces\hooks;
 use DateTime;
 use OpenFeature\interfaces\common\Metadata;
 use OpenFeature\interfaces\flags\EvaluationContext;
+use OpenFeature\interfaces\flags\FlagValueType;
 
 interface MutableHookContext
 {
     public function setFlagKey(string $flagKey): void;
 
-    public function setType(string $type): void;
+    public function setType(FlagValueType $type): void;
 
     /**
      * @param bool|string|int|float|DateTime|mixed[]|null $defaultValue

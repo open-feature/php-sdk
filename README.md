@@ -435,7 +435,7 @@ class CustomStrategy extends BaseEvaluationStrategy
 {
     // Set to RunMode::EVALUATE_ALL to evaluate all providers at one time
     // or leave as default for sequential evaluation
-    public string $runMode = RunMode::SEQUENTIAL;
+    public RunMode $runMode = RunMode::SEQUENTIAL;
 
     /**
      * Called before each provider is evaluated.
@@ -769,7 +769,7 @@ class ExampleStringHookImplementation implements Hook
     }
 
 
-    public function supportsFlagValueType(string $flagValueType): bool
+    public function supportsFlagValueType(FlagValueType $flagValueType): bool
     {
         return $flagValueType === FlagValueType::STRING;
     }

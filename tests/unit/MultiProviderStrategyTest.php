@@ -20,6 +20,7 @@ use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
 use OpenFeature\interfaces\provider\ResolutionDetails;
 use OpenFeature\interfaces\provider\ResolutionError as ResolutionErrorInterface;
+use OpenFeature\interfaces\provider\RunMode;
 use OpenFeature\interfaces\provider\ThrowableWithResolutionError;
 
 class MultiProviderStrategyTest extends TestCase
@@ -53,13 +54,13 @@ class MultiProviderStrategyTest extends TestCase
     public function testFirstMatchStrategyRunMode(): void
     {
         $strategy = new FirstMatchStrategy();
-        $this->assertEquals('sequential', $strategy->runMode);
+        $this->assertSame(RunMode::SEQUENTIAL, $strategy->runMode);
     }
 
     public function testFirstSuccessfulStrategyRunMode(): void
     {
         $strategy = new FirstSuccessfulStrategy();
-        $this->assertEquals('sequential', $strategy->runMode);
+        $this->assertSame(RunMode::SEQUENTIAL, $strategy->runMode);
     }
 
     public function testFirstMatchStrategyShouldEvaluateThisProvider(): void
@@ -96,7 +97,7 @@ class MultiProviderStrategyTest extends TestCase
         $error = new class extends Exception implements ThrowableWithResolutionError {
             public function getResolutionError(): ResolutionErrorInterface
             {
-                return new ResolutionError(ErrorCode::FLAG_NOT_FOUND(), 'Flag not found');
+                return new ResolutionError(ErrorCode::FLAG_NOT_FOUND, 'Flag not found');
             }
         };
 
@@ -113,7 +114,7 @@ class MultiProviderStrategyTest extends TestCase
         $error = new class extends Exception implements ThrowableWithResolutionError {
             public function getResolutionError(): ResolutionErrorInterface
             {
-                return new ResolutionError(ErrorCode::GENERAL(), 'General error');
+                return new ResolutionError(ErrorCode::GENERAL, 'General error');
             }
         };
 
@@ -166,7 +167,7 @@ class MultiProviderStrategyTest extends TestCase
         $error = new class extends Exception implements ThrowableWithResolutionError {
             public function getResolutionError(): ResolutionErrorInterface
             {
-                return new ResolutionError(ErrorCode::FLAG_NOT_FOUND(), 'Flag not found');
+                return new ResolutionError(ErrorCode::FLAG_NOT_FOUND, 'Flag not found');
             }
         };
 

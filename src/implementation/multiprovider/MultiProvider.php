@@ -12,12 +12,12 @@ use OpenFeature\implementation\multiprovider\strategy\FirstMatchStrategy;
 use OpenFeature\implementation\multiprovider\strategy\ProviderContext;
 use OpenFeature\implementation\multiprovider\strategy\StrategyContext;
 use OpenFeature\implementation\provider\AbstractProvider;
-use OpenFeature\implementation\provider\Reason;
 use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
 use OpenFeature\implementation\provider\ResolutionError;
 use OpenFeature\interfaces\flags\EvaluationContext;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
+use OpenFeature\interfaces\provider\Reason;
 use OpenFeature\interfaces\provider\ResolutionDetails;
 use OpenFeature\interfaces\provider\RunMode;
 use Throwable;
@@ -302,7 +302,7 @@ class MultiProvider extends AbstractProvider
     private function createErrorResolution(string $flagKey, bool | string | int | float | DateTime | array | null $defaultValue, ?array $errors): ResolutionDetails
     {
         $errorMessage = $this->aggregateErrorMessage($errors);
-        $errorCode = ErrorCode::GENERAL();
+        $errorCode = ErrorCode::GENERAL;
 
         return (new ResolutionDetailsBuilder())
                             ->withValue($defaultValue)

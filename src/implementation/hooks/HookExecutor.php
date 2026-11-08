@@ -8,6 +8,7 @@ use OpenFeature\implementation\flags\EvaluationContext as FlagsEvaluationContext
 use OpenFeature\implementation\flags\MutableEvaluationContext;
 use OpenFeature\interfaces\common\LoggerAwareTrait;
 use OpenFeature\interfaces\flags\EvaluationContext;
+use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\hooks\Hook;
 use OpenFeature\interfaces\hooks\HookContext;
 use OpenFeature\interfaces\hooks\HookHints as HookHintsInterface;
@@ -35,7 +36,7 @@ class HookExecutor implements LoggerAwareInterface
      *
      * @param Hook[] $mergedHooks
      */
-    public function beforeHooks(string $type, HookContext $hookContext, array $mergedHooks, HookHintsInterface $hints): ?EvaluationContext
+    public function beforeHooks(FlagValueType $type, HookContext $hookContext, array $mergedHooks, HookHintsInterface $hints): ?EvaluationContext
     {
         $additionalContext = new MutableEvaluationContext();
 
@@ -54,7 +55,7 @@ class HookExecutor implements LoggerAwareInterface
     /**
      * @param Hook[] $mergedHooks
      */
-    public function afterHooks(string $type, HookContext $hookContext, ResolutionDetails $details, array $mergedHooks, HookHintsInterface $hints): void
+    public function afterHooks(FlagValueType $type, HookContext $hookContext, ResolutionDetails $details, array $mergedHooks, HookHintsInterface $hints): void
     {
         foreach ($mergedHooks as $hook) {
             if ($hook->supportsFlagValueType($type)) {
@@ -66,7 +67,7 @@ class HookExecutor implements LoggerAwareInterface
     /**
      * @param Hook[] $mergedHooks
      */
-    public function errorHooks(string $type, HookContext $hookContext, Throwable $err, array $mergedHooks, HookHintsInterface $hints): void
+    public function errorHooks(FlagValueType $type, HookContext $hookContext, Throwable $err, array $mergedHooks, HookHintsInterface $hints): void
     {
         foreach ($mergedHooks as $hook) {
             if ($hook->supportsFlagValueType($type)) {
@@ -78,7 +79,7 @@ class HookExecutor implements LoggerAwareInterface
     /**
      * @param Hook[] $mergedHooks
      */
-    public function finallyHooks(string $type, HookContext $hookContext, array $mergedHooks, HookHintsInterface $hints): void
+    public function finallyHooks(FlagValueType $type, HookContext $hookContext, array $mergedHooks, HookHintsInterface $hints): void
     {
         foreach ($mergedHooks as $hook) {
             if ($hook->supportsFlagValueType($type)) {

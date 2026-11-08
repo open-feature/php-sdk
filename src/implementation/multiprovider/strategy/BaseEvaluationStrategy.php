@@ -18,7 +18,7 @@ use function count;
  */
 abstract class BaseEvaluationStrategy
 {
-    public string $runMode = RunMode::SEQUENTIAL;
+    public RunMode $runMode = RunMode::SEQUENTIAL;
 
     /**
      * Determine if the given provider should be evaluated.
