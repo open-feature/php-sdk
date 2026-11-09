@@ -134,7 +134,6 @@ class HooksTest extends TestCase
             return new EvaluationContext(null, new Attributes(['newKey' => 'newValue']));
         });
 
-        // @phpstan-ignore-next-line
         $additionalEvaluationContext = (new HookExecutor())
                                 ->afterHooks(
                                     FlagValueType::BOOLEAN,
@@ -164,7 +163,6 @@ class HooksTest extends TestCase
             return new EvaluationContext(null, new Attributes(['newKey' => 'newValue']));
         });
 
-        //@phpstan-ignore-next-line
         $additionalEvaluationContext = (new HookExecutor())
                                 ->errorHooks(
                                     FlagValueType::BOOLEAN,
@@ -195,7 +193,6 @@ class HooksTest extends TestCase
             return new EvaluationContext(null, new Attributes(['newKey' => 'newValue']));
         });
 
-        // @phpstan-ignore-next-line
         $additionalEvaluationContext = (new HookExecutor())
                                 ->finallyHooks(
                                     FlagValueType::BOOLEAN,
@@ -217,7 +214,6 @@ class HooksTest extends TestCase
         $propertyA = 'value a';
         $propertyB = 'value b';
 
-        /** @var HookHintsInterface $hints */
         $hints = new HookHints([
             'a' => $propertyA,
             'b' => $propertyB,
@@ -234,7 +230,6 @@ class HooksTest extends TestCase
      */
     public function testHookHintsIsImmutable(): void
     {
-        /** @var HookHintsInterface $hints */
         $hints = new HookHints();
 
         $methodName = 'set';
@@ -335,7 +330,6 @@ class HooksTest extends TestCase
      */
     public function testHooksMustSpecifyAtLeastOneStage(): void
     {
-        /** @var Hook $testHook */
         $testHook = new TestHook();
 
         $this->assertInstanceOf(Hook::class, $testHook);

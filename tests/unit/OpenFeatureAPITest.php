@@ -6,6 +6,7 @@ namespace OpenFeature\Test\unit;
 
 use DG\BypassFinals;
 use Exception;
+use Mockery;
 use Mockery\MockInterface;
 use OpenFeature\OpenFeatureAPI;
 use OpenFeature\Test\APITestHelper;
@@ -18,6 +19,8 @@ use OpenFeature\implementation\provider\NoOpProvider;
 use OpenFeature\interfaces\flags\API;
 use OpenFeature\interfaces\hooks\Hook;
 use OpenFeature\interfaces\provider\Provider;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Throwable;
 
 use function get_class;
@@ -224,17 +227,17 @@ class OpenFeatureAPITest extends TestCase
         $this->assertInstanceOf(TestProvider::class, $api->getProvider());
     }
 
-    /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testReturnsNoOpClientWhenClientResolutionFails(): void
     {
-        BypassFinals::enable();
+        BypassFinals::enable(bypassReadOnly: false);
         $name = 'test-name';
         $version = 'test-version';
-        /** @var (MockInterface&OpenFeatureAPI) $api @phpstan-ignore-line */
-        $api = $this->mockery(OpenFeatureAPI::class)->shouldAllowMockingProtectedMethods()->makePartial(); // @phpstan-ignore-line
+        // OpenFeatureAPI is final; BypassFinals makes it mockable at runtime, so type it via its interface
+        /** @var API&MockInterface $api */
+        $api = Mockery::mock(OpenFeatureAPI::class);
+        $api->shouldAllowMockingProtectedMethods()->makePartial();
 
         $api->shouldReceive('resolveClient')->once()
             ->with($name, $version)

@@ -8,26 +8,14 @@ use DateTime;
 use OpenFeature\interfaces\flags\Attributes as AttributesInterface;
 use OpenFeature\interfaces\flags\MutableAttributes as MutableAttributesInterface;
 
-use function array_reduce;
-
 class MutableAttributes extends Attributes implements MutableAttributesInterface
 {
     public static function from(AttributesInterface $attributes): MutableAttributes
     {
-        $attributeMap = array_reduce(
-            $attributes->keys(),
-            /**
-             * @param Array<string, bool|string|int|float|DateTime|mixed[]|null> $map
-             *
-             * @return Array<string, bool|string|int|float|DateTime|mixed[]|null>
-             */
-            function (array $map, string $key) use ($attributes) {
-                $map[$key] = $attributes->get($key);
-
-                return $map;
-            },
-            [],
-        );
+        $attributeMap = [];
+        foreach ($attributes->keys() as $key) {
+            $attributeMap[$key] = $attributes->get($key);
+        }
 
         return new MutableAttributes($attributeMap);
     }

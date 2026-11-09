@@ -11,3 +11,15 @@ parameters:
         -
             message: '#Constant .+ is unused#'
             path: src/interfaces/provider/ErrorCode.php
+        -
+            identifier: method.alreadyNarrowedType
+            path: tests/*
+        -
+            identifier: function.alreadyNarrowedType
+            path: tests/*
+        -
+            identifier: method.notFound
+            path: tests/unit/HooksTest.php
+        -
+            identifier: method.void
+            path: tests/unit/HooksTest.php

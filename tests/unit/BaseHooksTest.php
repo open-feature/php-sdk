@@ -15,13 +15,12 @@ use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\hooks\HookContext;
 use OpenFeature\interfaces\hooks\HookHints;
 use OpenFeature\interfaces\provider\ResolutionDetails;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Throwable;
 
 class BaseHooksTest extends TestCase
 {
-  /**
-   * @dataProvider dataBooleanHook
-   */
+    #[DataProvider('dataBooleanHook')]
     public function testBooleanHook(string $flagValueType, bool $supportsFlagValueType): void
     {
         $testBooleanHook = new class extends BooleanHook {
@@ -52,7 +51,7 @@ class BaseHooksTest extends TestCase
   /**
    * @return Array<Array<mixed>>
    */
-    public function dataBooleanHook(): array
+    public static function dataBooleanHook(): array
     {
         return [
             [FlagValueType::BOOLEAN, true],
@@ -63,9 +62,7 @@ class BaseHooksTest extends TestCase
         ];
     }
 
-  /**
-   * @dataProvider dataFloatHook
-   */
+    #[DataProvider('dataFloatHook')]
     public function testFloatHook(string $flagValueType, bool $supportsFlagValueType): void
     {
         $testFloatHook = new class extends FloatHook {
@@ -96,7 +93,7 @@ class BaseHooksTest extends TestCase
   /**
    * @return Array<Array<mixed>>
    */
-    public function dataFloatHook(): array
+    public static function dataFloatHook(): array
     {
         return [
             [FlagValueType::BOOLEAN, false],
@@ -107,9 +104,7 @@ class BaseHooksTest extends TestCase
         ];
     }
 
-  /**
-   * @dataProvider dataIntegerHook
-   */
+    #[DataProvider('dataIntegerHook')]
     public function testIntegerHook(string $flagValueType, bool $supportsFlagValueType): void
     {
         $testIntegerHook = new class extends IntegerHook {
@@ -140,7 +135,7 @@ class BaseHooksTest extends TestCase
   /**
    * @return Array<Array<mixed>>
    */
-    public function dataIntegerHook(): array
+    public static function dataIntegerHook(): array
     {
         return [
             [FlagValueType::BOOLEAN, false],
@@ -151,9 +146,7 @@ class BaseHooksTest extends TestCase
         ];
     }
 
-  /**
-   * @dataProvider dataObjectHook
-   */
+    #[DataProvider('dataObjectHook')]
     public function testObjectHook(string $flagValueType, bool $supportsFlagValueType): void
     {
         $testObjectHook = new class extends ObjectHook {
@@ -184,7 +177,7 @@ class BaseHooksTest extends TestCase
   /**
    * @return Array<Array<mixed>>
    */
-    public function dataObjectHook(): array
+    public static function dataObjectHook(): array
     {
         return [
             [FlagValueType::BOOLEAN, false],
@@ -195,9 +188,7 @@ class BaseHooksTest extends TestCase
         ];
     }
 
-  /**
-   * @dataProvider dataStringHook
-   */
+    #[DataProvider('dataStringHook')]
     public function testStringHook(string $flagValueType, bool $supportsFlagValueType): void
     {
         $testStringHook = new class extends StringHook {
@@ -228,7 +219,7 @@ class BaseHooksTest extends TestCase
   /**
    * @return Array<Array<mixed>>
    */
-    public function dataStringHook(): array
+    public static function dataStringHook(): array
     {
         return [
             [FlagValueType::BOOLEAN, false],
