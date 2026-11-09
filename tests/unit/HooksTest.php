@@ -13,6 +13,7 @@ use OpenFeature\Test\TestHook;
 use OpenFeature\implementation\common\Metadata;
 use OpenFeature\implementation\flags\Attributes;
 use OpenFeature\implementation\flags\EvaluationContext;
+use OpenFeature\implementation\flags\EvaluationDetailsFactory;
 use OpenFeature\implementation\flags\EvaluationOptions;
 use OpenFeature\implementation\hooks\HookContextBuilder;
 use OpenFeature\implementation\hooks\HookContextFactory;
@@ -197,6 +198,7 @@ class HooksTest extends TestCase
                                 ->finallyHooks(
                                     FlagValueType::BOOLEAN,
                                     HookContextFactory::from('flagKey', FlagValueType::BOOLEAN, false, new EvaluationContext(), new Metadata('client'), new Metadata('provider')),
+                                    EvaluationDetailsFactory::from('flagKey', false),
                                     [$mutationHook],
                                     new HookHints(),
                                 );
@@ -382,7 +384,7 @@ class HooksTest extends TestCase
             $testRunner->assertInstanceOf(HookHintsInterface::class, $hints);
             $testRunner->assertEquals($expectedHookHints, $hints);
         });
-        $hook->shouldReceive('finally')->andReturnUsing(function ($ctx, $hints) use ($testRunner, $expectedHookHints) {
+        $hook->shouldReceive('finally')->andReturnUsing(function ($ctx, $details, $hints) use ($testRunner, $expectedHookHints) {
             $testRunner->assertInstanceOf(HookHintsInterface::class, $hints);
             $testRunner->assertEquals($expectedHookHints, $hints);
         });

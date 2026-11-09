@@ -11,6 +11,7 @@ use OpenFeature\implementation\hooks\IntegerHook;
 use OpenFeature\implementation\hooks\ObjectHook;
 use OpenFeature\implementation\hooks\StringHook;
 use OpenFeature\interfaces\flags\EvaluationContext;
+use OpenFeature\interfaces\flags\EvaluationDetails;
 use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\hooks\HookContext;
 use OpenFeature\interfaces\hooks\HookHints;
@@ -39,7 +40,7 @@ class BaseHooksTest extends TestCase
               // no-op
             }
 
-            public function finally(HookContext $context, HookHints $hints): void
+            public function finally(HookContext $context, EvaluationDetails $details, HookHints $hints): void
             {
               // no-op
             }
@@ -81,7 +82,7 @@ class BaseHooksTest extends TestCase
               // no-op
             }
 
-            public function finally(HookContext $context, HookHints $hints): void
+            public function finally(HookContext $context, EvaluationDetails $details, HookHints $hints): void
             {
               // no-op
             }
@@ -123,7 +124,7 @@ class BaseHooksTest extends TestCase
               // no-op
             }
 
-            public function finally(HookContext $context, HookHints $hints): void
+            public function finally(HookContext $context, EvaluationDetails $details, HookHints $hints): void
             {
               // no-op
             }
@@ -165,7 +166,7 @@ class BaseHooksTest extends TestCase
               // no-op
             }
 
-            public function finally(HookContext $context, HookHints $hints): void
+            public function finally(HookContext $context, EvaluationDetails $details, HookHints $hints): void
             {
               // no-op
             }
@@ -207,7 +208,7 @@ class BaseHooksTest extends TestCase
               // no-op
             }
 
-            public function finally(HookContext $context, HookHints $hints): void
+            public function finally(HookContext $context, EvaluationDetails $details, HookHints $hints): void
             {
               // no-op
             }

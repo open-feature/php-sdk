@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenFeature\Test;
 
 use OpenFeature\interfaces\flags\EvaluationContext;
+use OpenFeature\interfaces\flags\EvaluationDetails;
 use OpenFeature\interfaces\hooks\Hook;
 use OpenFeature\interfaces\hooks\HookContext;
 use OpenFeature\interfaces\hooks\HookHints;
@@ -53,9 +54,10 @@ class TestHook implements Hook
      * Run after flag evaluation, including any error processing. This will always run. Errors will be swallowed.
      *
      * @param HookContext $context Information about the particular flag evaluation
+     * @param EvaluationDetails $details The completed evaluation result, including error information when present.
      * @param HookHints $hints An immutable mapping of data for users to communicate to the hooks.
      */
-    public function finally(HookContext $context, HookHints $hints): void
+    public function finally(HookContext $context, EvaluationDetails $details, HookHints $hints): void
     {
     }
 

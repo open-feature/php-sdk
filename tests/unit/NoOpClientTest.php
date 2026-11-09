@@ -9,6 +9,7 @@ use OpenFeature\implementation\common\Metadata;
 use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\implementation\flags\EvaluationDetailsBuilder;
 use OpenFeature\implementation\flags\NoOpClient;
+use OpenFeature\interfaces\flags\EvaluationDetails;
 use OpenFeature\interfaces\hooks\Hook;
 use OpenFeature\interfaces\hooks\HookContext;
 use OpenFeature\interfaces\hooks\HookHints;
@@ -193,7 +194,7 @@ class NoOpClientTest extends TestCase
                 // no-op
             }
 
-            public function finally(HookContext $context, HookHints $hints): void
+            public function finally(HookContext $context, EvaluationDetails $details, HookHints $hints): void
             {
                 // no-op
             }
