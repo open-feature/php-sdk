@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.4.1](https://github.com/open-feature/php-sdk/compare/2.4.0...2.4.1) (2026-11-09)
+
+
+### 🐛 Bug Fixes
+
+* remove pull_request_target and set permissions ([#206](https://github.com/open-feature/php-sdk/issues/206)) ([ac62428](https://github.com/open-feature/php-sdk/commit/ac624281049c44f361dd6de8c84e84071d715cc2))
+
+
+### 🧹 Chore
+
+* cleanup stale nix dev env and finish deprecating PHP 8.0 ([#203](https://github.com/open-feature/php-sdk/issues/203))s ([acfe7bb](https://github.com/open-feature/php-sdk/commit/acfe7bb2bece2fbf991c485f0c38bfdde11da424))
+* **deps:** update amannn/action-semantic-pull-request action to v6.1.2 ([#202](https://github.com/open-feature/php-sdk/issues/202)) ([8728719](https://github.com/open-feature/php-sdk/commit/8728719efc31832cc913c3597416cbbbb9c744ea))
+* **deps:** update dependency php to v8.5.12 ([#197](https://github.com/open-feature/php-sdk/issues/197)) ([895cf98](https://github.com/open-feature/php-sdk/commit/895cf98ad82ffe9f1ddf0b548b852c687a8ed0b0))
+* use sdk-php-maintainers team in CODEOWNERS ([#199](https://github.com/open-feature/php-sdk/issues/199)) ([ca0a8d2](https://github.com/open-feature/php-sdk/commit/ca0a8d2670fcdd60faf50005335cb22a72e7f0f3))
+
 ## [2.4.0](https://github.com/open-feature/php-sdk/compare/2.3.0...2.4.0) (2026-10-11)
 
 
