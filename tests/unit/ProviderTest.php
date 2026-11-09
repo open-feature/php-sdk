@@ -250,6 +250,14 @@ class ProviderTest extends TestCase
         $this->assertEquals($expectedErrorCode, $resolutionError->getResolutionErrorCode());
     }
 
+    public function testResolutionErrorPreservesThrowableMessage(): void
+    {
+        $error = new ResolutionError(ErrorCode::PARSE_ERROR(), 'Invalid provider configuration.');
+
+        $this->assertSame('Invalid provider configuration.', $error->getMessage());
+        $this->assertSame('Invalid provider configuration.', $error->getResolutionErrorMessage());
+    }
+
     /**
      * Requirement 2.10
      *

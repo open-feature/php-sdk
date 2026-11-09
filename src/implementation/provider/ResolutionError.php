@@ -7,15 +7,16 @@ namespace OpenFeature\implementation\provider;
 use Exception;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\ResolutionError as ResolutionErrorInterface;
+use OpenFeature\interfaces\provider\ThrowableWithResolutionError;
 
-class ResolutionError extends Exception implements ResolutionErrorInterface
+class ResolutionError extends Exception implements ResolutionErrorInterface, ThrowableWithResolutionError
 {
     private ErrorCode $resolutionErrorCode;
     private ?string $resolutionErrorMessage;
 
     public function __construct(ErrorCode $code, ?string $message = null)
     {
-        parent::__construct();
+        parent::__construct($message ?? '');
         $this->resolutionErrorCode = $code;
         $this->resolutionErrorMessage = $message;
     }
@@ -28,5 +29,10 @@ class ResolutionError extends Exception implements ResolutionErrorInterface
     public function getResolutionErrorMessage(): ?string
     {
         return $this->resolutionErrorMessage;
+    }
+
+    public function getResolutionError(): ResolutionErrorInterface
+    {
+        return $this;
     }
 }
