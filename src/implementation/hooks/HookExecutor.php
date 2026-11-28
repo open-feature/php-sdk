@@ -8,6 +8,7 @@ use OpenFeature\implementation\flags\EvaluationContext as FlagsEvaluationContext
 use OpenFeature\implementation\flags\MutableEvaluationContext;
 use OpenFeature\interfaces\common\LoggerAwareTrait;
 use OpenFeature\interfaces\flags\EvaluationContext;
+use OpenFeature\interfaces\flags\EvaluationDetails;
 use OpenFeature\interfaces\hooks\Hook;
 use OpenFeature\interfaces\hooks\HookContext;
 use OpenFeature\interfaces\hooks\HookHints as HookHintsInterface;
@@ -78,11 +79,11 @@ class HookExecutor implements LoggerAwareInterface
     /**
      * @param Hook[] $mergedHooks
      */
-    public function finallyHooks(string $type, HookContext $hookContext, array $mergedHooks, HookHintsInterface $hints): void
+    public function finallyHooks(string $type, HookContext $hookContext, EvaluationDetails $details, array $mergedHooks, HookHintsInterface $hints): void
     {
         foreach ($mergedHooks as $hook) {
             if ($hook->supportsFlagValueType($type)) {
-                $this->executeHookSafe(fn () => $hook->finally($hookContext, $hints), 'finally');
+                $this->executeHookSafe(fn () => $hook->finally($hookContext, $details, $hints), 'finally');
             }
         }
     }

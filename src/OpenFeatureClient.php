@@ -334,6 +334,8 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
 
         $mergedRemainingHooks = array_reverse(array_merge([], $mergedBeforeHooks));
 
+        $details = EvaluationDetailsFactory::from($flagKey, $defaultValue);
+
         try {
             $contextFromBeforeHook = $hookExecutor->beforeHooks($flagValueType, $hookContext, $mergedBeforeHooks, $hookHints);
 
@@ -383,7 +385,7 @@ class OpenFeatureClient implements Client, LoggerAwareInterface
 
             $hookExecutor->errorHooks($flagValueType, $hookContext, $err, $mergedRemainingHooks, $hookHints);
         } finally {
-            $hookExecutor->finallyHooks($flagValueType, $hookContext, $mergedRemainingHooks, $hookHints);
+            $hookExecutor->finallyHooks($flagValueType, $hookContext, $details, $mergedRemainingHooks, $hookHints);
         }
 
         return $details;
