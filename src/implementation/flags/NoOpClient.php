@@ -6,12 +6,17 @@ namespace OpenFeature\implementation\flags;
 
 use DateTime;
 use OpenFeature\implementation\common\Metadata;
-use OpenFeature\interfaces\flags\Client;
+use OpenFeature\implementation\events\EventDetails;
+use OpenFeature\interfaces\events\EventDetails as EventDetailsInterface;
+use OpenFeature\interfaces\events\ProviderEvent;
+use OpenFeature\interfaces\events\ProviderStatus;
 use OpenFeature\interfaces\flags\EvaluationContext as EvaluationContextInterface;
 use OpenFeature\interfaces\flags\EvaluationDetails;
 use OpenFeature\interfaces\flags\EvaluationOptions;
+use OpenFeature\interfaces\flags\EventAwareClient;
+use Throwable;
 
-class NoOpClient implements Client
+class NoOpClient implements EventAwareClient
 {
     private const CLIENT_NAME = 'no-op-client';
 
@@ -85,6 +90,29 @@ class NoOpClient implements Client
     }
 
     public function setEvaluationContext(EvaluationContextInterface $context): void
+    {
+      // no-op
+    }
+
+    public function getProviderStatus(): ProviderStatus
+    {
+        return ProviderStatus::READY();
+    }
+
+    /** @param callable(EventDetailsInterface): void $handler */
+    public function addHandler(ProviderEvent $event, callable $handler): void
+    {
+        if ($event->equals(ProviderEvent::READY())) {
+            try {
+                $handler(new EventDetails('NoOpProvider'));
+            } catch (Throwable) {
+                // No-op event handlers must not cause abnormal execution.
+            }
+        }
+    }
+
+    /** @param callable(EventDetailsInterface): void $handler */
+    public function removeHandler(ProviderEvent $event, callable $handler): void
     {
       // no-op
     }

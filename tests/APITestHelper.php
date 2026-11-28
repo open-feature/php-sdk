@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace OpenFeature\Test;
 
 use OpenFeature\OpenFeatureAPI;
-use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\implementation\provider\NoOpProvider;
-use OpenFeature\interfaces\flags\API;
+use OpenFeature\interfaces\flags\ProviderLifecycleAPI;
 
 class APITestHelper
 {
-    public static function createAPI(): API
+    public static function createAPI(): ProviderLifecycleAPI
     {
         return OpenFeatureAPI::getInstance();
     }
@@ -20,16 +19,15 @@ class APITestHelper
     {
         $api = self::createAPI();
 
-        $api->setProvider(new NoOpProvider());
-        $api->clearHooks();
-        $api->setEvaluationContext(new EvaluationContext());
+        $api->shutdown();
     }
 
-    public static function new(): API
+    public static function new(): ProviderLifecycleAPI
     {
         $api = self::createAPI();
 
         self::resetAPI();
+        $api->setProvider(new NoOpProvider());
 
         return $api;
     }
